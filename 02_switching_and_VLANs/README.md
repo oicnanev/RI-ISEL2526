@@ -173,3 +173,52 @@ Switch # traceroute 192.168.10.1
 
 ![Vlan tag stripping by  the router](./img/08.png)
 
+### Router-on-a-Stick (ROAS)
+
+- Used to route traffic between VLANs using a single physical router interface
+- Subinterfaces are created and assigned to VLANs using 802.1Q encapsulation
+- Trunk connection between switch and router is required
+
+![ROAS - logical view](./img/09.png)
+
+ROAS configuration example:
+
+```shell
+Router(config)# interface g0/0.10
+Router(config-subif)# encapsulation dot1Q 10
+Router(config-subif)# ip address 172.16.10.1 255.255.255.0
+Router(config)# interface g0/0.20
+Router(config-subif)# encapsulation dot1Q 20
+Router(config-subif)# ip address 172.16.20.1 255.255.255.0  
+```
+
+### From One Switch to Many: Complexity Increases
+
+- __Single-Switch VLAN Routing__ is simple:
+	+ VLANs and routing configured on one device
+	+ Trunk link connects switch to router (router-on-a-stick)
+- __When expanding to multiple switches__:
+	+ VLANs must be __propagated across all switches__
+	+ Loop prevention (e.g., STP) becomes essential
+	+ Requires __trunk links__ and possibly VLAN Trunking Protocol (VTP)
+	+ VTP is a Cisco protocol used to distribute VLAN configuration  across multiple switches, reducing manual configuration by synchronizing VLAN IDs and names automatically
+- VTP has three modes:
+	+ __Server__: Creates, modifies, and propagates VLANs
+	+ __Client__: Receives VLAN info but cannot create/modify
+	+ __Transparent__: Forwards VTP messages but manages VLAN locally
+	
+## 5. VLAN Design Considerations
+
+### Best Practices
+
+- Use descriptive VLAN names and maintain consistent documentation
+- Assign unused ports to a dummy VLAN and shut them down
+- Avoid VLAN 1 for user data and management
+- Disable DTP and configure trunk ports manually
+
+### Example VLAN Design
+
+![three VLANs across four physical switches](./img/10.png)
+
+
+ 
