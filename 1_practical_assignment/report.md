@@ -93,14 +93,11 @@ __TODO__
 
 __TODO__
 
-> O trabalho não tem Server2 !!?
-
 | VLAN | NAME             | IP GATEWAY    | NETWORK          | PCs |
 | -- | ------------------ | ------------- | -----------------| -------- |
 | 11 | Accounting         | 172.20.11.254 | 172.20.11.0/24   | PC7, PC9 |
 | 12 | Secretariat        | 172.20.12.254 | 172.20.12.0/24   | PC5, PC8 |
 | 13 | Computer science   | 172.20.13.126 | 172.20.13.0/25   | PC6 |
-| 14 | Network management | 172.20.13.254 | 172.20.13.127/25 | Server2 |
 
 #### 1.1.2 STP (RB/roles/costs)
 
