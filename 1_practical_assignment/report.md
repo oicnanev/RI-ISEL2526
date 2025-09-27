@@ -93,13 +93,208 @@ __TODO__
 
 __TODO__
 
+> O trabalho não tem Server2 !!?
+
+| VLAN | NAME             | IP GATEWAY    | NETWORK          | PCs |
+| -- | ------------------ | ------------- | -----------------| -------- |
+| 11 | Accounting         | 172.20.11.254 | 172.20.11.0/24   | PC7, PC9 |
+| 12 | Secretariat        | 172.20.12.254 | 172.20.12.0/24   | PC5, PC8 |
+| 13 | Computer science   | 172.20.13.126 | 172.20.13.0/25   | PC6 |
+| 14 | Network management | 172.20.13.254 | 172.20.13.127/25 | Server2 |
+
 #### 1.1.2 STP (RB/roles/costs)
 
 __TODO__
 
+- Table built using command `show spanning-tree`
+
+| Switch    | VLAN #   | Priority | MAC            | Root MAC       |
+| --------- | -------- | -------- | -------------- | -------------- |
+| SW_DC     | VLAN0001 | 32798 | 0002.4AE4.E093 | 00E0.A3CE.4A46 (sw1_piso2) |
+| SW_DC     | VLAN0020 | 32788 | 0002.4AE4.E093 | Same |
+| sw1_piso1 | VLAN0001 | 32769 | 0009.7C65.BA4B | 00E0.A3CE.4A46 (sw1_piso2) |
+| sw1_piso1 | VLAN0020 | 32788 | 0009.7C65.BA4B | 0002.4AE4.E093 (SW_DC) |
+| sw1_piso1 | VLAN0030 | 32798 | 0009.7C65.BA4B | 0002.4AE4.E093 (SW_DC) |
+| sw1_piso1 | VLAN0040 | 32808 | 0009.7C65.BA4B | 0002.4AE4.E093 (SW_DC) |
+| sw1_piso1 | VLAN0045 | 32813 | 0009.7C65.BA4B | 0002.4AE4.E093 (SW_DC) |
+| sw2_piso1 | VLAN0001 | 32769 | 00E0.F950.631A | 00E0.A3CE.4A46 (sw1_piso2) |
+| sw2_piso1 | VLAN0020 | 32788 | 00E0.F950.631A | 0002.4AE4.E093 (SW_DC) |
+| sw2_piso1 | VLAN0030 | 32798 | 00E0.F950.631A | 0002.4AE4.E093 (SW_DC) |
+| sw2_piso1 | VLAN0040 | 32808 | 00E0.F950.631A | 0002.4AE4.E093 (SW_DC) |
+| sw2_piso1 | VLAN0045 | 32813 | 00E0.F950.631A | 0002.4AE4.E093 (SW_DC) |
+| sw1_piso2 | VLAN0001 | 28673 | 00E0.A3CE.4A46 | Same |
+| sw1_piso2 | VLAN0020 | 32788 | 00E0.A3CE.4A46 | 0002.4AE4.E093 (SW_DC) |
+| sw1_piso2 | VLAN0030 | 32798 | 00E0.A3CE.4A46 | 0002.4AE4.E093 (SW_DC) |
+| sw1_piso2 | VLAN0040 | 32808 | 00E0.A3CE.4A46 | 0002.4AE4.E093 (SW_DC) |
+| sw1_piso2 | VLAN0045 | 32813 | 00E0.A3CE.4A46 | 0002.4AE4.E093 (SW_DC) |
+| sw2_piso2 | VLAN0001 | 32769 | 00E0.8FE1.53D7 | 00E0.A3CE.4A46 (sw1_piso2) |
+| sw2_piso2 | VLAN0020 | 32788 | 00E0.8FE1.53D7 | 0002.4AE4.E093 (SW_DC) |
+| sw2_piso2 | VLAN0030 | 32798 | 00E0.8FE1.53D7 | 0002.4AE4.E093 (SW_DC) |
+| sw2_piso2 | VLAN0040 | 32808 | 00E0.8FE1.53D7 | 0002.4AE4.E093 (SW_DC) |
+| sw2_piso2 | VLAN0045 | 32813 | 00E0.8FE1.53D7 | 0002.4AE4.E093 (SW_DC) |
+
+- __VLAN0001__
+
+| Port             | PC | RPC | RP | DP | ALT/BLK |
+| ---------------- | -- | --- | -- | -- | ------- |
+| sw1_piso2 Fa0/2  | 19 | -   |    | X  |         |
+| sw1_piso2 Fa0/18 | 19 | -   |    | X  |         |
+| sw1_piso2 Fa0/23 | 19 | -   |    | X  |         |
+| sw1_piso2 Fa0/24 | 19 | -   |    | X  |         | 
+
+```shell
+Interface        Role Sts Cost      Prio.Nbr Type
+---------------- ---- --- --------- -------- --------------------------------
+Fa0/2            Desg FWD 100       128.2    P2p
+Fa0/18           Desg FWD 19        128.18   P2p
+Fa0/23           Desg FWD 19        128.23   P2p
+Fa0/24           Desg FWD 19        128.24   P2p
+```
+
+
 ### 1.2 Tests and Validation
 
 __TODO__
+
+#### Summary of Spanning-Tree by Switch
+
+> `show spanning-tree summary`
+
+- __SW_DC__
+
+```shell
+Switch is in rapid-pvst mode
+Root bridge for: Contabilidade Secretariado Informatica Gestao_de_rede
+Extended system ID           is enabled
+Portfast Default             is disabled
+PortFast BPDU Guard Default  is disabled
+Portfast BPDU Filter Default is disabled
+Loopguard Default            is disabled
+EtherChannel misconfig guard is disabled
+UplinkFast                   is disabled
+BackboneFast                 is disabled
+Configured Pathcost method used is short
+
+Name                   Blocking Listening Learning Forwarding STP Active
+---------------------- -------- --------- -------- ---------- ----------
+VLAN0001                     1         0        0          2          3
+VLAN0020                     0         0        0          3          3
+VLAN0030                     0         0        0          3          3
+VLAN0040                     0         0        0          3          3
+VLAN0045                     0         0        0          3          3
+
+---------------------- -------- --------- -------- ---------- ----------
+5 vlans                      1         0        0         14         15
+```
+
+- __sw1_piso1__
+
+```shell
+Switch is in rapid-pvst mode
+Root bridge for:
+Extended system ID           is enabled
+Portfast Default             is disabled
+PortFast BPDU Guard Default  is disabled
+Portfast BPDU Filter Default is disabled
+Loopguard Default            is disabled
+EtherChannel misconfig guard is disabled
+UplinkFast                   is disabled
+BackboneFast                 is disabled
+Configured Pathcost method used is short
+
+Name                   Blocking Listening Learning Forwarding STP Active
+---------------------- -------- --------- -------- ---------- ----------
+VLAN0001                     2         0        0          3          5
+VLAN0020                     1         0        0          4          5
+VLAN0030                     0         0        0          5          5
+VLAN0040                     1         0        0          4          5
+VLAN0045                     1         0        0          4          5
+
+---------------------- -------- --------- -------- ---------- ----------
+5 vlans                      5         0        0         20         25
+```
+
+- __sw2_piso2__
+
+```shell
+Switch is in rapid-pvst mode
+Root bridge for:
+Extended system ID           is enabled
+Portfast Default             is disabled
+PortFast BPDU Guard Default  is disabled
+Portfast BPDU Filter Default is disabled
+Loopguard Default            is disabled
+EtherChannel misconfig guard is disabled
+UplinkFast                   is disabled
+BackboneFast                 is disabled
+Configured Pathcost method used is short
+
+Name                   Blocking Listening Learning Forwarding STP Active
+---------------------- -------- --------- -------- ---------- ----------
+VLAN0001                     2         0        0          4          6
+VLAN0020                     4         0        0          2          6
+VLAN0030                     4         0        0          2          6
+VLAN0040                     3         0        0          3          6
+VLAN0045                     3         0        0          3          6
+
+---------------------- -------- --------- -------- ---------- ----------
+5 vlans                     16         0        0         14         30
+```
+
+- __sw1_piso1__
+
+```shell
+Switch is in rapid-pvst mode
+Root bridge for: default
+Extended system ID           is enabled
+Portfast Default             is disabled
+PortFast BPDU Guard Default  is disabled
+Portfast BPDU Filter Default is disabled
+Loopguard Default            is disabled
+EtherChannel misconfig guard is disabled
+UplinkFast                   is disabled
+BackboneFast                 is disabled
+Configured Pathcost method used is short
+
+Name                   Blocking Listening Learning Forwarding STP Active
+---------------------- -------- --------- -------- ---------- ----------
+VLAN0001                     1         0        0          4          5
+VLAN0020                     1         0        0          4          5
+VLAN0030                     2         0        0          3          5
+VLAN0040                     3         0        0          2          5
+VLAN0045                     2         0        0          3          5
+
+---------------------- -------- --------- -------- ---------- ----------
+5 vlans                      9         0        0         16         25
+```
+
+- __sw2_piso2__
+
+```shell
+Switch is in rapid-pvst mode
+Root bridge for:
+Extended system ID           is enabled
+Portfast Default             is disabled
+PortFast BPDU Guard Default  is disabled
+Portfast BPDU Filter Default is disabled
+Loopguard Default            is disabled
+EtherChannel misconfig guard is disabled
+UplinkFast                   is disabled
+BackboneFast                 is disabled
+Configured Pathcost method used is short
+
+Name                   Blocking Listening Learning Forwarding STP Active
+---------------------- -------- --------- -------- ---------- ----------
+VLAN0001                     4         0        0          1          5
+VLAN0020                     3         0        0          2          5
+VLAN0030                     3         0        0          2          5
+VLAN0040                     4         0        0          1          5
+VLAN0045                     4         0        0          1          5
+
+---------------------- -------- --------- -------- ---------- ----------
+5 vlans                     18         0        0          7         25
+```
+
 
 ### 1.3 Practical Questions
 
@@ -162,6 +357,15 @@ __TODO__
 #### 2.1.1 VLANs
 
 __TODO__: add table and show configurations
+
+> O trabalho não tem Server2 !!?
+
+| VLAN | NAME             | IP GATEWAY    | NETWORK          | PCs |
+| -- | ------------------ | ------------- | -----------------| -------- |
+| 11 | Accounting         | 172.20.11.254 | 172.20.11.0/24   | PC7, PC9 |
+| 12 | Secretariat        | 172.20.12.254 | 172.20.12.0/24   | PC5, PC8 |
+| 13 | Computer science   | 172.20.13.126 | 172.20.13.0/25   | PC6 |
+| 14 | Network management | 172.20.13.254 | 172.20.13.127/25 | Server2 |
 
 #### 1.1.2 Access and Trunk Ports
 
