@@ -443,7 +443,7 @@ __Objective of this design__
 
 #### 5. What is the tag that the wefts belonging to VLAN 1 carry?
 
-__TODO__
+__TODO__ What is wefts???
 
 #### 6. When a machine receives an Ethernet frame, how does it differ if it includes the Type/Length field after the source address field or if it includes the fields associated with a VLAN?
 
