@@ -98,7 +98,7 @@ Switch(config)# no vlan 40
 Switch(config)# no vlan 45
 ``` 
 
-__TODO__: Meter a `Native VLAN` para a 99 ou outra para não coincidir com a `Default VLAN` (VLAN 1) por razões de segurança. Não temos a certeza se falta fazer `no spanning-tree vlan 1`
+__TODO__: Meter a `Native VLAN` para a 99 ou outra para não coincidir com a `Default VLAN` (VLAN 1) por razões de segurança, `Switch(config-if)# switchport trunk native vlan 99` followed by `Switch(config-if)# switchport trunk allowed vlan add 99`. Não temos a certeza se falta fazer `no spanning-tree vlan 1`
 
 To create and name our VLANs we use:
 
@@ -441,7 +441,7 @@ __Objective of this design__
     *   **Switches** are the "VLAN-aware" devices. They handle the complexity of tagging, filtering, and trunking.
     *   **End-devices** are "VLAN-unaware." They just send and receive standard network traffic.
 
-#### 5. What is the tag that the wefts belonging to VLAN 1 carry?
+#### 5. What is the tag that the ports/interfaces belonging to VLAN 1 carry?
 
 __TODO__ What is wefts???
 
@@ -511,7 +511,7 @@ Adjusting the STP timers to half their default values can speed up network conve
 
 __Weighing the Consequences: Faster Convergence vs. Stability Risks__
 
-The table below summarizes the potential outcomes:
+The table below summarises the potential outcomes:
 
 | Timer Change | Potential Benefit | Risks and Consequences |
 | :--- | :--- | :--- |
