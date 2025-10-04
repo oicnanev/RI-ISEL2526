@@ -130,69 +130,61 @@ __TODO__: A porta Gig1/0/1 do SW_DC não tem a VLAN 13, falta meter
 
 - Table built using command `show spanning-tree`, ordered by priorities and MAC
 
+
+
+Custos só com VLAN 1
+
 | Switch    | Priority        | MAC            | Root MAC       |
 | --------- |---------------- | -------------- | -------------- |
-| SW_DC     | 24577 (VLAN 1)  | 0002.4AE4.E093 | Same |
-| SW_DC     | 32779 (VLAN 11) | 0002.4AE4.E093 | Same |
-| SW_DC     | 32780 (VLAN 12) | 0002.4AE4.E093 | Same |
-| SW_DC     | 32781 (VLAN 13) | 0002.4AE4.E093 | Same |
-| sw1_piso1 | 32769 (VLAN 1)  | 0009.7C65.BA4B | 0002.4AE4.E093 (SW_DC) |
-| sw1_piso1 | 32779 (VLAN 11) | 0009.7C65.BA4B | 0002.4AE4.E093 (SW_DC) |
-| sw1_piso1 | 32780 (VLAN 12) | 0009.7C65.BA4B | 0002.4AE4.E093 (SW_DC) |
-| sw1_piso1 | 32781 (VLAN 13) | 0009.7C65.BA4B | 0002.4AE4.E093 (SW_DC) |
-| sw2_piso2 | 32769 (VLAN 1)  | 00E0.8FE1.53D7 | 0002.4AE4.E093 (SW_DC) |
-| sw2_piso2 | 32779 (VLAN 11) | 00E0.8FE1.53D7 | 0002.4AE4.E093 (SW_DC) |
-| sw2_piso2 | 32780 (VLAN 12) | 00E0.8FE1.53D7 | 0002.4AE4.E093 (SW_DC) |
-| sw2_piso2 | 32781 (VLAN 13) | 00E0.8FE1.53D7 | 0002.4AE4.E093 (SW_DC) |
-| sw1_piso2 | 28673 (VLAN 1)  | 00E0.A3CE.4A46 | 0002.4AE4.E093 (SW_DC) |
-| sw1_piso2 | 32779 (VLAN 11) | 00E0.A3CE.4A46 | 0002.4AE4.E093 (SW_DC) |
-| sw1_piso2 | 32780 (VLAN 12) | 00E0.A3CE.4A46 | 0002.4AE4.E093 (SW_DC) |
-| sw1_piso2 | 32781 (VLAN 13) | 00E0.A3CE.4A46 | 0002.4AE4.E093 (SW_DC) |
-| sw2_piso1 | 32769 (VLAN 1)  | 00E0.F950.631A | 0002.4AE4.E093 (SW_DC) |
-| sw2_piso1 | 32779 (VLAN 11) | 00E0.F950.631A | 0002.4AE4.E093 (SW_DC) |
-| sw2_piso1 | 32780 (VLAN 12) | 00E0.F950.631A | 0002.4AE4.E093 (SW_DC) |
-| sw2_piso1 | 32781 (VLAN 13) | 00E0.F950.631A | 0002.4AE4.E093 (SW_DC) |
+| sw1_piso2 | 28673           | 00E0.A3CE.4A46 | same           |
+| SW_DC     | 32769           | 0002.4AE4.E093 | 00E0.A3CE.4A46 |
+| sw1_piso1 | 32769           | 0009.7C65.BA4B | 00E0.A3CE.4A46 |
+| sw2_piso2 | 32769           | 00E0.8FE1.53D7 | 00E0.A3CE.4A46 |
+| sw2_piso1 | 32769           | 00E0.F950.631A | 00E0.A3CE.4A46 |
 
 
-table 2 - Root Bridge and VLAN priorities
+O sw1_piso2 é o root bridge na VLAN única VLAN 1
 
-
-
-- Root Bridge, Port Roles and Port Costs __TODO__: Port cost...
-
-| Switch    | VLANs      | Port    | PC | RPC | RP     | DP     | ALT/BLK |
-| --------- | ---------- | ------- | -- | --- | ------ | ------ | ------- |
-| SW_DC     | 1,11,12    | Gi1/0/1 | 4  | -   |        | X      |         |
-| SW_DC     | 1,11,12,13 | Gi1/0/2 | 4  | -   |        | X      |         |
-| SW_DC     | 1,11,12,13 | Gi1/0/5 | 19 | -   |        | X      |         |
-| sw1_piso1 | 1,11,12,13 | Gi0/1   | 4  |     |  X     | X (13) |         | 
-| sw1_piso1 | 1,11,12,13 | Fa0/2   | 19 |     | X (13) | X      |         |
-| sw1_piso1 | 12         | Fa0/10  | 19 |     |        | X      |         |
-| sw1_piso1 | 1,11,12,13 | Fa0/23  | 19 |     |        | X      |         |
-| sw1_piso1 | 1,11,12    | Fa0/24  | 19 |     |        | X      |         |
-| sw2_piso2 | 1,11,12,13 | Fa0/1   | 19 |     | X      |        |         |
-| sw2_piso2 | 1,11,12,13 | Fa0/2   | 19 |     |        | X      | X (1)   |    
-| sw2_piso2 | 12         | Fa0/10  | 19 |     |        | X      |         |
-| sw2_piso2 | 11         | Fa0/11  | 19 |     |        | X      |         |
-| sw2_piso2 | 1,11,12    | Fa0/24  | 19 |     |        |        | X       |
-| sw1_piso2 | 1,11,12,13 | Fa0/2   | 19 |     |        | X (1)  | X       |
-| sw1_piso2 | 11         | Fa0/10  | 19 |     |        | X      |         |
-| sw1_piso2 | 1,11,12,13 | Fa0/18  | 19 |     | X (13) |        | X       |
-| sw1_piso2 | 1,11,12,13 | Fa0/23  | 19 |     | X      |        | X (13)  |
-| sw1_piso2 | 1,11,12,13 | Fa0/24  | 19 |     |        | X (13) | X       |
-| sw2_piso1 | 1,11,12,13 | Gi0/1   | 4  |     | X      |        |         |
-| sw2_piso1 | 1,11,12,13 | Fa0/1   | 19 |     |        | X      |         |
-| sw2_piso1 | 1,11,12,13 | Fa0/2   | 19 |     |        | X (13) | X       |
-| sw2_piso1 | 13         | Fa0/10  | 19 |     |        | X      |         |
-| sw2_piso1 | 1,11,12,13 | Fa0/23  | 19 |     |        | X      |         |
-| sw2_piso1 | 1,11,12,13 | Fa0/24  | 19 |     |        | X      |         |
- 
- table 3 - Root Bridge, Port Roles and Port Costs
+| Switch    | Port    | PC | RPC | RP     | DP     | ALT/BLK |
+| --------- | ------- | -- | --- | ------ | ------ | ------- |
+| sw1_piso2 | Fa0/2   | 19 |  -  |        |        |         |
+| sw1_piso2 | Fa0/10  | 19 |  -  |        |        |         |
+| sw1_piso2 | Fa0/18  | 19 |  -  |        |        |         |
+| sw1_piso2 | Fa0/23  | 19 |  -  |        |        |         |
+| sw1_piso2 | Fa0/24  | 19 |  -  |        |        |         |
+| SW_DC     | Gig1/0/1| 4  |  23 |   X    |        |         |
+| SW_DC     | Gig1/0/2| 4  | 23  |        |        |   X     |
+| SW_DC     | Gig1/0/5| 4  |  ?  |        |   X    |         |
+| sw1_piso1 | Gig0/1  | 4  |  -  |        |    X   |         |
+| sw1_piso1 | Fa0/2   | 19 | 38  |        |    X   |         |
+| sw1_piso1 | Fa0/10  | 19 |(PC5)|        |    X   |         |
+| sw1_piso1 | Fa0/23  | 19 | 19  |        |        |   X     |
+| sw1_piso1 | Fa0/24  | 19 | 19  |    X   |        |         |
+| sw2_piso2 | Fa0/1   | 19 | 38  |    X   |        |         |
+| sw2_piso2 | Fa0/2   | 19 | 19  |        |        |   X     |
+| sw2_piso2 | Fa0/10  | 19 |(PC8)|        |    X   |         |
+| sw2_piso2 | Fa0/11  | 19 |(PC9)|        |    X   |         |
+| sw2_piso2 | Fa0/24  | 19 | 38  |        |        |    X    |
+| sw2_piso1 | Gi0/1   | 4  | 27  |        |     X   |       |
+| sw2_piso1 | Fa0/1   | 19 | 38  |        |   X     |        |
+| sw2_piso1 | Fa0/2   | 19 | 38  |        |        |    X    |
+| sw2_piso1 | Fa0/10  | 19 |(PC6)|        |   X     |        |
+| sw2_piso1 | Fa0/23  | 19 | 19  |    X   |        |        |
+| sw2_piso1 | Fa0/24  | 19 | 38  |        |   X     |       |
+  
 
 
 ### 1.2 Tests and Validation
 
 __TODO__
+With dual links between sw1_piso1 and sw1_piso2, modify settings so the previously blocked link forwards
+and the other blocks (justify)
+
+Para alterar o cost de uma porta:
+
+`sw1_piso1(config-if)#spanning-tree cost 18`
+
+Desta forma, forçamos o custo da porta para a mesma passar a forward e bloquear a anterior
 
 #### Summary of Spanning-Tree by Switch
 
@@ -574,6 +566,19 @@ __TODO__: add table and show configurations
 __TODO__: maybe a table
 
 #### 2.1.3 PCs IP Assignments
+
+```txt
+SW_DC(config)#inter vlan 13
+SW_DC(config-if)#
+%LINK-5-CHANGED: Interface Vlan13, changed state to up
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan13, changed state to up
+
+SW_DC(config-if)#ip address 172.20.13.254 255.255.255.0
+SW_DC(config-if)#no shu
+SW_DC(config-if)#no shutdown
+```
+8
 
 __TODO__: maybe a table
 
