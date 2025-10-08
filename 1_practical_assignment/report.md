@@ -4,7 +4,7 @@
 
 ---
 
-## Group 1 - Class 52D??? (not sure)
+## Group 1 - Class 51D (not sure)
 
 ### Professor Luís Mata 
 
@@ -23,7 +23,11 @@
     - 1.1 Implementation
         - 1.1.1 VLANs
         - 1.1.2 STP
+        - 1.1.3 Rapid PVST
     - 1.2 Tests and Validation
+        - 1.2.1 Root bridge (RB), designated/blocked ports, and path costs
+        - 1.2.2 SW_DC as the RB (lower priority) and reassessment of blocked links
+        - 1.2.3 Modification of settings between `sw1_piso1` and `sw1_piso2` to exchange blocked by forward links
     - 1.3 Practical Questions
 - 2 - Enterprise A — VLAN Segmentation & Addressing
     - 2.1 Implementation
@@ -71,7 +75,7 @@ In this project we explore Internet Networks topics like VLAN segmentation, L2 l
 
 To accomplish this we will configure and simulate a network between two enterprises (A and B) and an ISP (Internet Service Provider).
 
-The Enterprise A will be constituted of 1 router, 5 switches, 5 PCs and 4 VLANs.... __TODO__
+The Enterprise A will be constituted of 1 router, 5 switches, 5 PCs and 3 VLANs, VLAN 11 (Accounting), VLAN 12 (Secretariat) and VLAN 13 (Computer_science). __TODO__
 
 The Enterprise B will be constituted of 1 router, 1 switch, 1 server, 1 pc and 2 VLANs.... __TODO__
 
@@ -98,9 +102,17 @@ Switch(config)# no vlan 40
 Switch(config)# no vlan 45
 ``` 
 
-__TODO__: Meter a `Native VLAN` para a 99 ou outra para não coincidir com a `Default VLAN` (VLAN 1) por razões de segurança, `Switch(config-if)# switchport trunk native vlan 99` followed by `Switch(config-if)# switchport trunk allowed vlan add 99`. Não temos a certeza se falta fazer `no spanning-tree vlan 1`
+For security reasons, we assigned the `Native VLAN` to __VLAN 99__ in all the switches:
 
-To create and name our VLANs we use:
+```txt
+Switch(config) vlan 99
+Switch(config) interfaces range [desired interfaces]
+Switch(config-if)# switchport trunk native vlan 99
+Switch(config-if)# switchport trunk allowed vlan add 99
+Switch(config-if)# switchport nonegociate
+```
+
+To create and name our VLANs we used:
 
 ```txt
 Switch(config)# vlan 11
@@ -110,6 +122,12 @@ Switch(config-vlan)# name Secretariat
 Switch(config)# vlan 13
 Switch(config-vlan)# name Computer_science
 ```
+Then for each switch:
+
+```txt
+```
+
+__TODO__: Show how was configured each switch, trunk ports and access ports to PCs
 
 The only PC that uses __VLAN 13 - Computer_science__ is the `PC6`, witch is connected to `sw2_piso1` and this switch to `SW_DC`, but because of connection redundancy reasons, it was decided to add this VLAN to all the switches. 
 
@@ -123,16 +141,19 @@ table 1 - Enterprise A VLANs
 
 #### 1.1.2 STP (RB/roles/costs)
 
-For the switch `SW_DC` to be the __Root Bridge__ in all VLANs, we force his priority. Previously it was __Root Bridge__ only to VLANs 11, 12 and 13, but VLAN 1 has his __Root Bridge__ at `sw1_piso2`. 
+__TODO__: Per VLAN RB/roles/costs
 
-__TODO__: comando para baixar a prioridade do SW_DC
 __TODO__: A porta Gig1/0/1 do SW_DC não tem a VLAN 13, falta meter
 
-- Table built using command `show spanning-tree`, ordered by priorities and MAC
+#### 1.1.2 Rapid PVST
 
+__TODO__: Show command to turn all switches to Rapid PVST
 
+### 1.2 Tests and Validation
 
-Custos só com VLAN 1
+#### 1.2.1 Root bridge (RB), designated/blocked ports, and path costs (VLAN 1)
+
+##### Switches / Bridges priorities for VLAN 1
 
 | Switch    | Priority        | MAC            | Root MAC       |
 | --------- |---------------- | -------------- | -------------- |
@@ -142,8 +163,9 @@ Custos só com VLAN 1
 | sw2_piso2 | 32769           | 00E0.8FE1.53D7 | 00E0.A3CE.4A46 |
 | sw2_piso1 | 32769           | 00E0.F950.631A | 00E0.A3CE.4A46 |
 
+table 2 - Switches / Bridges priorities (VLAN 1)
 
-O sw1_piso2 é o root bridge na VLAN única VLAN 1
+##### Root Bridge, Port Roles and Root Port Costs for VLAN 1
 
 | Switch    | Port    | PC | RPC | RP     | DP     | ALT/BLK |
 | --------- | ------- | -- | --- | ------ | ------ | ------- |
@@ -165,160 +187,33 @@ O sw1_piso2 é o root bridge na VLAN única VLAN 1
 | sw2_piso2 | Fa0/10  | 19 |(PC8)|        |    X   |         |
 | sw2_piso2 | Fa0/11  | 19 |(PC9)|        |    X   |         |
 | sw2_piso2 | Fa0/24  | 19 | 38  |        |        |    X    |
-| sw2_piso1 | Gi0/1   | 4  | 27  |        |     X   |       |
-| sw2_piso1 | Fa0/1   | 19 | 38  |        |   X     |        |
+| sw2_piso1 | Gi0/1   | 4  | 27  |        |    X   |         |
+| sw2_piso1 | Fa0/1   | 19 | 38  |        |    X   |         |
 | sw2_piso1 | Fa0/2   | 19 | 38  |        |        |    X    |
-| sw2_piso1 | Fa0/10  | 19 |(PC6)|        |   X     |        |
-| sw2_piso1 | Fa0/23  | 19 | 19  |    X   |        |        |
-| sw2_piso1 | Fa0/24  | 19 | 38  |        |   X     |       |
+| sw2_piso1 | Fa0/10  | 19 |(PC6)|        |    X   |         |
+| sw2_piso1 | Fa0/23  | 19 | 19  |    X   |        |         |
+| sw2_piso1 | Fa0/24  | 19 | 38  |        |   X    |         |
   
+table 3 - Port Roles and Root Port Costs (VLAN 1)
 
+#### 1.2.2 SW_DC as the RB (lower priority) and reassessment of blocked links (VLAN 1)
 
-### 1.2 Tests and Validation
+For the switch `SW_DC` to be the __Root Bridge__ in all VLANs, we force his priority. Previously it was __Root Bridge__ only to VLANs 11, 12 and 13, but VLAN 1 has his __Root Bridge__ at `sw1_piso2`. 
 
-__TODO__
-With dual links between sw1_piso1 and sw1_piso2, modify settings so the previously blocked link forwards
-and the other blocks (justify)
+__TODO__: comando para baixar a prioridade do SW_DC
 
-Para alterar o cost de uma porta:
+__TODO__: mostrar as novas portas root/designated/blocked
 
-`sw1_piso1(config-if)#spanning-tree cost 18`
+#### 1.2.3 Modification of settings between `sw1_piso1` and `sw1_piso2` to exchange blocked by forward links
 
-Desta forma, forçamos o custo da porta para a mesma passar a forward e bloquear a anterior
+In VLAN 1, to change the port roles between `sw1_piso1` and `sw1_piso2`, we _force_ the cost of the _blocked_ port (`sw1_piso1 - Fa0/23`) to have the value __18__ instead of __19__.
 
-#### Summary of Spanning-Tree by Switch
-
-> `show spanning-tree summary`
-
-- __SW_DC__
-
-```shell
-Switch is in pvst mode
-Root bridge for: default Accounting Secretariat Computer_science
-Extended system ID           is enabled
-Portfast Default             is disabled
-PortFast BPDU Guard Default  is disabled
-Portfast BPDU Filter Default is disabled
-Loopguard Default            is disabled
-EtherChannel misconfig guard is disabled
-UplinkFast                   is disabled
-BackboneFast                 is disabled
-Configured Pathcost method used is short
-
-Name                   Blocking Listening Learning Forwarding STP Active
----------------------- -------- --------- -------- ---------- ----------
-VLAN0001                     0         0        0          3          3
-VLAN0011                     0         0        0          3          3
-VLAN0012                     0         0        0          3          3
-VLAN0013                     0         0        0          3          3
-
----------------------- -------- --------- -------- ---------- ----------
-4 vlans                      0         0        0         12         12
+```txt
+sw1_piso1(config)#int fa0/23
+sw1_piso1(config-if)#spanning-tree cost 18
 ```
 
-- __sw1_piso1__
-
-```shell
-Switch is in pvst mode
-Root bridge for:
-Extended system ID           is enabled
-Portfast Default             is disabled
-PortFast BPDU Guard Default  is disabled
-Portfast BPDU Filter Default is disabled
-Loopguard Default            is disabled
-EtherChannel misconfig guard is disabled
-UplinkFast                   is disabled
-BackboneFast                 is disabled
-Configured Pathcost method used is short
-
-Name                   Blocking Listening Learning Forwarding STP Active
----------------------- -------- --------- -------- ---------- ----------
-VLAN0001                     0         0        0          4          4
-VLAN0011                     0         0        0          4          4
-VLAN0012                     0         0        0          5          5
-VLAN0013                     0         0        0          3          3
-
----------------------- -------- --------- -------- ---------- ----------
-4 vlans                      0         0        0         16         16
-```
-
-- __sw2_piso1__
-
-```shell
-Switch is in pvst mode
-Root bridge for:
-Extended system ID           is enabled
-Portfast Default             is disabled
-PortFast BPDU Guard Default  is disabled
-Portfast BPDU Filter Default is disabled
-Loopguard Default            is disabled
-EtherChannel misconfig guard is disabled
-UplinkFast                   is disabled
-BackboneFast                 is disabled
-Configured Pathcost method used is short
-
-Name                   Blocking Listening Learning Forwarding STP Active
----------------------- -------- --------- -------- ---------- ----------
-VLAN0001                     1         0        0          4          5
-VLAN0011                     1         0        0          4          5
-VLAN0012                     1         0        0          4          5
-VLAN0013                     0         0        0          6          6
-
----------------------- -------- --------- -------- ---------- ----------
-4 vlans                      3         0        0         18         21
-```
-
-- __sw1_piso2__
-
-```shell
-Switch is in pvst mode
-Root bridge for:
-Extended system ID           is enabled
-Portfast Default             is disabled
-PortFast BPDU Guard Default  is disabled
-Portfast BPDU Filter Default is disabled
-Loopguard Default            is disabled
-EtherChannel misconfig guard is disabled
-UplinkFast                   is disabled
-BackboneFast                 is disabled
-Configured Pathcost method used is short
-
-Name                   Blocking Listening Learning Forwarding STP Active
----------------------- -------- --------- -------- ---------- ----------
-VLAN0001                     2         0        0          2          4
-VLAN0011                     3         0        0          2          5
-VLAN0012                     3         0        0          1          4
-VLAN0013                     2         0        0          2          4
-
----------------------- -------- --------- -------- ---------- ----------
-4 vlans                     10         0        0          7         17
-```
-
-- __sw2_piso2__
-
-```shell
-Switch is in pvst mode
-Root bridge for:
-Extended system ID           is enabled
-Portfast Default             is disabled
-PortFast BPDU Guard Default  is disabled
-Portfast BPDU Filter Default is disabled
-Loopguard Default            is disabled
-EtherChannel misconfig guard is disabled
-UplinkFast                   is disabled
-BackboneFast                 is disabled
-Configured Pathcost method used is short
-
-Name                   Blocking Listening Learning Forwarding STP Active
----------------------- -------- --------- -------- ---------- ----------
-VLAN0001                     2         0        0          1          3
-VLAN0011                     1         0        0          3          4
-VLAN0012                     1         0        0          3          4
-VLAN0013                     1         0        0          2          3
-
----------------------- -------- --------- -------- ---------- ----------
-4 vlans                      5         0        0          9         14
-```
+After doing this, this port changed from `Blocked` to `Root`, and the port `sw1_piso1 - fa0/24` from `Root` to `Blocked`. This was achieved because from the point of view of the spanning tree protocol, the port with lower cost is the one that is chosen.
 
 
 ### 1.3 Practical Questions
@@ -327,7 +222,7 @@ VLAN0013                     1         0        0          2          3
 
 The `no ip domain-lookup` command in Cisco Packet Tracer is used to __disable the router or switch's default behaviour of trying to resolve any mistyped command as a hostname__.
 
-By default, when is typed an unrecognised word at the command line, a Cisco device assumes that we are trying to connect via Telnet to a host with that name. The device then attempts a DNS lookup to find that host's IP address. In a lab environment without a DNS server, this causes the command line to freeze for a minute or more while the device broadcasts a request that will never be answered.
+By default, when it is typed an unrecognised word at the command line, a Cisco device assumes that we are trying to connect via Telnet to a host with that name. The device then attempts a DNS lookup to find that host's IP address. In a lab environment without a DNS server, this causes the command line to freeze for a minute or more while the device broadcasts a request that will never be answered.
 
 Using `no ip domain-lookup` prevents this delay. After entering this command, a mistyped command results in an immediate error message, allowing the correction of the mistake without waiting
 
@@ -423,19 +318,28 @@ An Access port is like a "VLAN translator" that sits between the switched networ
 
 2. **Receiving from the End Device to the Switch (Ingress)**
     *   **From the End Device:** The PC or server sends a standard, **untagged** Ethernet frame.
-    *   **At the Access Port:** The switch receives this untagged frame. Because the port is configured as an Access port for a specific VLAN (e.g., `switchport access vlan 10`), the switch **internally adds a VLAN 10 tag** to the frame.
-    *   **Result:** Now that the frame is tagged, the switch can process it correctly—forward it to other ports in VLAN 10, or tag it again to send it over a trunk to another switch.
+    *   **At the Access Port:** The switch receives this untagged frame. Because the port is configured as an Access port for a specific VLAN (e.g., `switchport access vlan 11`), the switch **internally adds a VLAN 11 tag** to the frame.
+    *   **Result:** Now that the frame is tagged, the switch can process it correctly—forward it to other ports in VLAN 11, or tag it again to send it over a trunk to another switch.
 
 __Objective of this design__
 
-1.  **Simplicity and Universality:** It allows you to introduce VLANs into your network without having to upgrade or reconfigure every single PC, printer, and server to understand 802.1Q tags.
+1.  **Simplicity and Universality:** It allows the introdution of VLANs into the network without having to upgrade or reconfigure every single PC, printer, and server to understand 802.1Q tags.
 2.  **Clear Separation of Responsibilities:**
-    *   **Switches** are the "VLAN-aware" devices. They handle the complexity of tagging, filtering, and trunking.
-    *   **End-devices** are "VLAN-unaware." They just send and receive standard network traffic.
+    *   **Switches** are the _VLAN-aware_ devices. They handle the complexity of tagging, filtering, and trunking.
+    *   **End-devices** are _VLAN-unaware_. They just send and receive standard network traffic.
 
 #### 5. What is the tag that the ports/interfaces belonging to VLAN 1 carry?
 
-__TODO__ What is wefts???
+Ports belonging to VLAN 1 do not carry a tag; they are untagged. This is because VLAN 1 is the default Native VLAN on Cisco switches.
+
+The behaviour of a port in VLAN 1 depends on whether the port is configured as an access port or a trunk port.
+
+| Port Mode | VLAN 1 Traffic | Explanation |
+| :--- | :--- | :--- |
+| Access Port | Untagged | An access port is assigned to a single VLAN and does not add VLAN tags to frames. |
+| Trunk Port | Untagged | A trunk port carries multiple VLANs. Frames in the Native VLAN are sent without a tag, which by default is VLAN 1. |
+
+__TODO__: tenho dúvidas porque embora a nossa default seja a VLAN 1 (para processos Cisco entre switches), a nossa Native VLAN foi alterada para a VLAN 99 
 
 #### 6. When a machine receives an Ethernet frame, how does it differ if it includes the Type/Length field after the source address field or if it includes the fields associated with a VLAN?
 
@@ -516,14 +420,14 @@ The default values (Max Age=20, Forward Delay=15) are calculated based on a **ma
 
 #### 8. What is the Root Bridge (RB)? Justify.
 
-In a network using the Spanning Tree Protocol (STP), the **Root Bridge** acts as the logical center or "boss" of the network. Its primary purpose is to serve as a common reference point that all other switches use to build a loop-free topology, allowing for redundant links without the risk of switching loops or broadcast storms.
+In a network using the Spanning Tree Protocol (STP), the **Root Bridge** acts as the logical center or _boss_ of the network. Its primary purpose is to serve as a common reference point that all other switches use to build a loop-free topology, allowing for redundant links without the risk of switching loops or broadcast storms.
 
-The Root Bridge is a switch elected by the STP algorithm to be the root of the spanning tree. All paths in the network are calculated relative to this switch. Wwe can think of the STP topology as an inverted tree, where the Root Bridge is the root, and all other switches connect to it through branches.
+The Root Bridge is a switch elected by the STP algorithm to be the root of the spanning tree. All paths in the network are calculated relative to this switch. We can think of the STP topology as an inverted tree, where the Root Bridge is the root, and all other switches connect to it through branches.
 
 Its key roles include:
-*   **BPDU Originator**: The Root Bridge is the source for Bridge Protocol Data Units (BPDUs), the special frames that switches use to share STP information. These BPDUs are relayed throughout the network from the root bridge "down" to all other switches.
-*   **Timer Keeper**: The Root Bridge dictates critical STP timers for the entire network, including the Hello Time, Forward Delay, and Max Age.
-*   **Topology Baseline**: All other switches determine the "best" path to the Root Bridge. The ports that connect switches to their best path toward the Root Bridge are called **Root Ports**.
+*   **BPDU Originator**: The Root Bridge is the source for Bridge Protocol Data Units (BPDUs), the special frames that switches use to share STP information. These BPDUs are relayed throughout the network from the root bridge _down_ to all other switches.
+*   **Timer Keeper**: The Root Bridge dictates critical STP timers for the entire network, including the `Hello Time`, `Forward Delay`, and `Max Age`.
+*   **Topology Baseline**: All other switches determine the _best_ path to the Root Bridge.
 
 [Spanning Tree Protocol](https://community.cisco.com/t5/networking-blogs/spanning-tree-protocol-from-a-feature-ccna-s-perspective-by/ba-p/3101592)
 
@@ -569,16 +473,10 @@ __TODO__: maybe a table
 
 ```txt
 SW_DC(config)#inter vlan 13
-SW_DC(config-if)#
-%LINK-5-CHANGED: Interface Vlan13, changed state to up
-
-%LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan13, changed state to up
-
 SW_DC(config-if)#ip address 172.20.13.254 255.255.255.0
-SW_DC(config-if)#no shu
 SW_DC(config-if)#no shutdown
 ```
-8
+
 
 __TODO__: maybe a table
 
@@ -592,11 +490,13 @@ __TODO__
 
 __TODO__
 
-#### 2. Explain what ac[ons were required to accommodate the topology requirements.
+#### 2. Explain what actions were required to accommodate the topology requirements.
 
 __TODO__
 
 #### 3. Did you achieve inter vlan connectivity in this phase? Explain the observed behaviour.
+
+No. Because switches cannot change VLAN tags, we cannot communicate between PCs that are connected in distinct VLANs. To achieve that we need to configure a Router with Router-on-a-Stick.
 
 ---
 ## 3. Enterprise A — Router-on-a-Stick (RoS) & L3 Rules (no ACLs)
