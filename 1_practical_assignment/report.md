@@ -4,7 +4,7 @@
 
 ---
 
-## Group 1 - Class 51D (not sure)
+## Group 1 - Class 51D
 
 ### Professor Luís Mata 
 
@@ -41,6 +41,8 @@
         - 3.1.1 Creation and configuration of sub interfaces to implement the L3 (Rules without ACLs)
         - 3.1.2 Trunk link between Router A and SW_DC
         - 3.1.3 Sub interfaces with encapsulation dot1Q and IPs (parent interface no IP)
+        - 3.1.4 Name routers/switches
+        - 3.1.5 Router / Switches initial message
     - 3.2 Test and Validation
     - 3.3 Practical Questions 
 - 4 - Enterprise B — Segmentation & ISP L2 Interconnection
@@ -122,12 +124,96 @@ Switch(config-vlan)# name Secretariat
 Switch(config)# vlan 13
 Switch(config-vlan)# name Computer_science
 ```
-Then for each switch:
+Then, interface configuration by switch:
 
 ```txt
-```
+# Switch SW_DC ##########################################
+# Gig1/0/1 -> sw1_piso1 - trunk
+# Gig1/0/2 -> sw2_piso1 - trunk
+# Gig1/0/5 -> Router A  - trunk
 
-__TODO__: Show how was configured each switch, trunk ports and access ports to PCs
+SW_DC(config)# interface range gig1/0/1-2,gig1/0/5
+SW_DC(config-if-range)# switchport mode trunk
+SW_DC(config-if-range)# switchport trunk native vlan 99
+SW_DC(config-if-range)# switchport trunk allowed vlan 11-13
+SW_DC(config-if-range)# switchport nonegociate
+
+# Switch sw1_piso1 #######################################
+# Fa0/2     -> sw2_piso1 - trunk
+# Fa0/10    -> PC5       - access
+# Fa0/23-24 -> sw1_piso2 - trunk
+# Gig0/1    -> SW_DC     - trunk
+
+sw1_piso1(config)# interface range fa0/2,fa0/23-24,Gig0/1
+sw1_piso1(config-if-range)# switchport mode trunk
+sw1_piso1(config-if-range)# switchport trunk native vlan 99
+sw1_piso1(config-if-range)# switchport trunk allowed 11-13
+sw1_piso1(config-if-range)# switchport nonegociate
+sw1_piso1(config-if-range)#
+sw1_piso1(config-if-range)# interface fa0/10
+sw1_piso1(config-if)# switchport mode access
+sw1_piso1(config-if)# switchport access vlan 12
+sw1_piso1(config-if)# switchport nonegociate
+
+# Switch sw2_piso1 #######################################
+# Fa0/1     -> sw2_piso2 - trunk
+# Fa0/2     -> sw1_piso1 - trunk
+# Fa0/10    -> PC6       - access
+# Fa0/23    -> sw2_piso2 - trunk
+# Fa0/24    -> sw1_piso2 - trunk
+# Gig0/1    -> SW_DC     - trunk
+
+sw2_piso1(config)# interface range fa0/1-2,fa0/23-24,Gig0/1
+sw2_piso1(config-if-range)# switchport mode trunk
+sw2_piso1(config-if-range)# switchport trunk native vlan 99
+sw2_piso1(config-if-range)# switchport trunk allowed 11-13
+sw2_piso1(config-if-range)# switchport nonegociate
+sw2_piso1(config-if-range)#
+sw2_piso1(config-if-range)# interface fa0/10
+sw2_piso1(config-if)# switchport mode access
+sw2_piso1(config-if)# switchport access vlan 13
+sw2_piso1(config-if)# switchport nonegociate
+
+# Switch sw1_piso2 #######################################
+# Fa0/2     -> sw2_piso1 - trunk
+# Fa0/10    -> PC7       - access
+# Fa0/18    -> sw2_piso2 - trunk
+# Fa0/23-24 -> sw1_piso1 - trunk
+
+sw1_piso2(config)# interface range fa0/2,fa0/18,fa0/23-24
+sw1_piso2(config-if-range)# switchport mode trunk
+sw1_piso2(config-if-range)# switchport trunk native vlan 99
+sw1_piso2(config-if-range)# switchport trunk allowed 11-13
+sw1_piso2(config-if-range)# switchport nonegociate
+sw1_piso2(config-if-range)#
+sw1_piso2(config-if-range)# interface fa0/10
+sw1_piso2(config-if)# switchport mode access
+sw1_piso2(config-if)# switchport access vlan 11
+sw1_piso2(config-if)# switchport nonegociate
+
+# Switch sw2_piso2 #######################################
+# Fa0/1     -> sw2_piso1 - trunk
+# Fa0/2     -> sw1_piso2 - trunk
+# Fa0/10    -> PC8       - access
+# Fa0/11    -> PC9       - access
+# Fa0/24    -> sw2_piso1 - trunk
+
+sw2_piso2(config)# interface range fa0/1-2,fa0/24
+sw2_piso2(config-if-range)# switchport mode trunk
+sw2_piso2(config-if-range)# switchport trunk native vlan 99
+sw2_piso2(config-if-range)# switchport trunk allowed 11-13
+sw2_piso2(config-if-range)# switchport nonegociate
+sw2_piso2(config-if-range)#
+sw2_piso2(config-if-range)# interface fa0/10
+sw2_piso2(config-if)# switchport mode access
+sw2_piso2(config-if)# switchport access vlan 12
+sw2_piso2(config-if)# switchport nonegociate
+sw2_piso2(config-if)#
+sw2_piso2(config-if)# interface fa0/11
+sw2_piso2(config-if)# switchport mode access
+sw2_piso2(config-if)# switchport access vlan 11
+sw2_piso2(config-if)# switchport nonegociate
+```
 
 The only PC that uses __VLAN 13 - Computer_science__ is the `PC6`, witch is connected to `sw2_piso1` and this switch to `SW_DC`, but because of connection redundancy reasons, it was decided to add this VLAN to all the switches. 
 
@@ -141,13 +227,160 @@ table 1 - Enterprise A VLANs
 
 #### 1.1.2 STP (RB/roles/costs)
 
-__TODO__: Per VLAN RB/roles/costs
+##### Switches / Bridges Priorities (All VLANs)
 
-__TODO__: A porta Gig1/0/1 do SW_DC não tem a VLAN 13, falta meter
+| Switch    | Priority | MAC Address    | Root MAC Address |
+| --------- | -------- | -------------- | ---------------- |
+| SW_DC     | 32779    | 0002.4AE4.E093 | same             |
+| sw1_piso1 | 32779    | 0009.7C65.BA4B | 0002.4AE4.E093   |
+| sw2_piso2 | 32779    | 00E0.8FE1.53D7 | 0002.4AE4.E093   |
+| sw1_piso2 | 32779    | 00E0.A3CE.4A46 | 0002.4AE4.E093   |
+| sw2_piso1 | 32779    | 00E0.F950.631A | 0002.4AE4.E093   |
+
+table 2 - Switches / Bridges Priorities (All VLANs)
+
+##### VLAN 11 (Accounting) - Root Bridge, Port Roles and Root Port Costs
+
+| Switch    | Port     | PC | RPC | RP | DP | BLK | Notes |
+| --------- | -------- | -- | --- | -- | -- | --- | ------|
+| SW_DC     | Gig1/0/1 | 4  | -   |    |    |     | |
+| SW_DC     | Gig1/0/2 | 4  | -   |    |    |     | |
+| SW_DC     | Gig1/0/5 | 19 | -   |    |    |     | to Fa port at RouterA |
+| sw1_piso1 | Gig0/1   | 4  | 4   | X  |    |     | |
+| sw1_piso1 | Fa0/2    | 19 | 19  |    | X  |     | |
+| sw1_piso1 | Fa0/23   | 19 | 19  |    | X  |     | |
+| sw1_piso1 | Fa0/24   | 19 | 19  |    | X  |     | |
+| sw2_piso2 | Fa0/1    | 19 | 23  | X  |    |     | |
+| sw2_piso2 | Fa0/2    | 19 | 42  |    | X  |     |
+| sw2_piso2 | Fa0/11   | 19 | -   |    | X  |     | to PC11 |
+| sw2_piso2 | Fa0/24   | 19 | 23  |    |    | X   | |
+| sw1_piso2 | Fa0/2    | 19 | 42  |    |    | X   | |
+| sw1_piso2 | Fa0/10   | 19 | -   |    | X  |     | to PC7 |
+| sw1_piso2 | Fa0/18   | 19 | 23  |    |    | X   | |
+| sw1_piso2 | Fa0/23   | 19 | 23  | X  |    |     | |
+| sw1_piso2 | Fa0/24   | 19 | 23  |    |    | X   | |
+| sw2_piso1 | Gig0/1   | 4  | 4   | X  |    |     | |
+| sw2_piso1 | Fa0/1    | 19 | 61  |    | X  |     | |
+| sw2_piso1 | Fa0/2    | 19 | 23  |    |    | X   | |
+| sw2_piso1 | Fa0/23   | 19 | 61  |    | X  |     | |
+| sw2_piso1 | Fa0/24   | 19 | 42  |    | X  |     | |
+
+table 3 - Root Bridge, port Roles and Root Port Costs (VLAN 11)
+
+##### VLAN 12 (Secretariat) - Root Bridge, Port Roles and Root Port Costs
+
+| Switch    | Port     | PC | RPC | RP | DP | BLK | Notes |
+| --------- | -------- | -- | --- | -- | -- | --- | ------|
+| SW_DC     | Gig1/0/1 | 4  | -   |    |    |     | |
+| SW_DC     | Gig1/0/2 | 4  | -   |    |    |     | |
+| SW_DC     | Gig1/0/5 | 19 | -   |    |    |     | to Fa port at RouterA |
+| sw1_piso1 | Gig0/1   | 4  | 4   | X  |    |     | |
+| sw1_piso1 | Fa0/2    | 19 | 23  |    | X  |     | |
+| sw1_piso1 | Fa0/10   | 19 | -   |    | X  |     | to PC5 |
+| sw1_piso1 | Fa0/23   | 19 | 42  |    | X  |     | |
+| sw1_piso1 | Fa0/24   | 19 | 42  |    | X  |     | |
+| sw2_piso2 | Fa0/1    | 19 | 23  | X  |    |     | |
+| sw2_piso2 | Fa0/2    | 19 | 42  |    | X  |     | |
+| sw2_piso2 | Fa0/10   | 19 | -   |    | X  |     | to PC8 |
+| sw2_piso2 | Fa0/24   | 19 | 23  |    |    | X   | |
+| sw1_piso2 | Fa0/2    | 19 | 42  |    |    | X   | |
+| sw1_piso2 | Fa0/18   | 19 | 23  |    |    | X   | |
+| sw1_piso2 | Fa0/23   | 19 | 23  | X  |    |     | |
+| sw1_piso2 | Fa0/24   | 19 | 23  |    |    | X   | |
+| sw2_piso1 | Gig0/1   | 4  | 4   | X  |    |     | |
+| sw2_piso1 | Fa0/1    | 19 | 61  |    | X  |     | |
+| sw2_piso1 | Fa0/2    | 19 | 23  |    |    | X   | |
+| sw2_piso1 | Fa0/23   | 19 | 61  |    | X  |     | |
+| sw2_piso1 | Fa0/24   | 19 | 42  |    | X  |     | |
+
+table 4 - Root Bridge, port Roles and Root Port Costs (VLAN 12)
+
+##### VLAN 13 (Computer_science) - Root Bridge, Port Roles and Root Port Costs
+
+| Switch    | Port     | PC | RPC | RP | DP | BLK | Notes |
+| --------- | -------- | -- | --- | -- | -- | --- | ------|
+| SW_DC     | Gig1/0/1 | 4  | -   |    |    |     | |
+| SW_DC     | Gig1/0/2 | 4  | -   |    |    |     | |
+| SW_DC     | Gig1/0/5 | 19 | -   |    |    |     | to Fa port at RouterA |
+| sw1_piso1 | Gig0/1   | 4  | 4   | X  |    |     | |
+| sw1_piso1 | Fa0/2    | 19 | 23  |    | X  |     | |
+| sw1_piso1 | Fa0/23   | 19 | 42  |    | X  |     | |
+| sw2_piso2 | Fa0/1    | 19 | 23  | X  |    |     | |
+| sw2_piso2 | Fa0/2    | 19 | 42  |    | X  |     | |
+| sw2_piso2 | Fa0/24   | 19 | 23  |    |    |  X  | |
+| sw1_piso2 | Fa0/2    | 19 | 42  |    |    | X   | |
+| sw1_piso2 | Fa0/18   | 19 | 23  |    |    | X   | |
+| sw1_piso2 | Fa0/23   | 19 | 23  | X  |    |     | |
+| sw1_piso2 | Fa0/24   | 19 | 23  |    | X  |     | |
+| sw2_piso1 | Gig0/1   | 4  | 4   | X  |    |     | |
+| sw2_piso1 | Fa0/1    | 19 | 61  |    | X  |     | |
+| sw2_piso1 | Fa0/2    | 19 | 23  |    |    | X   | |
+| sw2_piso1 | Fa0/10   | 19 | -   |    | X  |     | to PC6 |
+| sw2_piso1 | Fa0/23   | 19 | 61  |    | X  |     | |
+| sw2_piso1 | Fa0/24   | 19 | 42  |    | X  |     | |
+
+table 5 - Root Bridge, port Roles and Root Port Costs (VLAN 13)
+
+##### VLAN 99 (Native) - Root Bridge, Port Roles and Root Port Costs
+
+| Switch    | Port     | PC | RPC | RP | DP | BLK | Notes |
+| --------- | -------- | -- | --- | -- | -- | --- | ------|
+| SW_DC     | Gig1/0/1 | 4  | -   |    |    |     | |
+| SW_DC     | Gig1/0/2 | 4  | -   |    |    |     | |
+| SW_DC     | Gig1/0/5 | 19 | -   |    |    |     | to Fa port at RouterA |
+| sw1_piso1 | Gig0/1   | 4  | 4   | X  |    |     | |
+| sw1_piso1 | Fa0/2    | 19 | 23  |    | X  |     | |
+| sw1_piso1 | Fa0/23   | 19 | 42  |    | X  |     | |
+| sw1_piso1 | Fa0/24   | 19 | 42  |    | X  |     | |
+| sw2_piso2 | Fa0/1    | 19 | 23  | X  |    |     | |
+| sw2_piso2 | Fa0/2    | 19 | 42  |    | X  |     | |
+| sw2_piso2 | Fa0/24   | 19 | 23  |    |    |  X  | |
+| sw1_piso2 | Fa0/2    | 19 | 42  |    |    | X   | |
+| sw1_piso2 | Fa0/18   | 19 | 23  |    |    | X   | |
+| sw1_piso2 | Fa0/23   | 19 | 23  | X  |    |     | |
+| sw1_piso2 | Fa0/24   | 19 | 23  |    |    |  X  | |
+| sw2_piso1 | Gig0/1   | 4  |  4  | X  |    |     | |
+| sw2_piso1 | Fa0/1    | 19 | 61  |    | X  |     | |
+| sw2_piso1 | Fa0/2    | 19 | 23  |    |    | X   | |
+| sw2_piso1 | Fa0/23   | 19 | 61  |    | X  |     | |
+| sw2_piso1 | Fa0/24   | 19 | 42  |    | X  |     | |
+
+table 6 - Root Bridge, port Roles and Root Port Costs (VLAN 99)
 
 #### 1.1.2 Rapid PVST
 
-__TODO__: Show command to turn all switches to Rapid PVST
+To convert to Rapid PVST we need to do in all switches:
+
+```txt
+SWITCH(config)# spanning-tree mode rapid-pvst
+```
+
+In the ports connected to PCs, we convert them to `port fast` and enable the `bpdu guard`
+
+```txt
+# sw1_piso1 --------------------------------------------
+sw1_piso1(config)# interface fa0/10
+sw1_piso1(config-if)# spanning-tree port fast
+sw1_piso1(config-if)# spanning-tree bpduguard enable
+
+# sw2_piso1 --------------------------------------------
+sw2_piso1(config)# interface fa0/10
+sw2_piso1(config-if)# spanning-tree port fast
+sw2_piso1(config-if)# spanning-tree bpduguard enable
+
+# sw1_piso2 --------------------------------------------
+sw1_piso2(config)# interface fa0/10
+sw1_piso2(config-if)# spanning-tree port fast
+sw1_piso2(config-if)# spanning-tree bpduguard enable
+
+# sw1_piso1 --------------------------------------------
+sw1_piso1(config)# interface range fa0/10-11
+sw1_piso1(config-if-range)# spanning-tree port fast
+sw1_piso1(config-if-range)# spanning-tree bpduguard enable
+``` 
+__TODO__: falta fazer isto no Packet Tracer e depois gravar o ficheiro
+
+__TODO__: verify per-VLAN instances and changes in roles/timers.
 
 ### 1.2 Tests and Validation
 
@@ -453,8 +686,6 @@ __TODO__
 
 ### 2.1 Implementation
 
-__TODO__
-
 #### 2.1.1 VLANs
 
 __TODO__: add table and show configurations
@@ -476,7 +707,6 @@ SW_DC(config)#inter vlan 13
 SW_DC(config-if)#ip address 172.20.13.254 255.255.255.0
 SW_DC(config-if)#no shutdown
 ```
-
 
 __TODO__: maybe a table
 
@@ -508,22 +738,163 @@ __TODO__
 #### 3.1.1 Creation and configuration of sub interfaces to implement the L3 (Rules without ACLs)
 
 - Accounting & Secretariat: no access to any other internal or external VLAN/network
-- IT: access to Secretariat and outside Company A
-- Net-Management: mutual access (all support equipment must be reachable from PC6 for remote management)
+- Computer_science: access to Secretariat and outside Company A
 
-__TODO__
+__Rule 1__: Accounting & Secretariat Isolation
+- To achieve this we didn't create routes between VLAN 11 and VLAN 12
+- These VLANs remain isolated by default since there's no routing between them
+
+__Rule 2__: Computer_science Access
+- Computer_science (VLAN 13) can access Secretariat (VLAN 12) because both have routes through the router
+- For "outside Company A" access, we will need to configure routing toward the ISP in a later phases
+
+__Rule 3__: Network Management
+- Since we assumed that VLAN 13 serves as both IT and Net-Management, we ensured that all network equipment management interfaces was reachable from PC6 (in VLAN 13)
+
+sw2_piso1(config-if-range)#switchport trunk allowed vlan remove 12
+
+__Configuration of default Gateways on PCs__
+- PC7 & PC9 (Accounting): Default gateway = 172.20.11.254
+- PC5 & PC8 (Secretariat): Default gateway = 172.20.12.254
+- PC6 (Computer_science): Default gateway = 172.20.13.126
+
+```txt
+# VLAN 11 Accounting
+RouterA(config)#interface FastEthernet0/1.11
+RouterA(config-subif)#description VLAN 11
+RouterA(config-subif)#encapsulation dot1Q 11
+RouterA(config-subif)# ip address 172.20.11.254 255.255.255.0
+RouterA(config-subif)#shutdown
+RouterA(config-subif)#exit
+
+# VLAN 12 Secretariat
+RouterA(config)#interface FastEthernet0/1.12
+RouterA(config-subif)#description VLAN 12
+RouterA(config-subif)#encapsulation dot1Q 12
+RouterA(config-subif)# ip address 172.20.12.254 255.255.255.0
+RouterA(config-subif)#shutdown
+RouterA(config-if)#exit
+
+# VLAN 13 Computer_science
+RouterA(config)#interface FastEthernet0/1.13
+RouterA(config-subif)#description VLAN 13
+RouterA(config-subif)#encapsulation dot1Q 13
+RouterA(config-subif)# ip address 172.20.13.126 255.255.255.128
+RouterA(config-subif)#shutdown
+RouterA(config-subif)#exit
+```
 
 #### 3.1.2 Trunk link between Router A and SW_DC
 
-__TODO__
+To configure a trunk link between Router A and SW_DC, we made the next configuration on Router A
+__TODO__: not done in Packet Tracer
+```txt
+RouterA(config)# interface fa0/1
+RouterA(config-if)# description Trunk_to_SW_DC
+RouterA(config-if)# no shutdown
+RouterA(config-if)# no ip address
+```
 
 #### 3.1.3 Sub interfaces with encapsulation dot1Q and IPs (parent interface no IP)
 
-__TODO__
+```txt
+# VLAN 11 Accounting
+RouterA(config)#interface FastEthernet0/1.11
+RouterA(config-subif)#description VLAN 11
+RouterA(config-subif)#encapsulation dot1Q 11
+RouterA(config-subif)# ip address 172.20.11.254 255.255.255.0
+RouterA(config-subif)#shutdown
+RouterA(config-subif)#exit
+
+# VLAN 12 Secretariat
+RouterA(config)#interface FastEthernet0/1.12
+RouterA(config-subif)#description VLAN 12
+RouterA(config-subif)#encapsulation dot1Q 12
+RouterA(config-subif)# ip address 172.20.12.254 255.255.255.0
+RouterA(config-subif)#shutdown
+RouterA(config-if)#exit
+
+# VLAN 13 Computer_science
+RouterA(config)#interface FastEthernet0/1.13
+RouterA(config-subif)#description VLAN 13
+RouterA(config-subif)#encapsulation dot1Q 13
+RouterA(config-subif)# ip address 172.20.13.126 255.255.255.128
+RouterA(config-subif)#shutdown
+RouterA(config-subif)#exit
+```
+
+#### 3.1.4 Name routers/switches 
+
+To name router/switches we used the `hostname` command:
+
+__TODO__: not implemented in Packet Tracer
+```txt
+Router(config)# hostname RouterN
+RouterN(config)#
+```
+
+#### 3.1.5 Router / Switches initial message
+
+To set up an initial menssage for those who enter the machines, we use the command:
+
+```txt
+RouterN (config)# banner login ^C
+--- Router N ---
+--- ---------------------------------------------- ---
+--- UNAUTHORIZED ACCESS IS PROHIBITED ---
+--- Entries not authorized by lei ---
+--- (Law 109/2009 of 15 September) ---
+^C 
+```
 
 ### 3.2 Test and Validation
 
 __TODO__
+
+```txt
+# Verify subinterfaces ---------------------------------------------------------
+RouterA# show ip interface brief
+Interface              IP-Address      OK? Method Status                Protocol 
+FastEthernet0/0        10.20.1.2       YES NVRAM  up                    up 
+FastEthernet0/1        unassigned      YES NVRAM  up                    up 
+FastEthernet0/1.11     172.20.11.254   YES manual administratively down down 
+FastEthernet0/1.12     172.20.12.254   YES manual administratively down down 
+FastEthernet0/1.13     172.20.13.126   YES manual administratively down down 
+Vlan1                  unassigned      YES unset  administratively down down
+
+RouterA# show interfaces trunk
+TODO: not configured yet ============================
+
+# Verify routing table ---------------------------------------------------------
+RouterA# show ip route
+Codes: C - connected, S - static, I - IGRP, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2, E - EGP
+       i - IS-IS, L1 - IS-IS level-1, L2 - IS-IS level-2, ia - IS-IS inter area
+       * - candidate default, U - per-user static route, o - ODR
+       P - periodic downloaded static route
+
+Gateway of last resort is 10.20.1.1 to network 0.0.0.0
+
+     10.0.0.0/30 is subnetted, 1 subnets
+C       10.20.1.0 is directly connected, FastEthernet0/0
+S*   0.0.0.0/0 [1/0] via 10.20.1.1
+
+
+# Test connectivity -----------------------------------------------------------
+# Test Accounting PCs
+RouterA# ping 172.20.11.7
+
+RouterA# ping 172.20.11.9
+
+# Test Secretariat PC
+RouterA# ping 172.20.12.5
+RouterA# ping 172.20.12.8
+
+# Test Computer_science PC    
+RouterA# ping 172.20.13.6    
+```
 
 ### 3.3 Practical Questions
 
