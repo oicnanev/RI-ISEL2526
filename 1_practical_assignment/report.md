@@ -918,6 +918,79 @@ __TODO__
 
 #### 4.1.1 Company B VLANs and IP Assignments
 
+Remove previous configuration
+```txt
+SwEmpresaB(config)#no vlan 20
+SwEmpresaB(config)#no vlan 40
+```
+
+Change native VLAN from VLAN 1 to VLAN 99
+
+```txt
+SwEmpresaB(config)#vlan 99
+SwEmpresaB(config-vlan)#interface fa0/1
+SwEmpresaB(config-if)#switchport mode trunk
+SwEmpresaB(config-if)#switchport trunk native vlan 99
+SwEmpresaB(config-if)#switchport trunk allowed vlan 99
+SwEmpresaB(config-if)#switchport nonegotiate 
+```
+
+Add VLAN 2 (Servers) and VLAN 3 (Engineering)
+
+```txt
+SwEmpresaB(config)#vlan 2
+SwEmpresaB(config-vlan)#name Servers
+SwEmpresaB(config-vlan)#vlan 3
+SwEmpresaB(config-vlan)#name Engineering
+
+SwEmpresaB(config-vlan)#interface fa0/1
+SwEmpresaB(config-if)#switchport mode trunk
+SwEmpresaB(config-if)#switchport trunk allowed vlan add 2,3
+SwEmpresaB(config-if)#switchport nonegotiate
+
+
+SwEmpresaB(config)#int fa0/10
+SwEmpresaB(config-if)#swit
+SwEmpresaB(config-if)#switchport mode access
+SwEmpresaB(config-if)#swit
+SwEmpresaB(config-if)#switchport acc
+SwEmpresaB(config-if)#switchport access vl
+SwEmpresaB(config-if)#switchport access vlan 2
+SwEmpresaB(config-if)#switchport none
+SwEmpresaB(config-if)#switchport nonegotiate 
+SwEmpresaB(config-if)#do wr mem
+Building configuration...
+[OK]
+SwEmpresaB(config-if)#int fa0/11
+SwEmpresaB(config-if)#switchport mode access
+SwEmpresaB(config-if)#switchport access vlan 3
+SwEmpresaB(config-if)#switchport nonegotiate 
+SwEmpresaB(config-if)#int fa0/12
+SwEmpresaB(config-if)#switchport mode access
+SwEmpresaB(config-if)#switchport access vlan 3
+SwEmpresaB(config-if)#switchport nonegotiate 
+```
+
+No router
+
+```txt
+# Remove previous configurations ----------------------------
+RouterB(config)#no int fa0/1.20
+RouterB(config)#no int fa0/1.40
+
+# New configurations ----------------------------------------
+RouterB(config)#int fa0/1.2
+RouterB(config-subif)#description VLAN 2 Servers
+RouterB(config-subif)#encapsulation dot1Q 2
+RouterB(config-subif)#ip address 192.168.1.30 255.255.255.224
+
+RouterB(config-subif)#int fa0/1.3
+RouterB(config-subif)#description VLAN 3 Engineering
+RouterB(config-subif)#encapsulation dot1Q 3
+RouterB(config-subif)#ip address 192.168.2.30 255.255.255.224
+
+```
+
 __TODO__
 
 #### 4.1.2 Implementation of the ISP topology for interconnection with customers
