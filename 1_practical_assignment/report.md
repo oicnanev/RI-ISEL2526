@@ -88,9 +88,7 @@ The Enterprise A will be constituted of 1 router, 5 switches, 5 PCs and 3 VLANs,
 
 The Enterprise B will be constituted of 1 router, 1 switch, 1 server, 1 pc and 2 VLANs, VLAN 2 (Servers) and VLAN 3 (Engineering).
 
-The ISP will be constituted by 4 routers and 4 switches, that connects to "Internet" using a Loopback.... __TODO__
-
-__TODO__
+The ISP will be constituted by 4 routers and 4 switches, that connects to "Internet" using a Loopback
 
 ![VLAN/STP/OSPF MONO-AREA](./assets/01.png)
 
@@ -390,7 +388,7 @@ sw1_piso1(config-if-range)# spanning-tree bpduguard enable
 
 __TODO__: verify per-VLAN instances and changes in roles/timers.
 
-SW_DC
+##### SW_DC
 
 ```txt
 SW_DC#sh spanning-tree detail 
@@ -548,7 +546,7 @@ Port 5 (GigabitEthernet1/0/5) of VLAN0099 is designated forwarding
   Link type is point-to-point by default
 ```
 
-sw1_piso1
+##### sw1_piso1
 
 ```txt
 sw1_piso1#sh spanning-tree detail 
@@ -742,7 +740,7 @@ Port 25 (GigabitEthernet0/1) of VLAN0099 is root forwarding
   Link type is point-to-point by default
 ```
 
-sw2_piso2
+##### sw2_piso2
 
 ```txt
 sw2_piso1#sh spanning-tree detail 
@@ -975,7 +973,7 @@ Port 25 (GigabitEthernet0/1) of VLAN0099 is root forwarding
   Link type is point-to-point by default
 ```
 
-sw1_piso2
+##### sw1_piso2
 
 ```txt
 sw1_piso2#sh spanning-tree detail 
@@ -1169,7 +1167,7 @@ Port 24 (FastEthernet0/24) of VLAN0099 is alternate blocking
   Link type is point-to-point by default
 ```
 
-sw2_piso2
+##### sw2_piso2
 
 ```txt
 sw2_piso2#sh spanning-tree detail 
@@ -1465,13 +1463,18 @@ The 802.1Q tag is a **4-byte (32-bit)** field that is inserted into the original
 
 Here is a visual representation and breakdown of the frame structure:
 
-```
-BEFORE 802.1Q TAGGING (Standard Ethernet Frame):
-| Destination MAC (6 bytes) | Source MAC (6 bytes) | Type/Length (2 bytes) | Data (46-1500 bytes) | FCS (4 bytes) |
 
-AFTER 802.1Q TAGGING (VLAN Tagged Frame on a Trunk):
-| Destination MAC | Source MAC | 802.1Q TAG (4 bytes) | Type/Length | Data | FCS |
-```
+__BEFORE 802.1Q TAGGING (Standard Ethernet Frame)__:
+
+| Destination MAC | Source MAC | Type/Length | Data          | FCS     |
+| --------------- | ---------- | ----------- | ------------- | ------- |
+| 6 bytes         | 6 bytes    | 2 bytes     | 46-1500 bytes | 4 bytes |
+
+__AFTER 802.1Q TAGGING (VLAN Tagged Frame on a Trunk)__:
+
+| Destination MAC | Source MAC | 802.1Q TAG | Type/Length | Data | FCS |
+| --------------- | ---------- | ---------- | -------- | ----------- | -- |
+| 6 bytes         | 6 bytes    | 4 bytes    | 2 bytes  | 46-1500 bytes | 4 bytes |
 
 __Breakdown of the 4-Byte 802.1Q Tag Field:__
 
@@ -1544,9 +1547,10 @@ There are two different scenarios:
     This is the original Ethernet II frame format.
 
     **Frame Structure:**
-    ```
+    
     | Destination MAC (6) | Source MAC (6) | Type/Length (2) | Data & Padding   (46-1500) | FCS (4) |
-    ```
+    | --------- | ------- | ------- | -------| ------ |
+    
 
     **Processing from the receiving machine processes:**
     The machine looks at the **Type/Length field** (officially called the **EtherType** field when used as a type identifier). It checks the value in this 2-byte field:
@@ -1566,9 +1570,9 @@ There are two different scenarios:
     This is the frame after the 4-byte VLAN tag has been inserted.
 
     **Frame Structure:**
-    ```
+    
     | Dest MAC (6) | Source MAC (6) | 0x8100 (2) | TCI (2) | Type/Length (2) | Data & Padding (46-1500) | FCS (4) |
-    ```
+    | --- | --- | ---- | --- | ---- | ---- | ---- |
 
     **Processing by the receiving machine processes:**
     The machine starts reading the frame as usual. After the Source MAC address, it encounters the next 2 bytes:
@@ -1599,7 +1603,7 @@ Adjusting the STP timers to half their default values can speed up network conve
 
 __Weighing the Consequences: Faster Convergence vs. Stability Risks__
 
-The table below summarises the potential outcomes:
+The table below summarizes the potential outcomes:
 
 | Timer Change | Potential Benefit | Risks and Consequences |
 | :--- | :--- | :--- |
@@ -1633,7 +1637,7 @@ In the implemented topology there are 4 spanning trees, one for each VLAN. VLAN 
 
 #### 11.  For company A, build the table for calculating the cost of the paths and determining which are the Root, Designated and Blocking ports and calculate the respective values (check in the PT which cost values are used in the calculations of the spanning trees). Are the final results you arrived at consistent with those that the PT simulator presents?
 
-__TODO__
+View point 1.2.1
 
 #### 12. What is the cost of the shortest path to Router A since PC9? 
 
@@ -2165,11 +2169,176 @@ RouterA# ping 172.20.13.6
 
 #### 2. Explain how you enforced the three communication rules __without ACLs__
 
-__TODO__
+To isolate VLAN 12 (Secretariat) from the rest of the network, in the `Router A`, we shutdown the sub interface fa0/1.12.
+
+To make VLAN 13 (Computer Science) communicate with VLAN 11 (Accounting), the other two sub interfaces must be `no shutdown`. But this way, without `ACLs` we cannot block VLAN 11 (Accounting) to communicate with VLAN 13 (Computer Science)
 
 #### 3. Provide short command outputs proving each rule is satisfied/blocked as required
 
-__TODO__
+##### Communications from/to VLAN 11 (Accounting)
+
+```txt
+# From PC7 - VLAN 11 -------------------------------------------------
+C:\>ipconfig
+
+FastEthernet0 Connection:(default port)
+
+   Connection-specific DNS Suffix..: 
+   Link-local IPv6 Address.........: FE80::201:43FF:FE2A:258E
+   IPv6 Address....................: ::
+   IPv4 Address....................: 172.20.11.7
+   Subnet Mask.....................: 255.255.255.0
+   Default Gateway.................: ::
+                                     172.20.11.254
+                                     
+# To PC9 - VLAN 11 ---------------------------------------------------
+C:\>ping 172.20.11.9
+
+Pinging 172.20.11.9 with 32 bytes of data:
+
+Reply from 172.20.11.9: bytes=32 time<1ms TTL=128
+Reply from 172.20.11.9: bytes=32 time<1ms TTL=128
+Reply from 172.20.11.9: bytes=32 time<1ms TTL=128
+Reply from 172.20.11.9: bytes=32 time<1ms TTL=128
+
+Ping statistics for 172.20.11.9:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms
+    
+# To PC5 - VLAN 12 ---------------------------------------------------
+C:\>ping 172.20.12.5
+
+Pinging 172.20.12.5 with 32 bytes of data:
+
+Request timed out.
+Request timed out.
+Request timed out.
+Request timed out.
+
+Ping statistics for 172.20.12.5:
+    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss)
+
+# To PC6 - VLAN 13 ---------------------------------------------------
+C:\>ping 172.20.13.6
+
+Pinging 172.20.13.6 with 32 bytes of data:
+
+Request timed out.
+Request timed out.
+Request timed out.
+Request timed out.
+
+Ping statistics for 172.20.13.6:
+    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss)
+```
+
+##### Communications from/to VLAN 12 (Secretariat)   
+
+```txt
+# From PC5 - VLAN 12 -------------------------------------------------
+C:\>ipconfig
+
+FastEthernet0 Connection:(default port)
+
+   Connection-specific DNS Suffix..: 
+   Link-local IPv6 Address.........: FE80::230:A3FF:FEB5:B871
+   IPv6 Address....................: ::
+   IPv4 Address....................: 172.20.12.5
+   Subnet Mask.....................: 255.255.255.0
+   Default Gateway.................: ::
+                                     172.20.12.254
+
+# To PC6 - VLAN 13 ---------------------------------------------------
+C:\>ping 172.20.13.6
+
+Pinging 172.20.13.6 with 32 bytes of data:
+
+Reply from 172.20.13.6: bytes=32 time=16ms TTL=127
+Reply from 172.20.13.6: bytes=32 time<1ms TTL=127
+Reply from 172.20.13.6: bytes=32 time<1ms TTL=127
+Reply from 172.20.13.6: bytes=32 time<1ms TTL=127
+
+Ping statistics for 172.20.13.6:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 16ms, Average = 4ms
+    
+# To PC7 - VLAN 11 ---------------------------------------------------
+C:\>ping 172.20.11.7
+
+Pinging 172.20.11.7 with 32 bytes of data:
+
+Request timed out.
+Request timed out.
+Request timed out.
+Request timed out.
+
+Ping statistics for 172.20.11.7:
+    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss)
+
+# To PC8 - VLAN 12 ---------------------------------------------------
+C:\>ping 172.20.12.8
+
+Pinging 172.20.12.8 with 32 bytes of data:
+
+Reply from 172.20.12.8: bytes=32 time<1ms TTL=128
+Reply from 172.20.12.8: bytes=32 time=12ms TTL=128
+Reply from 172.20.12.8: bytes=32 time<1ms TTL=128
+Reply from 172.20.12.8: bytes=32 time<1ms TTL=128
+
+Ping statistics for 172.20.12.8:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 12ms, Average = 3ms
+```
+
+
+
+##### Communications from/to VLAN 13 (Computer Science)
+
+```txt
+# From PC6 - VLAN 13 -----------------------------------------------
+C:\>ipconfig
+
+FastEthernet0 Connection:(default port)
+
+   Connection-specific DNS Suffix..: 
+   Link-local IPv6 Address.........: FE80::290:CFF:FEC9:2A2
+   IPv6 Address....................: ::
+   IPv4 Address....................: 172.20.13.6
+   Subnet Mask.....................: 255.255.255.128
+   Default Gateway.................: ::
+                                     172.20.13.127
+                                     
+# To PC8 - VLAN 12 -------------------------------------------------
+C:\>ping 172.20.12.8
+
+Pinging 172.20.12.8 with 32 bytes of data:
+
+Request timed out.
+Request timed out.
+Reply from 172.20.12.8: bytes=32 time=1ms TTL=127
+Reply from 172.20.12.8: bytes=32 time<1ms TTL=127
+
+Ping statistics for 172.20.12.8:
+    Packets: Sent = 4, Received = 2, Lost = 2 (50% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 1ms, Average = 0ms
+
+# To PC9 - VLAN 11 -------------------------------------------------
+C:\>ping 172.20.11.9
+
+Pinging 172.20.11.9 with 32 bytes of data:
+
+Request timed out.
+Request timed out.
+Request timed out.
+Request timed out.
+
+Ping statistics for 172.20.11.9:
+    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss),
+```
 
 ---
 
@@ -2452,6 +2621,8 @@ __TODO__
 ## Conclusion
 
 __TODO__
+
+In the first part we did not understand that the objective was to only observe and describe the given Packet Tracer file, and we start implementing VLANS from part 2
 
 
 
