@@ -16,6 +16,8 @@
 
 ---
 
+<div style="page-break-after: always"></div>
+
 ## Index
 
 - Introduction
@@ -35,6 +37,8 @@
         - 2.1.2 Access and Trunk Ports
         - 2.1.3 PCs IP Assignments
     - 2.2 Test and Validation
+        - 2.2.1 Intra-VLAN and Inter-VLAN connectivity
+        - 2.2.2 Connectivity between the PCs on each VLAN
     - 2.3 Practical Questions
 - 3 - Enterprise A — Router-on-a-Stick (RoS) & L3 Rules (no ACLs)
     - 3.1 Implementation
@@ -52,6 +56,7 @@
         - 4.1.3 Building of VLAN paths in the switch fabric
         - 4.1.4 Assignment of IP address to Router 1, Router 3, Router A, and Router B
     - 4.2 Test and Validation
+        - 4.2.1 End to end L3 connectivity: R1 <-> RA and R2 <-> RB
     - 4.3 Practical Questions
 - 5 - Static Routing → OSPF Core & “Internet” Loopback → Public Addressing Test
     - 5.1 Implementation
@@ -71,15 +76,17 @@
 
 ---
 
+<div style="page-break-after: always"></div>
+
 ## Introduction
 
 In this project we explore Internet Networks topics like VLAN segmentation, L2 loop protection (STP/RSTP), inter-VLAN routing (router-on-a-stick), static routing, and single-area OSPF.
 
 To accomplish this we will configure and simulate a network between two enterprises (A and B) and an ISP (Internet Service Provider).
 
-The Enterprise A will be constituted of 1 router, 5 switches, 5 PCs and 3 VLANs, VLAN 11 (Accounting), VLAN 12 (Secretariat) and VLAN 13 (Computer_science). __TODO__
+The Enterprise A will be constituted of 1 router, 5 switches, 5 PCs and 3 VLANs, VLAN 11 (Accounting), VLAN 12 (Secretariat) and VLAN 13 (Computer_science).
 
-The Enterprise B will be constituted of 1 router, 1 switch, 1 server, 1 pc and 2 VLANs.... __TODO__
+The Enterprise B will be constituted of 1 router, 1 switch, 1 server, 1 pc and 2 VLANs, VLAN 2 (Servers) and VLAN 3 (Engineering).
 
 The ISP will be constituted by 4 routers and 4 switches, that connects to "Internet" using a Loopback.... __TODO__
 
@@ -88,6 +95,8 @@ __TODO__
 ![VLAN/STP/OSPF MONO-AREA](./assets/01.png)
 
 ___
+
+<div style="page-break-after: always"></div>
 
 ## 1. Enterprise A - L2 Foundations (VLAN/STP/RSTP)
 
@@ -360,27 +369,977 @@ In the ports connected to PCs, we convert them to `port fast` and enable the `bp
 ```txt
 # sw1_piso1 --------------------------------------------
 sw1_piso1(config)# interface fa0/10
-sw1_piso1(config-if)# spanning-tree port fast
+sw1_piso1(config-if)# spanning-tree portfast
 sw1_piso1(config-if)# spanning-tree bpduguard enable
 
 # sw2_piso1 --------------------------------------------
 sw2_piso1(config)# interface fa0/10
-sw2_piso1(config-if)# spanning-tree port fast
+sw2_piso1(config-if)# spanning-tree portfast
 sw2_piso1(config-if)# spanning-tree bpduguard enable
 
 # sw1_piso2 --------------------------------------------
 sw1_piso2(config)# interface fa0/10
-sw1_piso2(config-if)# spanning-tree port fast
+sw1_piso2(config-if)# spanning-tree portfast
 sw1_piso2(config-if)# spanning-tree bpduguard enable
 
 # sw1_piso1 --------------------------------------------
 sw1_piso1(config)# interface range fa0/10-11
-sw1_piso1(config-if-range)# spanning-tree port fast
+sw1_piso1(config-if-range)# spanning-tree portfast
 sw1_piso1(config-if-range)# spanning-tree bpduguard enable
 ``` 
-__TODO__: falta fazer isto no Packet Tracer e depois gravar o ficheiro
 
 __TODO__: verify per-VLAN instances and changes in roles/timers.
+
+SW_DC
+
+```txt
+SW_DC#sh spanning-tree detail 
+
+VLAN0011 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 11, 0002.4AE4.E093
+  Configured hello time 2, max age 20, forward delay 15
+  We are the root of the spanning tree
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 1 (GigabitEthernet1/0/1) of VLAN0011 is designated forwarding
+  Port path cost 4, Port priority 128, Port Identifier 128.1
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 0002.4AE4.E093
+  Designated port id is 128.1, designated path cost 4
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 2 (GigabitEthernet1/0/2) of VLAN0011 is designated forwarding
+  Port path cost 4, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 0002.4AE4.E093
+  Designated port id is 128.2, designated path cost 4
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 5 (GigabitEthernet1/0/5) of VLAN0011 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.5
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 0002.4AE4.E093
+  Designated port id is 128.5, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+VLAN0012 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 12, 0002.4AE4.E093
+  Configured hello time 2, max age 20, forward delay 15
+  We are the root of the spanning tree
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 1 (GigabitEthernet1/0/1) of VLAN0012 is designated forwarding
+  Port path cost 4, Port priority 128, Port Identifier 128.1
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 0002.4AE4.E093
+  Designated port id is 128.1, designated path cost 4
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 2 (GigabitEthernet1/0/2) of VLAN0012 is designated forwarding
+  Port path cost 4, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 0002.4AE4.E093
+  Designated port id is 128.2, designated path cost 4
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 5 (GigabitEthernet1/0/5) of VLAN0012 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.5
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 0002.4AE4.E093
+  Designated port id is 128.5, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+VLAN0013 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 13, 0002.4AE4.E093
+  Configured hello time 2, max age 20, forward delay 15
+  We are the root of the spanning tree
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 1 (GigabitEthernet1/0/1) of VLAN0013 is designated forwarding
+  Port path cost 4, Port priority 128, Port Identifier 128.1
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 0002.4AE4.E093
+  Designated port id is 128.1, designated path cost 4
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 2 (GigabitEthernet1/0/2) of VLAN0013 is designated forwarding
+  Port path cost 4, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 0002.4AE4.E093
+  Designated port id is 128.2, designated path cost 4
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 5 (GigabitEthernet1/0/5) of VLAN0013 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.5
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 0002.4AE4.E093
+  Designated port id is 128.5, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+VLAN0099 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 99, 0002.4AE4.E093
+  Configured hello time 2, max age 20, forward delay 15
+  We are the root of the spanning tree
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 1 (GigabitEthernet1/0/1) of VLAN0099 is designated forwarding
+  Port path cost 4, Port priority 128, Port Identifier 128.1
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 0002.4AE4.E093
+  Designated port id is 128.1, designated path cost 4
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 2 (GigabitEthernet1/0/2) of VLAN0099 is designated forwarding
+  Port path cost 4, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 0002.4AE4.E093
+  Designated port id is 128.2, designated path cost 4
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 5 (GigabitEthernet1/0/5) of VLAN0099 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.5
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 0002.4AE4.E093
+  Designated port id is 128.5, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+```
+
+sw1_piso1
+
+```txt
+sw1_piso1#sh spanning-tree detail 
+
+VLAN0011 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 11, 0009.7C65.BA4B
+  Configured hello time 2, max age 20, forward delay 15
+  Current root has priority 32779
+  Root port is 25 (GigabitEthernet0/1), cost of root path is 4
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 2 (FastEthernet0/2) of VLAN0011 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 0009.7C65.BA4B
+  Designated port id is 128.2, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 23 (FastEthernet0/23) of VLAN0011 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.23
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 0009.7C65.BA4B
+  Designated port id is 128.23, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 24 (FastEthernet0/24) of VLAN0011 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.24
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 0009.7C65.BA4B
+  Designated port id is 128.24, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 25 (GigabitEthernet0/1) of VLAN0011 is root forwarding
+  Port path cost 4, Port priority 128, Port Identifier 128.25
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 0002.4AE4.E093
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+VLAN0012 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 12, 0009.7C65.BA4B
+  Configured hello time 2, max age 20, forward delay 15
+  Current root has priority 32780
+  Root port is 25 (GigabitEthernet0/1), cost of root path is 4
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 2 (FastEthernet0/2) of VLAN0012 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 0009.7C65.BA4B
+  Designated port id is 128.2, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 10 (FastEthernet0/10) of VLAN0012 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.10
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 0009.7C65.BA4B
+  Designated port id is 128.10, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 23 (FastEthernet0/23) of VLAN0012 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.23
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 0009.7C65.BA4B
+  Designated port id is 128.23, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 24 (FastEthernet0/24) of VLAN0012 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.24
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 0009.7C65.BA4B
+  Designated port id is 128.24, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 25 (GigabitEthernet0/1) of VLAN0012 is root forwarding
+  Port path cost 4, Port priority 128, Port Identifier 128.25
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 0002.4AE4.E093
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+VLAN0013 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 13, 0009.7C65.BA4B
+  Configured hello time 2, max age 20, forward delay 15
+  Current root has priority 32781
+  Root port is 25 (GigabitEthernet0/1), cost of root path is 4
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 2 (FastEthernet0/2) of VLAN0013 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 0009.7C65.BA4B
+  Designated port id is 128.2, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 23 (FastEthernet0/23) of VLAN0013 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.23
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 0009.7C65.BA4B
+  Designated port id is 128.23, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 25 (GigabitEthernet0/1) of VLAN0013 is root forwarding
+  Port path cost 4, Port priority 128, Port Identifier 128.25
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 0002.4AE4.E093
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+VLAN0099 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 99, 0009.7C65.BA4B
+  Configured hello time 2, max age 20, forward delay 15
+  Current root has priority 32867
+  Root port is 25 (GigabitEthernet0/1), cost of root path is 4
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 2 (FastEthernet0/2) of VLAN0099 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 0009.7C65.BA4B
+  Designated port id is 128.2, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 23 (FastEthernet0/23) of VLAN0099 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.23
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 0009.7C65.BA4B
+  Designated port id is 128.23, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 24 (FastEthernet0/24) of VLAN0099 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.24
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 0009.7C65.BA4B
+  Designated port id is 128.24, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 25 (GigabitEthernet0/1) of VLAN0099 is root forwarding
+  Port path cost 4, Port priority 128, Port Identifier 128.25
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 0002.4AE4.E093
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+```
+
+sw2_piso2
+
+```txt
+sw2_piso1#sh spanning-tree detail 
+
+VLAN0011 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 11, 00E0.F950.631A
+  Configured hello time 2, max age 20, forward delay 15
+  Current root has priority 32779
+  Root port is 25 (GigabitEthernet0/1), cost of root path is 4
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 1 (FastEthernet0/1) of VLAN0011 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.1
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 00E0.F950.631A
+  Designated port id is 128.1, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 2 (FastEthernet0/2) of VLAN0011 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 0009.7C65.BA4B
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 23 (FastEthernet0/23) of VLAN0011 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.23
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 00E0.A3CE.4A46
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 24 (FastEthernet0/24) of VLAN0011 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.24
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 00E0.F950.631A
+  Designated port id is 128.24, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 25 (GigabitEthernet0/1) of VLAN0011 is root forwarding
+  Port path cost 4, Port priority 128, Port Identifier 128.25
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 0002.4AE4.E093
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+VLAN0012 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 12, 00E0.F950.631A
+  Configured hello time 2, max age 20, forward delay 15
+  Current root has priority 32780
+  Root port is 25 (GigabitEthernet0/1), cost of root path is 4
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 1 (FastEthernet0/1) of VLAN0012 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.1
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 00E0.F950.631A
+  Designated port id is 128.1, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 2 (FastEthernet0/2) of VLAN0012 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 0009.7C65.BA4B
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 23 (FastEthernet0/23) of VLAN0012 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.23
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 00E0.A3CE.4A46
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 24 (FastEthernet0/24) of VLAN0012 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.24
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 00E0.F950.631A
+  Designated port id is 128.24, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 25 (GigabitEthernet0/1) of VLAN0012 is root forwarding
+  Port path cost 4, Port priority 128, Port Identifier 128.25
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 0002.4AE4.E093
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+VLAN0013 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 13, 00E0.F950.631A
+  Configured hello time 2, max age 20, forward delay 15
+  Current root has priority 32781
+  Root port is 25 (GigabitEthernet0/1), cost of root path is 4
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 1 (FastEthernet0/1) of VLAN0013 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.1
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 00E0.F950.631A
+  Designated port id is 128.1, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 2 (FastEthernet0/2) of VLAN0013 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 0009.7C65.BA4B
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 10 (FastEthernet0/10) of VLAN0013 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.10
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 00E0.F950.631A
+  Designated port id is 128.10, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 23 (FastEthernet0/23) of VLAN0013 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.23
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 00E0.F950.631A
+  Designated port id is 128.23, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 24 (FastEthernet0/24) of VLAN0013 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.24
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 00E0.F950.631A
+  Designated port id is 128.24, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 25 (GigabitEthernet0/1) of VLAN0013 is root forwarding
+  Port path cost 4, Port priority 128, Port Identifier 128.25
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 0002.4AE4.E093
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+VLAN0099 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 99, 00E0.F950.631A
+  Configured hello time 2, max age 20, forward delay 15
+  Current root has priority 32867
+  Root port is 25 (GigabitEthernet0/1), cost of root path is 4
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 1 (FastEthernet0/1) of VLAN0099 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.1
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 00E0.F950.631A
+  Designated port id is 128.1, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 2 (FastEthernet0/2) of VLAN0099 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 0009.7C65.BA4B
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 23 (FastEthernet0/23) of VLAN0099 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.23
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 00E0.F950.631A
+  Designated port id is 128.23, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 24 (FastEthernet0/24) of VLAN0099 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.24
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 00E0.F950.631A
+  Designated port id is 128.24, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 25 (GigabitEthernet0/1) of VLAN0099 is root forwarding
+  Port path cost 4, Port priority 128, Port Identifier 128.25
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 0002.4AE4.E093
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+```
+
+sw1_piso2
+
+```txt
+sw1_piso2#sh spanning-tree detail 
+
+VLAN0011 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 11, 00E0.A3CE.4A46
+  Configured hello time 2, max age 20, forward delay 15
+  Current root has priority 32779
+  Root port is 23 (FastEthernet0/23), cost of root path is 23
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 2 (FastEthernet0/2) of VLAN0011 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 00E0.8FE1.53D7
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 10 (FastEthernet0/10) of VLAN0011 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.10
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 00E0.A3CE.4A46
+  Designated port id is 128.10, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 18 (FastEthernet0/18) of VLAN0011 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.18
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 00E0.A3CE.4A46
+  Designated port id is 128.18, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 23 (FastEthernet0/23) of VLAN0011 is root forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.23
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 0009.7C65.BA4B
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 24 (FastEthernet0/24) of VLAN0011 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.24
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 0009.7C65.BA4B
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+VLAN0012 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 12, 00E0.A3CE.4A46
+  Configured hello time 2, max age 20, forward delay 15
+  Current root has priority 32780
+  Root port is 23 (FastEthernet0/23), cost of root path is 23
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 2 (FastEthernet0/2) of VLAN0012 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 00E0.8FE1.53D7
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 18 (FastEthernet0/18) of VLAN0012 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.18
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 00E0.A3CE.4A46
+  Designated port id is 128.18, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 23 (FastEthernet0/23) of VLAN0012 is root forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.23
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 0009.7C65.BA4B
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 24 (FastEthernet0/24) of VLAN0012 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.24
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 0009.7C65.BA4B
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+VLAN0013 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 13, 00E0.A3CE.4A46
+  Configured hello time 2, max age 20, forward delay 15
+  Current root has priority 32781
+  Root port is 23 (FastEthernet0/23), cost of root path is 23
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 2 (FastEthernet0/2) of VLAN0013 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 00E0.8FE1.53D7
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 18 (FastEthernet0/18) of VLAN0013 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.18
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 00E0.F950.631A
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 23 (FastEthernet0/23) of VLAN0013 is root forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.23
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 0009.7C65.BA4B
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 24 (FastEthernet0/24) of VLAN0013 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.24
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 00E0.A3CE.4A46
+  Designated port id is 128.24, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+VLAN0099 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 99, 00E0.A3CE.4A46
+  Configured hello time 2, max age 20, forward delay 15
+  Current root has priority 32867
+  Root port is 23 (FastEthernet0/23), cost of root path is 23
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 2 (FastEthernet0/2) of VLAN0099 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 00E0.8FE1.53D7
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 18 (FastEthernet0/18) of VLAN0099 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.18
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 00E0.F950.631A
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 23 (FastEthernet0/23) of VLAN0099 is root forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.23
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 0009.7C65.BA4B
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 24 (FastEthernet0/24) of VLAN0099 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.24
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 0009.7C65.BA4B
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+```
+
+sw2_piso2
+
+```txt
+sw2_piso2#sh spanning-tree detail 
+
+VLAN0011 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 11, 00E0.8FE1.53D7
+  Configured hello time 2, max age 20, forward delay 15
+  Current root has priority 32779
+  Root port is 1 (FastEthernet0/1), cost of root path is 23
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 1 (FastEthernet0/1) of VLAN0011 is root forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.1
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 00E0.F950.631A
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 2 (FastEthernet0/2) of VLAN0011 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 00E0.8FE1.53D7
+  Designated port id is 128.2, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 11 (FastEthernet0/11) of VLAN0011 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.11
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 00E0.8FE1.53D7
+  Designated port id is 128.11, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 24 (FastEthernet0/24) of VLAN0011 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.24
+  Designated root has priority 32779, address 0002.4AE4.E093
+  Designated bridge has priority 32779, address 00E0.F950.631A
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+VLAN0012 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 12, 00E0.8FE1.53D7
+  Configured hello time 2, max age 20, forward delay 15
+  Current root has priority 32780
+  Root port is 1 (FastEthernet0/1), cost of root path is 23
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 1 (FastEthernet0/1) of VLAN0012 is root forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.1
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 00E0.F950.631A
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 2 (FastEthernet0/2) of VLAN0012 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 00E0.8FE1.53D7
+  Designated port id is 128.2, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 10 (FastEthernet0/10) of VLAN0012 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.10
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 00E0.8FE1.53D7
+  Designated port id is 128.10, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 24 (FastEthernet0/24) of VLAN0012 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.24
+  Designated root has priority 32780, address 0002.4AE4.E093
+  Designated bridge has priority 32780, address 00E0.F950.631A
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+VLAN0013 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 13, 00E0.8FE1.53D7
+  Configured hello time 2, max age 20, forward delay 15
+  Current root has priority 32781
+  Root port is 1 (FastEthernet0/1), cost of root path is 23
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 1 (FastEthernet0/1) of VLAN0013 is root forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.1
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 00E0.F950.631A
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 2 (FastEthernet0/2) of VLAN0013 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 00E0.8FE1.53D7
+  Designated port id is 128.2, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 24 (FastEthernet0/24) of VLAN0013 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.24
+  Designated root has priority 32781, address 0002.4AE4.E093
+  Designated bridge has priority 32781, address 00E0.F950.631A
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+VLAN0099 is executing the rstp compatible Spanning Tree Protocol
+  Bridge Identifier has priority of 32768, sysid 99, 00E0.8FE1.53D7
+  Configured hello time 2, max age 20, forward delay 15
+  Current root has priority 32867
+  Root port is 1 (FastEthernet0/1), cost of root path is 23
+  Topology change flag not set, detected flag not set
+  Number of topology changes 0 last change occurred 00:00:00 ago
+	        from FastEthernet0/1
+  Times:  hold 1, topology change 35, notification 2
+  		hello 2, max age 20, forward delay 15
+  Timers: hello 0, topology change 0, notification 0, aging 300
+
+Port 1 (FastEthernet0/1) of VLAN0099 is root forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.1
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 00E0.F950.631A
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 2 (FastEthernet0/2) of VLAN0099 is designated forwarding
+  Port path cost 19, Port priority 128, Port Identifier 128.2
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 00E0.8FE1.53D7
+  Designated port id is 128.2, designated path cost 19
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+
+Port 24 (FastEthernet0/24) of VLAN0099 is alternate blocking
+  Port path cost 19, Port priority 128, Port Identifier 128.24
+  Designated root has priority 32867, address 0002.4AE4.E093
+  Designated bridge has priority 32867, address 00E0.F950.631A
+  Timers: message age 16, forward delay 0, hold 0
+  Number of transitions to forwarding state: 1
+  Link type is point-to-point by default
+```
 
 ### 1.2 Tests and Validation
 
@@ -556,7 +1515,7 @@ An Access port is like a "VLAN translator" that sits between the switched networ
 
 __Objective of this design__
 
-1.  **Simplicity and Universality:** It allows the introdution of VLANs into the network without having to upgrade or reconfigure every single PC, printer, and server to understand 802.1Q tags.
+1.  **Simplicity and Universality:** It allows the introduction of VLANs into the network without having to upgrade or reconfigure every single PC, printer, and server to understand 802.1Q tags.
 2.  **Clear Separation of Responsibilities:**
     *   **Switches** are the _VLAN-aware_ devices. They handle the complexity of tagging, filtering, and trunking.
     *   **End-devices** are _VLAN-unaware_. They just send and receive standard network traffic.
@@ -672,15 +1631,24 @@ Using the command `sh spanning-tree summary` it says `Switch is in pvst mode` wh
 
 In the implemented topology there are 4 spanning trees, one for each VLAN. VLAN 1, VLAN 11, VLAN 12 and VLAN 13.
 
-#### 11.  For company A, build the table for calculating the cost of the paths and determining which are the Root, Designated and Blocking ports and calculate the respective values (check in the PT which cost values are used in the calcula[ons of the spanning trees). Are the final results you arrived at consistent with those that the PT simulator presents?
+#### 11.  For company A, build the table for calculating the cost of the paths and determining which are the Root, Designated and Blocking ports and calculate the respective values (check in the PT which cost values are used in the calculations of the spanning trees). Are the final results you arrived at consistent with those that the PT simulator presents?
 
 __TODO__
 
 #### 12. What is the cost of the shortest path to Router A since PC9? 
 
-__TODO__
+| Device out | Interface out | Device in | Interface in | Cost |
+| ---------- | ------------- | --------- | ------------ | ---- |
+| PC9        | Fa0           | sw2_piso2 | Fa0/11       | 19 |
+| sw2_piso2  | Fa0/1         | sw2_piso1 | Fa0/1        | 19 |
+| sw2_piso1  | Gig0/1        | SW_DC     | Gig1/0/2     | 4 |
+| SW_DC      | Gig1/0/5      | RouterA   | Fa0/1        | 19 |
+
+The cost of the shortest path to Router A since PC9 is `19 + 19 + 4 + 19 = 61`
 
 ---
+
+<div style="page-break-after: always"></div>
 
 ## 2. Enterprise A - VLAN Segmentation and Addressing
 
@@ -688,52 +1656,317 @@ __TODO__
 
 #### 2.1.1 VLANs
 
-__TODO__: add table and show configurations
-
 | VLAN | NAME             | IP GATEWAY    | NETWORK          | PCs |
 | -- | ------------------ | ------------- | -----------------| -------- |
 | 11 | Accounting         | 172.20.11.254 | 172.20.11.0/24   | PC7, PC9 |
 | 12 | Secretariat        | 172.20.12.254 | 172.20.12.0/24   | PC5, PC8 |
 | 13 | Computer science   | 172.20.13.126 | 172.20.13.0/25   | PC6 |
 
+__TODO__: add table nº x
+
+Already configured, view point 1.1.1 VLANs
+
 #### 1.1.2 Access and Trunk Ports
 
-__TODO__: maybe a table
+Already configured, in the point 1.1.1 VLANs
 
 #### 2.1.3 PCs IP Assignments
 
-```txt
-SW_DC(config)#inter vlan 13
-SW_DC(config-if)#ip address 172.20.13.254 255.255.255.0
-SW_DC(config-if)#no shutdown
-```
+| PC  | VLAN | IP address  | Gateway |
+| --- | ---- | ----------- | ------- |
+| PC5 | 12   | 172.20.12.5 | 172.20.12.254 |
+| PC6 | 13   | 172.20.13.6 | 172.20.13.126 |
+| PC7 | 11   | 172.20.11.7 | 172.20.11.254 |
+| PC8 | 12   | 172.20.12.8 | 172.20.12.254 |
+| PC9 | 11   | 172.20.11.9 | 172.20.11.254 |
 
-__TODO__: maybe a table
+We decided, that the last octet of the assigned IP address corresponds to the PC number
 
 ### 2.2 Test and Validation
 
-__TODO__
+#### 2.2.1 Intra-VLAN and Inter-VLAN connectivity
+
+With the configuration that we made, we have connectivity intra-VLAN but not inter-VLAN. To achieve inter-VLAN connectivity we need to configure the Router A with `Router-in-a-Stick`, switches cannot change the VLAN tag, so we have not connectivity inter-VLANs
+
+#### 2.2.2 Connectivity between the PCs on each VLAN
+
+##### SW_DC `show vlan brief` and `show interfaces trunk`
+
+```txt
+SW_DC#sh vlan brief
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Gig1/0/3, Gig1/0/4, Gig1/0/6, Gig1/0/7
+                                                Gig1/0/8, Gig1/0/9, Gig1/0/10, Gig1/0/11
+                                                Gig1/0/12, Gig1/0/13, Gig1/0/14, Gig1/0/15
+                                                Gig1/0/16, Gig1/0/17, Gig1/0/18, Gig1/0/19
+                                                Gig1/0/20, Gig1/0/21, Gig1/0/22, Gig1/0/23
+                                                Gig1/0/24, Gig1/1/1, Gig1/1/2, Gig1/1/3
+                                                Gig1/1/4
+11   Accounting                       active    
+12   Secretariat                      active    
+13   Computer_science                 active    
+99   VLAN0099                         active    
+1002 fddi-default                     active    
+1003 token-ring-default               active    
+1004 fddinet-default                  active    
+1005 trnet-default                    active 
+
+SW_DC#sh int trunk
+Port        Mode         Encapsulation  Status        Native vlan
+Gig1/0/1    on           802.1q         trunking      99
+Gig1/0/2    on           802.1q         trunking      99
+Gig1/0/5    on           802.1q         trunking      99
+
+Port        Vlans allowed on trunk
+Gig1/0/1    11-13
+Gig1/0/2    11-13
+Gig1/0/5    11-13
+
+Port        Vlans allowed and active in management domain
+Gig1/0/1    11,12,13
+Gig1/0/2    11,12,13
+Gig1/0/5    11,12,13
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Gig1/0/1    11,12,13
+Gig1/0/2    11,12,13
+Gig1/0/5    11,12,13
+```
+
+##### sw1_piso1 `show vlan brief` and `show interfaces trunk`
+
+```txt
+sw1_piso1#sh vlan brief
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Fa0/1, Fa0/3, Fa0/4, Fa0/5
+                                                Fa0/6, Fa0/7, Fa0/8, Fa0/9
+                                                Fa0/11, Fa0/12, Fa0/13, Fa0/14
+                                                Fa0/15, Fa0/16, Fa0/17, Fa0/18
+                                                Fa0/19, Fa0/20, Fa0/21, Fa0/22
+                                                Gig0/2
+11   Accounting                       active    
+12   Secretariat                      active    Fa0/10
+13   Computer_science                 active    
+99   VLAN0099                         active    
+1002 fddi-default                     active    
+1003 token-ring-default               active    
+1004 fddinet-default                  active    
+1005 trnet-default                    active
+
+sw1_piso1#sh int trunk
+Port        Mode         Encapsulation  Status        Native vlan
+Fa0/2       on           802.1q         trunking      99
+Fa0/23      on           802.1q         trunking      99
+Fa0/24      on           802.1q         trunking      99
+Gig0/1      on           802.1q         trunking      99
+
+Port        Vlans allowed on trunk
+Fa0/2       11-13
+Fa0/23      11-13
+Fa0/24      11-13
+Gig0/1      11-13
+
+Port        Vlans allowed and active in management domain
+Fa0/2       11,12,13
+Fa0/23      11,12,13
+Fa0/24      11,12,13
+Gig0/1      11,12,13
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Fa0/2       11,12,13
+Fa0/23      11,12,13
+Fa0/24      11,12,13
+Gig0/1      11,12,13
+```
+
+##### sw2_piso1 `show vlan brief` and `show interfaces trunk`
+
+```txt
+sw1_piso2#sh vlan brief
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Fa0/1, Fa0/3, Fa0/4, Fa0/5
+                                                Fa0/6, Fa0/7, Fa0/8, Fa0/9
+                                                Fa0/11, Fa0/12, Fa0/13, Fa0/14
+                                                Fa0/15, Fa0/16, Fa0/17, Fa0/19
+                                                Fa0/20, Fa0/21, Fa0/22, Gig0/1
+                                                Gig0/2
+11   Accounting                       active    Fa0/10
+12   Secretariat                      active    
+13   Computer_science                 active    
+99   VLAN0099                         active    
+1002 fddi-default                     active    
+1003 token-ring-default               active    
+1004 fddinet-default                  active    
+1005 trnet-default                    active    
+
+sw1_piso2#sh int trunk
+Port        Mode         Encapsulation  Status        Native vlan
+Fa0/2       on           802.1q         trunking      99
+Fa0/18      on           802.1q         trunking      99
+Fa0/23      on           802.1q         trunking      99
+Fa0/24      on           802.1q         trunking      99
+
+Port        Vlans allowed on trunk
+Fa0/2       11-13
+Fa0/18      11-13
+Fa0/23      11-13
+Fa0/24      11-13
+
+Port        Vlans allowed and active in management domain
+Fa0/2       11,12,13
+Fa0/18      11,12,13
+Fa0/23      11,12,13
+Fa0/24      11,12,13
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Fa0/2       none
+Fa0/18      none
+Fa0/23      11,12,13
+Fa0/24      none
+```
+
+##### sw2_piso2 `show vlan brief` and `show interfaces trunk`
+
+```txt
+sw2_piso2#sh vlan brief
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Fa0/3, Fa0/4, Fa0/5, Fa0/6
+                                                Fa0/7, Fa0/8, Fa0/9, Fa0/12
+                                                Fa0/13, Fa0/14, Fa0/15, Fa0/16
+                                                Fa0/17, Fa0/18, Fa0/19, Fa0/20
+                                                Fa0/21, Fa0/22, Fa0/23, Gig0/1
+                                                Gig0/2
+11   Accounting                       active    Fa0/11
+12   Secretariat                      active    Fa0/10
+13   Computer_science                 active    
+99   VLAN0099                         active    
+1002 fddi-default                     active    
+1003 token-ring-default               active    
+1004 fddinet-default                  active    
+1005 trnet-default                    active 
+   
+sw2_piso2#sh int trunk
+Port        Mode         Encapsulation  Status        Native vlan
+Fa0/1       on           802.1q         trunking      99
+Fa0/2       on           802.1q         trunking      99
+Fa0/24      on           802.1q         trunking      99
+
+Port        Vlans allowed on trunk
+Fa0/1       11-13
+Fa0/2       11-13
+Fa0/24      11-13
+
+Port        Vlans allowed and active in management domain
+Fa0/1       11,12,13
+Fa0/2       11,12,13
+Fa0/24      11,12,13
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Fa0/1       11,12,13
+Fa0/2       11,12,13
+Fa0/24      none
+```
+
+##### VLAN 11 - Accounting connectivity between PC7 and PC9
+
+```txt
+C:\>ipconfig
+
+FastEthernet0 Connection:(default port)
+
+   Connection-specific DNS Suffix..: 
+   Link-local IPv6 Address.........: FE80::201:43FF:FE2A:258E
+   IPv6 Address....................: ::
+   IPv4 Address....................: 172.20.11.7
+   Subnet Mask.....................: 255.255.255.0
+   Default Gateway.................: ::
+                                     172.20.11.254
+
+
+C:\>ping 172.20.11.9
+
+Pinging 172.20.11.9 with 32 bytes of data:
+
+Reply from 172.20.11.9: bytes=32 time<1ms TTL=128
+Reply from 172.20.11.9: bytes=32 time<1ms TTL=128
+Reply from 172.20.11.9: bytes=32 time<1ms TTL=128
+Reply from 172.20.11.9: bytes=32 time<1ms TTL=128
+
+Ping statistics for 172.20.11.9:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms
+```
+
+##### VLAN 12 - Accounting connectivity between PC5 and PC8
+
+```txt
+C:\>ipconfig
+
+FastEthernet0 Connection:(default port)
+
+   Connection-specific DNS Suffix..: 
+   Link-local IPv6 Address.........: FE80::230:A3FF:FEB5:B871
+   IPv6 Address....................: ::
+   IPv4 Address....................: 172.20.12.5
+   Subnet Mask.....................: 255.255.255.0
+   Default Gateway.................: ::
+                                     172.20.12.254
+
+
+C:\>ping 172.20.12.8
+
+Pinging 172.20.12.8 with 32 bytes of data:
+
+Reply from 172.20.12.8: bytes=32 time<1ms TTL=128
+Reply from 172.20.12.8: bytes=32 time<1ms TTL=128
+Reply from 172.20.12.8: bytes=32 time<1ms TTL=128
+Reply from 172.20.12.8: bytes=32 time<1ms TTL=128
+
+Ping statistics for 172.20.12.8:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms
+```
+
+VLAN 13 (Computer_science) has only one PC connected, PC6
 
 ### 2.3 Practical Questions
 
 #### 1. What is the cost of the shortest path to Router A since PC9? 
 
-__TODO__
+| Device out | Interface out | Device in | Interface in | Cost |
+| ---------- | ------------- | --------- | ------------ | ---- |
+| PC9        | Fa0           | sw2_piso2 | Fa0/11       | 19 |
+| sw2_piso2  | Fa0/1         | sw2_piso1 | Fa0/1        | 19 |
+| sw2_piso1  | Gig0/1        | SW_DC     | Gig1/0/2     | 4 |
+| SW_DC      | Gig1/0/5      | RouterA   | Fa0/1        | 19 |
+
+The cost of the shortest path to Router A since PC9 is `19 + 19 + 4 + 19 = 61`
 
 #### 2. Explain what actions were required to accommodate the topology requirements.
 
-__TODO__
+To accommodate this topology requirements we need to configure, the VLANs, trunk and access interfaces on the switches, and configure VLAN IP addresses on SW_DC (VLAN gateways)
 
-#### 3. Did you achieve inter vlan connectivity in this phase? Explain the observed behaviour.
+#### 3. Did you achieve inter vlan connectivity in this phase? Explain the observed behavior.
 
 No. Because switches cannot change VLAN tags, we cannot communicate between PCs that are connected in distinct VLANs. To achieve that we need to configure a Router with Router-on-a-Stick.
 
 ---
+
+<div style="page-break-after: always"></div>
+
 ## 3. Enterprise A — Router-on-a-Stick (RoS) & L3 Rules (no ACLs)
 
 ### 3.1 Implementation
-
-__TODO__
 
 #### 3.1.1 Creation and configuration of sub interfaces to implement the L3 (Rules without ACLs)
 
@@ -748,46 +1981,41 @@ __Rule 2__: Computer_science Access
 - Computer_science (VLAN 13) can access Secretariat (VLAN 12) because both have routes through the router
 - For "outside Company A" access, we will need to configure routing toward the ISP in a later phases
 
-__Rule 3__: Network Management
-- Since we assumed that VLAN 13 serves as both IT and Net-Management, we ensured that all network equipment management interfaces was reachable from PC6 (in VLAN 13)
-
-sw2_piso1(config-if-range)#switchport trunk allowed vlan remove 12
-
 __Configuration of default Gateways on PCs__
 - PC7 & PC9 (Accounting): Default gateway = 172.20.11.254
 - PC5 & PC8 (Secretariat): Default gateway = 172.20.12.254
 - PC6 (Computer_science): Default gateway = 172.20.13.126
 
 ```txt
-# VLAN 11 Accounting
-RouterA(config)#interface FastEthernet0/1.11
-RouterA(config-subif)#description VLAN 11
-RouterA(config-subif)#encapsulation dot1Q 11
+# VLAN 11 Accounting -----------------------------------------
+RouterA(config)# interface FastEthernet0/1.11
+RouterA(config-subif)# description VLAN 11
+RouterA(config-subif)# encapsulation dot1Q 11
 RouterA(config-subif)# ip address 172.20.11.254 255.255.255.0
-RouterA(config-subif)#shutdown
-RouterA(config-subif)#exit
+RouterA(config-subif)# no shutdown
+RouterA(config-subif)# exit
 
-# VLAN 12 Secretariat
-RouterA(config)#interface FastEthernet0/1.12
-RouterA(config-subif)#description VLAN 12
-RouterA(config-subif)#encapsulation dot1Q 12
+# VLAN 12 Secretariat -----------------------------------------
+RouterA(config)# interface FastEthernet0/1.12
+RouterA(config-subif)# description VLAN 12
+RouterA(config-subif)# encapsulation dot1Q 12
 RouterA(config-subif)# ip address 172.20.12.254 255.255.255.0
-RouterA(config-subif)#shutdown
-RouterA(config-if)#exit
+RouterA(config-subif)# shutdown
+RouterA(config-if)# exit
 
-# VLAN 13 Computer_science
-RouterA(config)#interface FastEthernet0/1.13
-RouterA(config-subif)#description VLAN 13
-RouterA(config-subif)#encapsulation dot1Q 13
+# VLAN 13 Computer_science -------------------------------------
+RouterA(config)# interface FastEthernet0/1.13
+RouterA(config-subif)# description VLAN 13
+RouterA(config-subif)# encapsulation dot1Q 13
 RouterA(config-subif)# ip address 172.20.13.126 255.255.255.128
-RouterA(config-subif)#shutdown
-RouterA(config-subif)#exit
+RouterA(config-subif)# no shutdown
+RouterA(config-subif)# exit
 ```
 
 #### 3.1.2 Trunk link between Router A and SW_DC
 
 To configure a trunk link between Router A and SW_DC, we made the next configuration on Router A
-__TODO__: not done in Packet Tracer
+
 ```txt
 RouterA(config)# interface fa0/1
 RouterA(config-if)# description Trunk_to_SW_DC
@@ -799,35 +2027,34 @@ RouterA(config-if)# no ip address
 
 ```txt
 # VLAN 11 Accounting
-RouterA(config)#interface FastEthernet0/1.11
-RouterA(config-subif)#description VLAN 11
-RouterA(config-subif)#encapsulation dot1Q 11
+RouterA(config)# interface FastEthernet0/1.11
+RouterA(config-subif)# description VLAN 11
+RouterA(config-subif)# encapsulation dot1Q 11
 RouterA(config-subif)# ip address 172.20.11.254 255.255.255.0
-RouterA(config-subif)#shutdown
-RouterA(config-subif)#exit
+RouterA(config-subif)# no shutdown
+RouterA(config-subif)# exit
 
 # VLAN 12 Secretariat
-RouterA(config)#interface FastEthernet0/1.12
-RouterA(config-subif)#description VLAN 12
-RouterA(config-subif)#encapsulation dot1Q 12
+RouterA(config)# interface FastEthernet0/1.12
+RouterA(config-subif)# description VLAN 12
+RouterA(config-subif)# encapsulation dot1Q 12
 RouterA(config-subif)# ip address 172.20.12.254 255.255.255.0
-RouterA(config-subif)#shutdown
-RouterA(config-if)#exit
+RouterA(config-subif)# shutdown
+RouterA(config-if)# exit
 
 # VLAN 13 Computer_science
-RouterA(config)#interface FastEthernet0/1.13
-RouterA(config-subif)#description VLAN 13
-RouterA(config-subif)#encapsulation dot1Q 13
+RouterA(config)# interface FastEthernet0/1.13
+RouterA(config-subif)# description VLAN 13
+RouterA(config-subif)# encapsulation dot1Q 13
 RouterA(config-subif)# ip address 172.20.13.126 255.255.255.128
-RouterA(config-subif)#shutdown
-RouterA(config-subif)#exit
+RouterA(config-subif)# no shutdown
+RouterA(config-subif)# exit
 ```
 
 #### 3.1.4 Name routers/switches 
 
 To name router/switches we used the `hostname` command:
 
-__TODO__: not implemented in Packet Tracer
 ```txt
 Router(config)# hostname RouterN
 RouterN(config)#
@@ -900,7 +2127,41 @@ RouterA# ping 172.20.13.6
 
 #### 1. Explain the advantages and disadvantages of the Router-on-a-stick functionality
 
-__TODO__
+##### Advantages of Router-on-a-Stick
+
+1.  **Cost-Effectiveness:**
+    *   This is the primary advantage. It conserves physical router interfaces. High-speed router interfaces can be very expensive. By using a single interface to handle routing for many VLANs, you save significant hardware costs.
+
+2.  **Simplified Cabling:**
+    *   Only a single physical cable is required between the router and the switch. This reduces cable clutter and simplifies the physical network layout.
+
+3.  **Scalability for VLANs:**
+    *   It's very easy to add a new VLAN. You simply create a new subinterface on the router and configure the switch accordingly. There's no need to install a new physical module or card.
+
+4.  **Efficient Use of Hardware:**
+    *   It allows you to leverage the routing capability of a router you already own without requiring a more advanced (and expensive) layer 3 switch.
+
+5.  **Clear Separation of Duties:**
+    *   It enforces a clear network design: the switch handles layer 2 VLAN segmentation and trunking, while the router handles layer 3 inter-VLAN routing.
+
+##### Disadvantages of Router-on-a-Stick
+
+1.  **Single Point of Failure:**
+    *   The single physical link and the single router interface become critical points of failure. If either fails, *all* inter-VLAN communication is severed.
+
+2.  **Performance and Latency Bottleneck:**
+    *   This is the most significant disadvantage. **All inter-VLAN traffic must pass through this single interface.**
+    *   The throughput is limited by the speed of that one interface (e.g., 1 Gbps). If VLANs are communicating heavily, this link can become saturated, causing network congestion and high latency.
+    *   The router's CPU has to process every single packet moving between VLANs, which can be taxing on older or less powerful routers.
+
+3.  **Limited by Router Processing Power:**
+    *   Unlike a Layer 3 switch, which uses specialized hardware (ASICs) for high-speed switching, a router uses its general-purpose CPU for routing. This process is much slower, adding more latency.
+
+4.  **Increased Complexity in Configuration:**
+    *   While the cabling is simple, the configuration is more complex than on a Layer 3 switch. You must configure subinterfaces, 802.1Q tagging, and ensure the switch trunk is set up correctly. A misconfiguration on one subinterface can affect multiple VLANs.
+
+5.  **Potential for Congestion:**
+    *   Traffic has to make **two trips** across the same link for a single communication flow (in to the router, then back out to the destination VLAN). This "hairpinning" effect is inherently less efficient.
 
 #### 2. Explain how you enforced the three communication rules __without ACLs__
 
@@ -912,6 +2173,8 @@ __TODO__
 
 ---
 
+<div style="page-break-after: always"></div>
+
 ## 4. Enterprise B — Segmentation & ISP L2 Interconnection
 
 ### 4.1 Implementation
@@ -919,6 +2182,7 @@ __TODO__
 #### 4.1.1 Company B VLANs and IP Assignments
 
 Remove previous configuration
+
 ```txt
 SwEmpresaB(config)#no vlan 20
 SwEmpresaB(config)#no vlan 40
@@ -947,31 +2211,28 @@ SwEmpresaB(config-vlan)#interface fa0/1
 SwEmpresaB(config-if)#switchport mode trunk
 SwEmpresaB(config-if)#switchport trunk allowed vlan add 2,3
 SwEmpresaB(config-if)#switchport nonegotiate
+```
 
+Configure access ports to end-devices
 
+```txt
 SwEmpresaB(config)#int fa0/10
-SwEmpresaB(config-if)#swit
 SwEmpresaB(config-if)#switchport mode access
-SwEmpresaB(config-if)#swit
-SwEmpresaB(config-if)#switchport acc
-SwEmpresaB(config-if)#switchport access vl
 SwEmpresaB(config-if)#switchport access vlan 2
-SwEmpresaB(config-if)#switchport none
 SwEmpresaB(config-if)#switchport nonegotiate 
-SwEmpresaB(config-if)#do wr mem
-Building configuration...
-[OK]
+
 SwEmpresaB(config-if)#int fa0/11
 SwEmpresaB(config-if)#switchport mode access
 SwEmpresaB(config-if)#switchport access vlan 3
-SwEmpresaB(config-if)#switchport nonegotiate 
+SwEmpresaB(config-if)#switchport nonegotiate
+
 SwEmpresaB(config-if)#int fa0/12
 SwEmpresaB(config-if)#switchport mode access
 SwEmpresaB(config-if)#switchport access vlan 3
 SwEmpresaB(config-if)#switchport nonegotiate 
 ```
 
-No router
+At router, we made a configuration router-in-a-stick and assign IP addresses to sub interfaces
 
 ```txt
 # Remove previous configurations ----------------------------
@@ -988,26 +2249,123 @@ RouterB(config-subif)#int fa0/1.3
 RouterB(config-subif)#description VLAN 3 Engineering
 RouterB(config-subif)#encapsulation dot1Q 3
 RouterB(config-subif)#ip address 192.168.2.30 255.255.255.224
-
 ```
 
-__TODO__
+__TODO__: Maybe convert to rapid-PVST and convert access ports to `port fast` and enable the `bpdu guard`
+
 
 #### 4.1.2 Implementation of the ISP topology for interconnection with customers
+
+In all the router we turned of RIP with the command:
+
+```txt
+Router(config)#no router rip
+```
+
+Router 1 - to Company A
+
+```txt
+interface FastEthernet1/0
+ ip address 10.20.1.1 255.255.255.252
+ duplex auto
+ speed auto
+```
+
+Router 3 - to Company B
+
+```txt
+interface FastEthernet1/0
+ ip address 10.20.1.5 255.255.255.252
+ duplex auto
+ speed auto
+```
 
 __TODO__
 
 #### 4.1.3 Building of VLAN paths in the switch fabric
 
-__TODO__
+The switch fabric was already configured, using PVST, with VLAN 90 (Company A) and VLAN 95 (Company B) with layer 2 redundancy for trunk ports and access ports, as shown in the tables bellow:
+
+##### Swacesso-A 
+
+| Interface | Mode   | VLAN   | connected to |
+| --------- | ------ | ------ | ------------ |
+| Fa0/1     | trunk  | 90, 95 | swdistribution-1 |
+| Fa0/2     | access | 90     | RouterA |
+| Fa0/24    | trunk  | 90, 95 | swacesso-B |
+
+__TODO__: tabela nº X - Interfaces configuration for Swacesso-A
+
+##### Swacesso-B 
+
+| Interface | Mode   | VLAN   | connected to |
+| --------- | ------ | ------ | ------------ |
+| Fa0/1     | trunk  | 90, 95 | swdistribution-2 |
+| Fa0/2     | access | 95     | RouterB |
+| Fa0/24    | trunk  | 90, 95 | swacesso-A |
+
+__TODO__: tabela nº X - Interfaces configuration for Swacesso-B
+
+##### Sdistribution-1 
+
+| Interface | Mode   | VLAN   | connected to |
+| --------- | ------ | ------ | ------------ |
+| Fa0/1     | access | 90     | Router1 |
+| Fa0/2     | trunk  | 90, 95 | swacesso-A |
+| Fa0/24    | trunk  | 90, 95 | swdistribution-2 |
+
+__TODO__: tabela nº X - Interfaces configuration for Sdistribution-1
+
+##### Sdistribution-2 
+
+| Interface | Mode   | VLAN   | Connected to |
+| --------- | ------ | ------ | ------------ |
+| Fa0/1     | access | 95     | Router3 |
+| Fa0/2     | trunk  | 90, 95 | swacesso-B |
+| Fa0/24    | trunk  | 90, 95 | swdistribution-1 |
+
+__TODO__: tabela nº X - Interfaces configuration for Sdistribution-2
+
+__TODO__: Rapid-PVST? Access ports to port fast, VLAN 99
 
 #### 4.1.4 Assignment of IP address to Router 1, Router 3, Router A, and Router B
 
-__TODO__
+Interfaces already correctly configured in the `.pkt` file:
+
+| Router  | Interface | IP address   | Connected to |
+| ------- | --------- | ------------ | ------------ |
+| Router1 | Fa1/0     | 10.20.1.1/30 | Swdistribution-1 |
+| Router3 | Fa1/0     | 10.20.2.5/30 | Swdistribution-2 |
+| RouterA | Fa0/0     | 10.20.1.2/30 | Swacesso-A |
+| RouterB | Fa0/0     | 10.20.1.6/30 | Swacesso-B |
+
+__TODO__: tabela nº X - Interfaces configuration for Routers 1, 2, A and B
 
 ### 4.2 Test and Validation
 
-__TODO__
+#### 4.2.1 End-to-end L3 connectivity: R1 <-> RA and R2 <-> RB
+
+##### Connectivity: R1 <-> RA
+
+```txt
+Router1>ping 10.20.1.2
+
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.20.1.2, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/2/12 ms
+```
+
+##### Connectivity: R2 <-> RB
+
+```txt
+Router3>ping 10.20.1.6
+
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.20.1.6, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/0 ms
+```
 
 ### 4.3 Practical Questions
 
@@ -1024,6 +2382,8 @@ __TODO__
 __TODO__
 
 ---
+
+<div style="page-break-after: always"></div>
 
 ## 5. Static Routing → OSPF Core & “Internet” Loopback → Public Addressing Test
 
@@ -1086,6 +2446,8 @@ __TODO__
 __TODO__
 
 ---
+
+<div style="page-break-after: always"></div>
 
 ## Conclusion
 
