@@ -2076,27 +2076,7 @@ There is only a blocked (alternate) port between `Swacesso-A` and `Swacesso-B` t
 
 ##### 5.1.1.1 Default static routes on company routers toward the ISP; identify next-hop and purpose.
 
-__TODO__: not done on Packet Tracer
-
-Of course. This is a critical step to establish outbound connectivity from your companies to the internet (or other networks via the ISP).
-
-## Default Static Routes: Purpose and Next-Hop Identification
-
-### **Purpose of Default Static Routes**
-
-A **default static route** (0.0.0.0/0) is often called the "gateway of last resort." Its purpose is:
-
-1.  **Catch-All for Unknown Destinations:** It tells the router: "If you don't have a specific route for a destination network in your routing table, send the packet to this next-hop address."
-2.  **Internet Access:** It's the primary way for internal company networks to reach any external network on the internet.
-3.  **Simplified Configuration:** Instead of defining routes for every possible external network, you use one single default route.
-
----
-
-## Configuration for Your Topology
-
-Based on your setup, here are the specific configurations:
-
-### **Company A (RouterA) - Toward ISP Router1**
+**Company A (RouterA) - Toward ISP Router1**
 
 **Next-Hop Identification:**
 - **RouterA's Interface:** `FastEthernet0/0`
@@ -2104,18 +2084,11 @@ Based on your setup, here are the specific configurations:
 - **Next-Hop IP:** `10.20.1.1` (Router1's interface facing RouterA)
 
 **Configuration:**
-```bash
+```txt
 RouterA(config)# ip route 0.0.0.0 0.0.0.0 10.20.1.1
 ```
-**Verification:**
-```bash
-RouterA# show ip route
-# You should see:
-# S*    0.0.0.0/0 [1/0] via 10.20.1.1
-# And this line: "Gateway of last resort is 10.20.1.1 to network 0.0.0.0"
-```
 
-### **Company B (RouterB) - Toward ISP Router3**
+**Company B (RouterB) - Toward ISP Router3**
 
 **Next-Hop Identification:**
 - **RouterB's Interface:** `FastEthernet0/0`
@@ -2123,164 +2096,109 @@ RouterA# show ip route
 - **Next-Hop IP:** `10.20.1.5` (Router3's interface facing RouterB)
 
 **Configuration:**
-```bash
+```txt
 RouterB(config)# ip route 0.0.0.0 0.0.0.0 10.20.1.5
 ```
-**Verification:**
-```bash
-RouterB# show ip route
-# You should see:
-# S*    0.0.0.0/0 [1/0] via 10.20.1.5
-# And this line: "Gateway of last resort is 10.20.1.5 to network 0.0.0.0"
-```
-
----
-
-## What This Achieves - Traffic Flow Examples
-
-### **Example 1: PC6 (Computer_science) browsing google.com**
-1.  PC6 (`172.20.13.x`) sends packet to `8.8.8.8` (Google DNS)
-2.  RouterA receives it on subinterface Fa0/1.13
-3.  RouterA checks routing table: no specific route for `8.8.8.8`
-4.  RouterA uses **default route**, forwards packet to `10.20.1.1` (Router1)
-5.  Router1 then routes it through the ISP fabric to the internet
-
-### **Example 2: Server in Company B accessing external service**
-1.  Server (`192.168.1.x`) in VLAN 2 sends packet to external IP
-2.  RouterB receives it on subinterface Fa0/1.2
-3.  RouterB checks routing table: no specific route for destination
-4.  RouterB uses **default route**, forwards packet to `10.20.1.5` (Router3)
-5.  Router3 routes it through the ISP fabric
-
----
-
-## Important Considerations and Next Steps
-
-### **1. Asymmetric Routing Notice**
-Currently, you have **static routes on the ISP routers pointing back to your company networks**. The default routes you're adding now complete the two-way communication:
-
-- **ISP → Company:** Specific static routes (already configured)
-- **Company → ISP/Internet:** Default static route (configuring now)
-
-### **2. Security Consideration**
-With a default route, **all unknown traffic from your company networks will be sent to the ISP**. Ensure you have:
-- Firewall policies on the company routers
-- Proper NAT configuration for outbound traffic
-
-### **3. Verification Testing**
-
-After configuring the default routes, test from internal devices:
-
-```bash
-# From PC6 (Computer_science) in Company A
-PC6> ping 8.8.8.8
-# This should now work if the ISP routers have full internet connectivity
-
-# From a server in Company B VLAN 2
-Server> ping 8.8.4.4  # Should reach Router4's loopback via the ISP fabric
-```
-
-### **4. Alternative: Using Exit Interface**
-
-Instead of next-hop IP, you could use the exit interface (though next-hop IP is generally preferred):
-
-```bash
-RouterA(config)# ip route 0.0.0.0 0.0.0.0 FastEthernet0/0
-```
-
-**Difference:** This method uses Proxy ARP and is less efficient than specifying the next-hop IP address.
-
-## Summary
-
-By adding these default static routes, you're essentially telling each company router:
-**"If you don't know where to send a packet, send it to your respective ISP gateway."**
-
-This completes the outbound path and, combined with the existing inbound static routes on the ISP routers, establishes full bidirectional connectivity between your company networks and the ISP fabric.
 
 ##### 5.1.1.2 Static routing on R1–R4, add required static routes to reach company blocks.
 
 __TODO__: not done in packet tracer
 
-## Network Topology Analysis
+Complete Static Routing Configuration in the ISP Routers
 
-From the configs, I can see:
+**Router1 Configuration:**
 
-**Router1 (R1):**
-- Fa0/0: `10.0.0.1/26` (connected to Router2/Router4)
-- Fa1/0: `10.20.1.1/30` (connected to Company A)
-- Static routes to Company A networks via `10.20.1.2`
+```txt
+Router1(config)#int fa0/0
+Router1(config-if)#ip address 10.12.10.1 255.255.255.252
+Router1(config-if)#int fa0/1
+Router1(config-if)#ip address 10.14.10.1 255.255.255.252
+Router1(config-if)#
 
-**Router2 (R2):**
-- Fa0/0: `10.0.0.2/26` (connected to Router1)
-- Loopback0: `8.8.8.8/32`
 
-**Router3 (R3):**
-- Fa0/0: `10.0.0.3/26` (connected to Router4)
-- Fa1/0: `10.20.1.5/30` (connected to Company B)
-- Static routes to Company B networks via `10.20.1.6`
 
-**Router4 (R4):**
-- Fa0/0: `10.0.0.2/26` (connected to Router3) - **NOTE: IP conflict with R2!**
-- Loopback0: `8.8.8.8/32` - **NOTE: IP conflict with R2!**
-
-## Critical Issues to Fix First
-
-**Problem 1:** Router2 and Router4 have **IP address conflicts**!
-- Both have Fa0/0: `10.0.0.2/26`
-- Both have Loopback0: `8.8.8.8/32`
-
-**Fix these conflicts first:**
-
-```bash
-# On Router4 - Change conflicting IPs
-Router4(config)# interface FastEthernet0/0
-Router4(config-if)# ip address 10.0.0.4 255.255.255.192
-
-Router4(config)# interface Loopback0  
-Router4(config-if)# ip address 8.8.4.4 255.255.255.255
 ```
 
-## Complete Static Routing Configuration
+__TODO__ comment routes
+```txt
+Router1# conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+Router1(config)#ip route 10.0.0.0 255.255.255.192 10.0.0.2
+Router1(config)#ip route 10.0.0.64 255.255.255.192 10.0.0.2
+Router1(config)#ip route 8.8.8.8 255.255.255.255 10.0.0.2
+Router1(config)#ip route 172.32.1.0 255.255.255.224 10.0.0.2
+Router1(config)#ip route 172.32.2.0 255.255.255.224 10.0.0.2
 
-Now, let's establish full connectivity with static routes:
+Router1# sh ip route
+.............................................
+Gateway of last resort is not set
 
-### **Router1 Configuration:**
-```bash
-Router1(config)# ip route 10.0.0.0 255.255.255.192 10.0.0.2    # Route to R2 via direct link
-Router1(config)# ip route 10.0.0.64 255.255.255.192 10.0.0.2   # Route to R3/R4 network via R2
-Router1(config)# ip route 8.8.8.8 255.255.255.255 10.0.0.2     # Route to R2's loopback
-Router1(config)# ip route 8.8.4.4 255.255.255.255 10.0.0.2     # Route to R4's loopback via R2
-Router1(config)# ip route 172.32.1.0 255.255.255.224 10.0.0.2  # Route to Company B via R2->R3
-Router1(config)# ip route 172.32.2.0 255.255.255.224 10.0.0.2  # Route to Company B via R2->R3
+     8.0.0.0/32 is subnetted, 1 subnets
+S       8.8.8.8 [1/0] via 10.0.0.2
+     10.0.0.0/8 is variably subnetted, 3 subnets, 2 masks
+C       10.0.0.0/26 is directly connected, FastEthernet0/0
+S       10.0.0.64/26 [1/0] via 10.0.0.2
+C       10.20.1.0/30 is directly connected, FastEthernet1/0
+     172.32.0.0/27 is subnetted, 2 subnets
+S       172.32.1.0 [1/0] via 10.0.0.2
+S       172.32.2.0 [1/0] via 10.0.0.2
+S    192.168.64.0/24 [1/0] via 10.20.1.2
+S    192.168.65.0/24 [1/0] via 10.20.1.2
 ```
 
-### **Router2 Configuration:**
-```bash
+**Router2 Configuration:**
+```txt 
 Router2(config)# ip route 0.0.0.0 0.0.0.0 10.0.0.1             # Default route to R1
 Router2(config)# ip route 10.0.0.64 255.255.255.192 10.0.0.3   # Route to R3/R4 network
-Router2(config)# ip route 8.8.4.4 255.255.255.255 10.0.0.3     # Route to R4's loopback
 Router2(config)# ip route 192.168.64.0 255.255.255.0 10.0.0.1  # Route to Company A via R1
 Router2(config)# ip route 192.168.65.0 255.255.255.0 10.0.0.1  # Route to Company A via R1
 Router2(config)# ip route 172.32.1.0 255.255.255.224 10.0.0.3  # Route to Company B via R3
 Router2(config)# ip route 172.32.2.0 255.255.255.224 10.0.0.3  # Route to Company B via R3
+
+Router2(config)#do sh ip route
+
+..........................................
+
+Gateway of last resort is 10.0.0.1 to network 0.0.0.0
+
+     8.0.0.0/32 is subnetted, 1 subnets
+C       8.8.8.8 is directly connected, Loopback0
+     10.0.0.0/26 is subnetted, 2 subnets
+C       10.0.0.0 is directly connected, FastEthernet0/0
+S       10.0.0.64 [1/0] via 10.0.0.3
+     172.32.0.0/27 is subnetted, 2 subnets
+S       172.32.1.0 [1/0] via 10.0.0.3
+S       172.32.2.0 [1/0] via 10.0.0.3
+S    192.168.64.0/24 [1/0] via 10.0.0.1
+S    192.168.65.0/24 [1/0] via 10.0.0.1
+S*   0.0.0.0/0 [1/0] via 10.0.0.1
 ```
 
 ### **Router3 Configuration:**
 ```bash
 Router3(config)# ip route 10.0.0.0 255.255.255.192 10.0.0.4    # Route to R1/R2 network via R4
 Router3(config)# ip route 8.8.8.8 255.255.255.255 10.0.0.4     # Route to R2's loopback via R4
-Router3(config)# ip route 8.8.4.4 255.255.255.255 10.0.0.4     # Route to R4's loopback (direct)
 Router3(config)# ip route 192.168.64.0 255.255.255.0 10.0.0.4  # Route to Company A via R4->R2->R1
 Router3(config)# ip route 192.168.65.0 255.255.255.0 10.0.0.4  # Route to Company A via R4->R2->R1
+
+Router3(config)#do sh ip route
+................
+Gateway of last resort is not set
+
+     10.0.0.0/30 is subnetted, 1 subnets
+C       10.20.1.4 is directly connected, FastEthernet1/0
+     172.32.0.0/27 is subnetted, 2 subnets
+S       172.32.1.0 [1/0] via 10.20.1.6
+S       172.32.2.0 [1/0] via 10.20.1.6
 ```
 
-### **Router4 Configuration:**
-```bash
+**Router4 Configuration:**
+
+```txt
 Router4(config)# ip route 0.0.0.0 0.0.0.0 10.0.0.3             # Default route to R3
-Router4(config)# ip route 10.0.0.0 255.255.255.192 10.0.0.2    # Route to R1/R2 network
-Router4(config)# ip route 8.8.8.8 255.255.255.255 10.0.0.2     # Route to R2's loopback
-Router4(config)# ip route 192.168.64.0 255.255.255.0 10.0.0.2  # Route to Company A via R2->R1
-Router4(config)# ip route 192.168.65.0 255.255.255.0 10.0.0.2  # Route to Company A via R2->R1
+Router4(config)# ip route 8.8.8.8 255.255.255.255 10.0.0.1     # Route to R2's loopback
+Router4(config)# ip route 192.168.64.0 255.255.255.0 10.0.0.1  # Route to Company A via R2->R1
+Router4(config)# ip route 192.168.65.0 255.255.255.0 10.0.0.1  # Route to Company A via R2->R1
 Router4(config)# ip route 172.32.1.0 255.255.255.224 10.0.0.3  # Route to Company B via R3
 Router4(config)# ip route 172.32.2.0 255.255.255.224 10.0.0.3  # Route to Company B via R3
 ```
