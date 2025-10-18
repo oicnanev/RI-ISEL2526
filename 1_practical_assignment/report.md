@@ -2102,156 +2102,174 @@ RouterB(config)# ip route 0.0.0.0 0.0.0.0 10.20.1.5
 
 ##### 5.1.1.2 Static routing on R1–R4, add required static routes to reach company blocks.
 
-__TODO__: not done in packet tracer
 
-Complete Static Routing Configuration in the ISP Routers
-
-**Router1 Configuration:**
+###### Router1 Configuration:
 
 ```txt
-Router1(config)#int fa0/0
-Router1(config-if)#ip address 10.12.10.1 255.255.255.252
-Router1(config-if)#int fa0/1
-Router1(config-if)#ip address 10.14.10.1 255.255.255.252
-Router1(config-if)#
+# IP Assignments -------------------------------------------
+Router1(config)# int fa0/0
+Router1(config-if)# ip address 10.12.10.1 255.255.255.252
+Router1(config-if)# int fa0/1
+Router1(config-if)# ip address 10.14.10.1 255.255.255.252
 
-
-
+# Static Routes ---------------------------------------------------------------------
+Router1(config) ip route 0.0.0.0 0.0.0.0 10.12.10.2           # Gateway last resort
+Router1(config) ip route 172.20.11.0 255.255.255.0 10.20.1.2  # Company A (VLAN 11)
+Router1(config) ip route 172.20.12.0 255.255.254.0 10.20.1.2  # Company A (VLAN 12, 13)
+Router1(config) ip route 192.168.1.0 255.255.255.224 10.14.10.2 # Company B (VLAN 2)
+Router1(config) ip route 192.168.2.0 255.255.255.224 10.14.10.2 # Company B (VLAN 3)
 ```
 
-__TODO__ comment routes
-```txt
-Router1# conf t
-Enter configuration commands, one per line.  End with CNTL/Z.
-Router1(config)#ip route 10.0.0.0 255.255.255.192 10.0.0.2
-Router1(config)#ip route 10.0.0.64 255.255.255.192 10.0.0.2
-Router1(config)#ip route 8.8.8.8 255.255.255.255 10.0.0.2
-Router1(config)#ip route 172.32.1.0 255.255.255.224 10.0.0.2
-Router1(config)#ip route 172.32.2.0 255.255.255.224 10.0.0.2
+###### Router2 Configuration:
 
-Router1# sh ip route
-.............................................
-Gateway of last resort is not set
-
-     8.0.0.0/32 is subnetted, 1 subnets
-S       8.8.8.8 [1/0] via 10.0.0.2
-     10.0.0.0/8 is variably subnetted, 3 subnets, 2 masks
-C       10.0.0.0/26 is directly connected, FastEthernet0/0
-S       10.0.0.64/26 [1/0] via 10.0.0.2
-C       10.20.1.0/30 is directly connected, FastEthernet1/0
-     172.32.0.0/27 is subnetted, 2 subnets
-S       172.32.1.0 [1/0] via 10.0.0.2
-S       172.32.2.0 [1/0] via 10.0.0.2
-S    192.168.64.0/24 [1/0] via 10.20.1.2
-S    192.168.65.0/24 [1/0] via 10.20.1.2
-```
-
-**Router2 Configuration:**
 ```txt 
-Router2(config)# ip route 0.0.0.0 0.0.0.0 10.0.0.1             # Default route to R1
-Router2(config)# ip route 10.0.0.64 255.255.255.192 10.0.0.3   # Route to R3/R4 network
-Router2(config)# ip route 192.168.64.0 255.255.255.0 10.0.0.1  # Route to Company A via R1
-Router2(config)# ip route 192.168.65.0 255.255.255.0 10.0.0.1  # Route to Company A via R1
-Router2(config)# ip route 172.32.1.0 255.255.255.224 10.0.0.3  # Route to Company B via R3
-Router2(config)# ip route 172.32.2.0 255.255.255.224 10.0.0.3  # Route to Company B via R3
+# IP Assignments -------------------------------------------
+Router2(config)# int fa0/0
+Router2(config-if)# ip address 10.12.10.2 255.255.255.252
+Router2(config-if)# int fa0/1
+Router2(config-if)# ip address 10.23.10.1 255.255.255.252
 
-Router2(config)#do sh ip route
+# Static Routes --------------------------------------------
+Router2(config)# ip route 0.0.0.0 0.0.0.0 Loopback0             # Gateway last resort
+Router2(config)# ip route 10.20.1.0 255.255.255.252 10.12.10.1  # To Router 1
+Router2(config)# ip route 10.20.1.4 255.255.255.252 10.23.10.2  # To Router 3
+Router2(config)# ip route 172.20.11.0 255.255.255.0 10.12.10.1  # To Company A (VLAN 11)
+Router2(config)# ip route 172.20.12.0 255.255.254.0 10.12.10.1  # To Company A (VLAN 12, 13)
+Router2(config)# ip route 192.168.1.0 255.255.255.224 10.23.10.2 # To Company B (VLAN 2)
+Router2(config)# ip route 192.168.2.0 255.255.255.224 10.23.10.2 # To Company B (VLAN 3) 
+```
 
-..........................................
+###### Router3 Configuration:
 
-Gateway of last resort is 10.0.0.1 to network 0.0.0.0
+```txt
+# IP Assignments -------------------------------------------
+Router3(config)# int fa0/0
+Router3(config-if)# ip address 10.34.10.1 255.255.255.252
+Router3(config-if)# int fa0/1
+Router3(config-if)# ip address 10.23.10.2 255.255.255.252
+
+# Static Routes --------------------------------------------
+Router3(config)# ip route 0.0.0.0 0.0.0.0 10.23.10.1             # Gateway last resort
+Router3(config)# ip route 10.20.1.0 255.255.255.252 10.14.10.1   # To Router 1
+Router3(config)# ip route 172.20.11.0 255.255.255.0 10.34.10.2   # To Company A (VLAN 11)
+Router3(config)# ip route 172.20.12.0 255.255.254.0 10.34.10.2   # To Company A (VLAN 12, 13)
+Router3(config)# ip route 192.168.1.0 255.255.255.224 10.20.1.6   # To Company B (VLAN 2)
+Router3(config)# ip route 192.168.2.0 255.255.255.224 10.20.1.6   # To Company B (VLAN 3)  
+```
+
+###### Router4 Configuration:
+
+```txt
+# IP Assignments -------------------------------------------
+Router4(config)# int fa0/0
+Router4(config-if)# ip address 10.14.10.2 255.255.255.252
+Router4(config-if)# int fa0/1
+Router4(config-if)# ip address 10.34.10.2 255.255.255.252
+
+Router4(config)# ip route 0.0.0.0 0.0.0.0 10.14.10.1             # Gateway last resort
+Router4(config)# ip route 10.20.1.0 255.255.255.252 10.14.10.1   # To Router 1
+Router4(config)# ip route 10.20.1.4 255.255.255.252 10.34.10.1   # To Router 3
+Router4(config)# ip route 172.20.11.0 255.255.255.0 10.14.10.1   # To Company A (VLAN 11)
+Router4(config)# ip route 172.20.12.0 255.255.254.0 10.14.10.1   # To Company A (VLAN 12, 13)
+Router4(config)# ip route 192.168.1.0 255.255.255.224 10.34.10.1 # To Company B (VLAN 2)
+Router4(config)# ip route 192.168.2.0 255.255.255.224 10.34.10.1 # To Company B (VLAN 3)
+```
+
+###### Routing tables:
+```txt
+Router1 -------------------------------------------------------------------
+Gateway of last resort is 10.12.10.2 to network 0.0.0.0
+
+     10.0.0.0/30 is subnetted, 3 subnets
+C       10.12.10.0 is directly connected, FastEthernet0/0
+C       10.14.10.0 is directly connected, FastEthernet0/1
+C       10.20.1.0 is directly connected, FastEthernet1/0
+     172.20.0.0/16 is variably subnetted, 2 subnets, 2 masks
+S       172.20.11.0/24 [1/0] via 10.20.1.2
+S       172.20.12.0/23 [1/0] via 10.20.1.2
+     192.168.1.0/27 is subnetted, 1 subnets
+S       192.168.1.0 [1/0] via 10.14.10.2
+     192.168.2.0/27 is subnetted, 1 subnets
+S       192.168.2.0 [1/0] via 10.14.10.2
+S*   0.0.0.0/0 [1/0] via 10.12.10.2
+
+Router2 --------------------------------------------------------------------
+Gateway of last resort is 0.0.0.0 to network 0.0.0.0
 
      8.0.0.0/32 is subnetted, 1 subnets
 C       8.8.8.8 is directly connected, Loopback0
-     10.0.0.0/26 is subnetted, 2 subnets
-C       10.0.0.0 is directly connected, FastEthernet0/0
-S       10.0.0.64 [1/0] via 10.0.0.3
-     172.32.0.0/27 is subnetted, 2 subnets
-S       172.32.1.0 [1/0] via 10.0.0.3
-S       172.32.2.0 [1/0] via 10.0.0.3
-S    192.168.64.0/24 [1/0] via 10.0.0.1
-S    192.168.65.0/24 [1/0] via 10.0.0.1
-S*   0.0.0.0/0 [1/0] via 10.0.0.1
-```
+     10.0.0.0/30 is subnetted, 4 subnets
+C       10.12.10.0 is directly connected, FastEthernet0/0
+S       10.20.1.0 [1/0] via 10.12.10.1
+S       10.20.1.4 [1/0] via 10.23.10.2
+C       10.23.10.0 is directly connected, FastEthernet0/1
+     172.20.0.0/16 is variably subnetted, 2 subnets, 2 masks
+S       172.20.11.0/24 [1/0] via 10.12.10.1
+S       172.20.12.0/23 [1/0] via 10.12.10.1
+     192.168.1.0/27 is subnetted, 1 subnets
+S       192.168.1.0 [1/0] via 10.23.10.2
+     192.168.2.0/27 is subnetted, 1 subnets
+S       192.168.2.0 [1/0] via 10.23.10.2
+S*   0.0.0.0/0 is directly connected, Loopback0
 
-### **Router3 Configuration:**
-```bash
-Router3(config)# ip route 10.0.0.0 255.255.255.192 10.0.0.4    # Route to R1/R2 network via R4
-Router3(config)# ip route 8.8.8.8 255.255.255.255 10.0.0.4     # Route to R2's loopback via R4
-Router3(config)# ip route 192.168.64.0 255.255.255.0 10.0.0.4  # Route to Company A via R4->R2->R1
-Router3(config)# ip route 192.168.65.0 255.255.255.0 10.0.0.4  # Route to Company A via R4->R2->R1
+Router3 ---------------------------------------------------------------------
+Gateway of last resort is 10.23.10.1 to network 0.0.0.0
 
-Router3(config)#do sh ip route
-................
-Gateway of last resort is not set
-
-     10.0.0.0/30 is subnetted, 1 subnets
+     10.0.0.0/30 is subnetted, 3 subnets
 C       10.20.1.4 is directly connected, FastEthernet1/0
-     172.32.0.0/27 is subnetted, 2 subnets
-S       172.32.1.0 [1/0] via 10.20.1.6
-S       172.32.2.0 [1/0] via 10.20.1.6
+C       10.23.10.0 is directly connected, FastEthernet0/1
+C       10.34.10.0 is directly connected, FastEthernet0/0
+     172.20.0.0/16 is variably subnetted, 2 subnets, 2 masks
+S       172.20.11.0/24 [1/0] via 10.34.10.2
+S       172.20.12.0/23 [1/0] via 10.34.10.2
+     192.168.1.0/27 is subnetted, 1 subnets
+S       192.168.1.0 [1/0] via 10.20.1.6
+     192.168.2.0/27 is subnetted, 1 subnets
+S       192.168.2.0 [1/0] via 10.20.1.6
+S*   0.0.0.0/0 [1/0] via 10.23.10.1
+ 
+Router4 ---------------------------------------------------------------------
+Gateway of last resort is 10.14.10.1 to network 0.0.0.0
+
+     8.0.0.0/32 is subnetted, 1 subnets
+C       8.8.8.8 is directly connected, Loopback0
+     10.0.0.0/30 is subnetted, 4 subnets
+C       10.14.10.0 is directly connected, FastEthernet0/0
+S       10.20.1.0 [1/0] via 10.14.10.1
+S       10.20.1.4 [1/0] via 10.34.10.1
+C       10.34.10.0 is directly connected, FastEthernet0/1
+     172.20.0.0/16 is variably subnetted, 2 subnets, 2 masks
+S       172.20.11.0/24 [1/0] via 10.14.10.1
+S       172.20.12.0/23 [1/0] via 10.14.10.1
+     192.168.1.0/27 is subnetted, 1 subnets
+S       192.168.1.0 [1/0] via 10.34.10.1
+     192.168.2.0/27 is subnetted, 1 subnets
+S       192.168.2.0 [1/0] via 10.34.10.1
+S*   0.0.0.0/0 [1/0] via 10.14.10.1
 ```
-
-**Router4 Configuration:**
-
-```txt
-Router4(config)# ip route 0.0.0.0 0.0.0.0 10.0.0.3             # Default route to R3
-Router4(config)# ip route 8.8.8.8 255.255.255.255 10.0.0.1     # Route to R2's loopback
-Router4(config)# ip route 192.168.64.0 255.255.255.0 10.0.0.1  # Route to Company A via R2->R1
-Router4(config)# ip route 192.168.65.0 255.255.255.0 10.0.0.1  # Route to Company A via R2->R1
-Router4(config)# ip route 172.32.1.0 255.255.255.224 10.0.0.3  # Route to Company B via R3
-Router4(config)# ip route 172.32.2.0 255.255.255.224 10.0.0.3  # Route to Company B via R3
-```
-
-## Verification Commands
-
-After applying these routes, verify connectivity:
-
-### Check routing tables:
-```bash
-Router1# show ip route
-Router2# show ip route
-Router3# show ip route  
-Router4# show ip route
-```
-
-### Test end-to-end connectivity:
-```bash
-# From Router2, test connectivity to Company A and B
-Router2# ping 192.168.64.1    # Should succeed (Company A)
-Router2# ping 172.32.1.1      # Should succeed (Company B)
-
-# From Router4, test connectivity to Company A and B
-Router4# ping 192.168.64.1    # Should succeed (Company A via R2->R1)
-Router4# ping 172.32.1.1      # Should succeed (Company B via R3)
-
-# Test loopback connectivity
-Router1# ping 8.8.8.8         # R2's loopback
-Router1# ping 8.8.4.4         # R4's loopback
-Router3# ping 8.8.8.8         # R2's loopback
-```
-
-## Alternative: Simplified Default Routing
-
-If you prefer a simpler approach, you could use default routes:
-
-```bash
-# On Router2 and Router4 - point default to core
-Router2(config)# ip route 0.0.0.0 0.0.0.0 10.0.0.1
-Router4(config)# ip route 0.0.0.0 0.0.0.0 10.0.0.3
-
-# On Router1 and Router3 - specific routes for internal networks
-Router1(config)# ip route 10.0.0.64 255.255.255.192 10.0.0.2
-Router1(config)# ip route 8.8.4.4 255.255.255.255 10.0.0.2
-Router3(config)# ip route 10.0.0.0 255.255.255.192 10.0.0.4  
-Router3(config)# ip route 8.8.8.8 255.255.255.255 10.0.0.4
-```
-
-The detailed static routes I provided first will give you more control and better troubleshooting capabilities. Start with fixing the IP conflicts, then apply the routing configuration.
 
 ##### 5.1.1.3 Verification of which pings succeed before OSPF and why.
 
-__TODO__
+```txt
+# From Router2, connectivity test to Company A and B -----------------------
+Router2# ping 192.168.2.2   # Company B - PC2
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/0 ms
+
+Router2# ping 172.20.13.6    # Company A - PC6
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/0 ms
+
+# From Router4, connectivity test to Company A and B -----------------------
+Router4# ping 192.168.2.1    # Company B - PC1
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/5/15 ms
+Router4# ping 172.20.12.8    # Company A - PC8
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/8/34 ms
+
+# Test loopback connectivity. -----------------------------------------------
+Router1# ping 8.8.8.8         # R2's loopback
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/8/34 ms
+Router3# ping 8.8.8.8         # R2's loopback
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/8/34 ms
+```
 
 #### 5.1.2 OSPF (ISP core)
 
@@ -2272,7 +2290,7 @@ Excellent! Migrating from static routes to OSPF will provide dynamic routing wit
 ## Step 1: OSPF Configuration on All Routers
 
 ### **Router1 Configuration:**
-```bash
+```txt
 Router1(config)# router ospf 1
 Router1(config-router)# router-id 1.1.1.1
 Router1(config-router)# network 10.0.0.0 0.0.0.63 area 0    # Fa0/0 network
@@ -2283,7 +2301,7 @@ Router1(config-router)# exit
 ```
 
 ### **Router2 Configuration:**
-```bash
+```txt
 Router2(config)# router ospf 1
 Router2(config-router)# router-id 2.2.2.2
 Router2(config-router)# network 10.0.0.0 0.0.0.63 area 0    # Fa0/0 network
@@ -2294,7 +2312,7 @@ Router2(config-router)# exit
 ```
 
 ### **Router3 Configuration:**
-```bash
+```txt
 Router3(config)# router ospf 1
 Router3(config-router)# router-id 3.3.3.3
 Router3(config-router)# network 10.0.0.64 0.0.0.63 area 0   # Fa0/0 network
@@ -2305,7 +2323,7 @@ Router3(config-router)# exit
 ```
 
 ### **Router4 Configuration:**
-```bash
+```txt
 Router4(config)# router ospf 1
 Router4(config-router)# router-id 4.4.4.4
 Router4(config-router)# network 10.0.0.64 0.0.0.63 area 0   # Fa0/0 network
@@ -3156,427 +3174,22 @@ __TODO__
 
 #### 1. Can corporate PCs ping the ISP router before OSPF? Justify.
 
-__TODO__: REVIEW
-
-**No, corporate PCs cannot ping the ISP router interfaces before OSPF is configured and stable.** Here's the technical justification:
-
-## The Connectivity Breakdown
-
-### **Initial State (Before OSPF):**
-- **Corporate PCs** have default gateways pointing to their company routers (RouterA/RouterB)
-- **Company routers** have default routes pointing to ISP routers (Router1/Router3)
-- **ISP routers** have NO routes back to the corporate networks
-
-### **The Routing Gap:**
-
-**From PC6 (Company A) to Router1 (198.51.100.1):**
-```
-PC6 (198.51.100.50) 
-→ RouterA (198.51.100.49) ✓ [Direct VLAN]
-→ RouterA checks routing table: has default route to 198.51.100.9 ✓
-→ Router1 receives packet at 198.51.100.9 ✓
-→ Router1 needs to send reply to 198.51.100.50 ✗
-```
-
-**The Problem:** Router1 has **no route back** to 198.51.100.48/28 (Company A VLAN 13)!
-
-## Technical Proof
-
-### **Router1's Routing Table (Before OSPF):**
-```bash
-Router1# show ip route
-# Connected routes only:
-# C    198.51.100.0/30 is directly connected, FastEthernet0/0
-# C    198.51.100.8/30 is directly connected, FastEthernet1/0  
-# C    192.0.2.1/32 is directly connected, Loopback0
-# S    198.51.100.16/28 via 198.51.100.10  # Static route to Company A VLAN 11
-# S    198.51.100.32/28 via 198.51.100.10  # Static route to Company A VLAN 12
-# S    198.51.100.48/28 via 198.51.100.10  # Static route to Company A VLAN 13
-```
-
-**Wait!** I see the issue - you DO have static routes configured. Let me re-analyze:
-
-## Re-evaluation with Static Routes Present
-
-If you have the static routes I configured earlier, then **the ping SHOULD work** because:
-
-### **Forward Path (PC6 → Router1):**
-```
-PC6 (198.51.100.50) 
-→ RouterA (GW: 198.51.100.49) 
-→ RouterA routes via default route to 198.51.100.9 (Router1)
-→ Router1 receives packet
-```
-
-### **Return Path (Router1 → PC6):**
-```
-Router1 receives packet at 198.51.100.9
-→ Router1 checks routing table: has static route for 198.51.100.48/28 via 198.51.100.10
-→ Router1 sends reply to 198.51.100.10 (RouterA)
-→ RouterA delivers to PC6 (198.51.100.50)
-```
-
-## The REAL Answer Depends on Configuration State
-
-### **Scenario 1: If Static Routes ARE Configured**
-**✅ PCs CAN ping ISP routers** because:
-- Forward path: Corporate default routes point to ISP
-- Return path: ISP static routes point back to corporations
-- **No OSPF required** for basic reachability
-
-### **Scenario 2: If Static Routes Are NOT Configured**  
-**❌ PCs CANNOT ping ISP routers** because:
-- Forward path works (corporate default routes)
-- Return path fails (ISP has no routes to corporate networks)
-- **Asymmetric routing** - packets go out but never return
-
-## Evidence from Your Configuration
-
-Looking at your initial configs:
-
-**Router1 had:**
-```bash
-ip route 192.168.64.0 255.255.255.0 10.20.1.2 
-ip route 192.168.65.0 255.255.255.0 10.20.1.2
-```
-
-**Router3 had:**
-```bash
-ip route 172.32.1.0 255.255.255.224 10.20.1.6 
-ip route 172.32.2.0 255.255.255.224 10.20.1.6
-```
-
-**After public IP migration, equivalent static routes exist.**
-
-## Practical Test to Prove This
-
-```bash
-# Test 1: From PC6 to Router1 (WITH static routes)
-PC6> ping 198.51.100.1
-# Result: SUCCESS (if static routes exist)
-
-# Test 2: Remove static routes temporarily
-Router1(config)# no ip route 198.51.100.48 255.255.255.240 198.51.100.10
-
-# Test again from PC6
-PC6> ping 198.51.100.1  
-# Result: FAILURE (request timeout, no route back)
-
-# Restore static routes
-Router1(config)# ip route 198.51.100.48 255.255.255.240 198.51.100.10
-```
-
-## OSPF's Role in This Context
-
-**OSPF solves the scalability problem, not the basic connectivity problem:**
-
-- **With static routes:** Manual configuration for every network
-- **With OSPF:** Automatic route advertisement between ISP routers
-- **OSPF provides:** Dynamic failover, load balancing, and easier scaling
-
-## Conclusion
-
-**Corporate PCs CAN ping ISP router interfaces BEFORE OSPF IF (and only if) the ISP routers have static routes configured back to the corporate networks.**
-
-The key insight is that **basic connectivity depends on bidirectional routing**, which can be achieved with either:
-1. **Static routes** (manual, simple networks)
-2. **Dynamic routing** like OSPF (automatic, complex networks)
-
-OSSPF makes the network more resilient and scalable, but it's not strictly necessary for basic ping connectivity when proper static routes exist in both directions.
+Yes, with exception of PC7 and PC9 from Company A, because the sub-interface for VLAN 11 in the Company Router is shutdown. All other PCs can ping ISP routers because in the Company Routers there is a default route pointing to them and then in the ISP routers there are routes pointing back to to the Companys
 
 #### 2. What is the __next-hop__ of your default routes and why?
 
-__TODO__: REVIEW
-
-The **next-hop** in my default routes is strategically chosen based on the network topology and routing principles. Here's the breakdown:
-
-## Default Route Next-Hop Analysis
-
-### **Company A (RouterA):**
-```bash
-RouterA(config)# ip route 0.0.0.0 0.0.0.0 198.51.100.9
-```
-**Next-Hop:** `198.51.100.9` (Router1's Fa1/0 interface)
-
-**Why this next-hop?**
-- **Direct Connection:** RouterA's Fa0/0 (`198.51.100.10`) is directly connected to Router1's Fa1/0 (`198.51.100.9`)
-- **ISP Gateway:** Router1 is Company A's designated ISP gateway router
-- **Shortest Path:** Most efficient path to the internet and other networks
-
-### **Company B (RouterB):**
-```bash
-RouterB(config)# ip route 0.0.0.0 0.0.0.0 203.0.113.1
-```
-**Next-Hop:** `203.0.113.1` (Router3's Fa1/0 interface)
-
-**Why this next-hop?**
-- **Direct Connection:** RouterB's Fa0/0 (`203.0.113.2`) is directly connected to Router3's Fa1/0 (`203.0.113.1`)
-- **ISP Gateway:** Router3 is Company B's designated ISP gateway router
-- **Geographic/Logical Assignment:** Each company has its own ISP connection point
-
-## Technical Justification for Next-Hop Selection
-
-### **1. Layer 3 vs Layer 2 Next-Hop**
-```bash
-# Why we use IP next-hop (198.51.100.9) instead of exit interface:
-RouterA(config)# ip route 0.0.0.0 0.0.0.0 198.51.100.9    # ✓ CORRECT
-# vs
-RouterA(config)# ip route 0.0.0.0 0.0.0.0 FastEthernet0/0 # ✗ LESS EFFICIENT
-```
-
-**Advantages of IP Next-Hop:**
-- **No Proxy ARP:** Avoids unnecessary ARP broadcasts
-- **Better Routing:** Router performs actual routing decision
-- **Clearer Intent:** Explicitly states where packets should go
-
-### **2. Why Not Use Other Routers as Next-Hop?**
-
-**Why RouterA doesn't use Router2 (`198.51.100.2`) as next-hop:**
-- ❌ **No Direct Route:** RouterA has no direct connection to Router2
-- ❌ **Requires Additional Routing:** Would need Router1 to route between subnets
-- ❌ **Inefficient:** Extra hop through Router1 unnecessarily
-
-**Current Path (Efficient):**
-```
-RouterA → Router1 → Router2 → Internet
-```
-
-**Inefficient Alternative:**
-```
-RouterA → Router1 → Router2 → Internet
-         (but configured to go via Router2 directly - impossible)
-```
-
-### **3. Next-Hop Reachability Verification**
-
-```bash
-# RouterA can directly ping its next-hop
-RouterA# ping 198.51.100.9
-# Success rate should be 100% - proves layer 2 connectivity
-
-# Show the connected route that makes this possible
-RouterA# show ip route connected
-# C    198.51.100.8/30 is directly connected, FastEthernet0/0
-```
-
-### **4. What the Next-Hop Actually Represents**
-
-**For RouterA:**
-- **Physical Path:** Out Fa0/0 → Direct cable → Router1's Fa1/0
-- **Logical Path:** "Send all unknown traffic to my ISP gateway"
-- **Administrative:** Company A's contracted service through Router1
-
-**For RouterB:**
-- **Physical Path:** Out Fa0/0 → Direct cable → Router3's Fa1/0  
-- **Logical Path:** "Send all unknown traffic to my ISP gateway"
-- **Administrative:** Company B's contracted service through Router3
-
-## Traffic Flow Examples
-
-### **PC6 to Internet (8.8.8.8):**
-```
-PC6 (198.51.100.50) 
-→ "Where's 8.8.8.8? Send to my gateway" (RouterA VLAN 13: 198.51.100.49)
-→ RouterA: "No specific route for 8.8.8.8, use default route"
-→ RouterA: "Send to next-hop 198.51.100.9" (Router1)
-→ Router1: "I have OSPF routes, forward to Router2"
-→ Router2: "8.8.8.8 is my loopback - deliver locally"
-```
-
-### **Why This Next-Hop Design Works:**
-
-1. **Minimal Hops:** Each company uses its direct ISP connection
-2. **Load Distribution:** Traffic from Company A and B uses different ingress points
-3. **Failover Ready:** If Router1 fails, we could reconfigure RouterA to use a different path
-4. **Policy Enforcement:** Each company's traffic enters ISP at controlled points
-
-## Verification Commands
-
-```bash
-# Check default route on company routers
-RouterA# show ip route | include 0.0.0.0
-# S*    0.0.0.0/0 [1/0] via 198.51.100.9
-
-RouterB# show ip route | include 0.0.0.0  
-# S*    0.0.0.0/0 [1/0] via 203.0.113.1
-
-# Verify next-hop reachability
-RouterA# show ip arp 198.51.100.9
-# Should show MAC address of Router1's Fa1/0 interface
-
-# Test the path
-RouterA# traceroute 8.8.8.8
-# First hop should be 198.51.100.9 (Router1)
-```
-
-## Summary
-
-The **next-hop IP addresses** in the default routes represent:
-- **The immediate next router** in the path to external networks
-- **Directly connected interfaces** for efficient forwarding
-- **The designated ISP gateway** for each company
-- **The point where corporate control ends and ISP responsibility begins**
-
-This design ensures optimal traffic flow while maintaining clear administrative boundaries between the companies and their ISP.
+| Router  | next-hop   | Justification |
+| ------- | ---------- | ------------- |
+| RouterA | 10.20.1.1  | Router1 Fa1/0 - ISP closest router |
+| RouterB | 10.20.1.5  | Router3 Fa1/0 - ISP closest router |
+| Router1 | 10.12.10.2 | Router2 Fa0/0 - Connects to Loopback0 internally |
+| Router2 | directly connected | Loopback0 (Internet simulation)| 
+| Router3 | 10.23.10.1 | Router2 Fa0/1 - Connects to Loopback0 internally |
+| Router4 | 10.14.10.1 | Router1 F0/1 - Has internal route to default too. Could have been 10.34.10.1, the result will be the same |
 
 #### 3. Describe the purpose of static routes on R1–R4 and what changes once OSPF runs. 
 
-__TODO__: REVIEW
-
-## Purpose of Static Routes on R1-R4 (Before OSPF)
-
-### **The Fundamental Problem Static Routes Solve**
-
 Static routes on R1-R4 provide **manual path instruction** to create complete connectivity across the ISP fabric when dynamic routing is unavailable.
-
-### **Router1's Static Routes:**
-```bash
-ip route 192.168.64.0 255.255.255.0 10.20.1.2     # Company A VLAN
-ip route 192.168.65.0 255.255.255.0 10.20.1.2     # Company A VLAN
-```
-**Purpose:** "I (Router1) need to know how to reach Company A's internal networks. Send anything for these networks to RouterA (`10.20.1.2`)."
-
-### **Router3's Static Routes:**
-```bash
-ip route 172.32.1.0 255.255.255.224 10.20.1.6     # Company B VLAN  
-ip route 172.32.2.0 255.255.255.224 10.20.1.6     # Company B VLAN
-```
-**Purpose:** "I (Router3) need to know how to reach Company B's internal networks. Send anything for these networks to RouterB (`10.20.1.6`)."
-
-### **The Missing Piece - Internal ISP Routes**
-
-**Critical Insight:** Before OSPF, R1-R4 also needed static routes for **internal ISP connectivity**:
-
-```bash
-# What was missing but needed:
-Router1# ip route 10.0.0.64/26 10.0.0.2    # Route to R3/R4 network via R2
-Router2# ip route 10.0.0.64/26 10.0.0.3    # Route to R3/R4 network
-Router3# ip route 10.0.0.0/26 10.0.0.4     # Route to R1/R2 network via R4  
-Router4# ip route 10.0.0.0/26 10.0.0.2     # Route to R1/R2 network
-```
-
-## What Changes When OSPF Runs
-
-### **1. Automatic Route Discovery**
-**Before OSPF (Manual):**
-```bash
-# Admin must manually configure every path
-Router1(config)# ip route 10.0.0.64 255.255.255.192 10.0.0.2
-Router1(config)# ip route 8.8.8.8 255.255.255.255 10.0.0.2
-Router1(config)# ip route 8.8.4.4 255.255.255.255 10.0.0.2
-```
-
-**After OSPF (Automatic):**
-```bash
-# OSPF automatically learns and shares routes
-Router1(config)# router ospf 1
-Router1(config-router)# network 10.0.0.0 0.0.0.63 area 0
-# OSPF automatically advertises: "I can reach 10.0.0.0/26"
-```
-
-### **2. Dynamic Failover Capability**
-
-**Static Route Limitation:**
-```bash
-# Single path - if next-hop fails, route becomes useless
-Router1# ip route 10.0.0.64 255.255.255.192 10.0.0.2
-# If 10.0.0.2 becomes unreachable, this route is dead
-```
-
-**OSPF Advantage:**
-```bash
-# Multiple paths - automatic recalculation
-Router1# show ip route ospf
-# O 10.0.0.64/26 [110/20] via 10.0.0.2, FastEthernet0/0
-# If 10.0.0.2 fails, OSPF recalculates and finds alternate path
-```
-
-### **3. Route Withdrawal Process**
-
-Once OSPF is stable, we withdraw the **internal ISP static routes** but keep **customer-facing static routes**:
-
-**Routes REMOVED (internal ISP):**
-```bash
-Router1(config)# no ip route 10.0.0.64 255.255.255.192 10.0.0.2
-Router1(config)# no ip route 8.8.8.8 255.255.255.255 10.0.0.2
-Router2(config)# no ip route 10.0.0.64 255.255.255.192 10.0.0.3
-# etc...
-```
-
-**Routes RETAINED (customer networks):**
-```bash
-Router1(config)# ip route 192.168.64.0 255.255.255.0 10.20.1.2
-Router3(config)# ip route 172.32.1.0 255.255.255.224 10.20.1.6
-```
-
-### **4. Real-time Topology Awareness**
-
-**Static Routing View:**
-```
-Router1 knows: 
-- 192.168.64.0/24 via 10.20.1.2 ✓
-- 10.0.0.64/26 via 10.0.0.2 ✓
-- But has NO IDEA if 10.0.0.3 is reachable ✗
-```
-
-**OSPF Dynamic View:**
-```
-Router1 learns via OSPF:
-- 10.0.0.64/26 via 10.0.0.2 (Cost: 20) ✓
-- 8.8.8.8/32 via 10.0.0.2 (Cost: 11) ✓
-- 8.8.4.4/32 via 10.0.0.2 (Cost: 11) ✓
-- And can verify all neighbors are alive ✓
-```
-
-## Practical Demonstration
-
-### **Before OSPF - Manual Verification Required:**
-```bash
-# Admin must test each path manually
-Router1# ping 10.0.0.3
-# If fails, manually troubleshoot static route
-```
-
-### **After OSPF - Automatic Monitoring:**
-```bash
-# OSPF continuously verifies neighbors
-Router1# show ip ospf neighbor
-# Neighbor ID     Pri   State           Dead Time   Address
-# 2.2.2.2           1   FULL/DR         00:00:37    10.0.0.2
-
-# If neighbor drops, routes automatically withdrawn
-```
-
-## Why We Keep Some Static Routes
-
-### **Customer Routes Remain Static Because:**
-1. **Security:** Don't expose customer internal networks to OSPF domain
-2. **Stability:** Customer networks are relatively static
-3. **Policy:** Clear separation between ISP routing and customer routes
-4. **Control:** Explicit control over how to reach customer networks
-
-### **Default Routes on Company Routers Remain Static Because:**
-- Simple "send everything to ISP" policy
-- No need for dynamic routing from companies to ISP
-- Clear administrative boundary
-
-## Summary of the Transition
-
-**Static Routes Era:**
-- ✅ Manual control
-- ✅ Simple for small networks  
-- ❌ No automatic failover
-- ❌ Administrative overhead
-- ❌ Difficult to scale
-
-**OSPF Era:**
-- ✅ Automatic route discovery
-- ✅ Dynamic failover
-- ✅ Scalable
-- ✅ Real-time topology awareness
-- ✅ Reduced administrative overhead
-- ⚠️ More complex configuration
-- ⚠️ Requires careful design
 
 The transition from static to OSPF routing transforms the network from a **manually configured mesh** to an **intelligent, self-healing fabric** while maintaining appropriate boundaries between ISP internal routing and customer connectivity.
 
