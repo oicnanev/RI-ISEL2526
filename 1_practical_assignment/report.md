@@ -14,7 +14,7 @@
 - 49420 André Carrilho
 - 51454 Hugo Leal
 
----
+![VLAN/STP/OSPF MONO-AREA](./assets/01.png)
 
 <div style="page-break-after: always"></div>
 
@@ -74,13 +74,34 @@
     - 5.3 Practical Questions
 - Conclusion
 
----
-
 <div style="page-break-after: always"></div>
 
 ## Introduction
 
-In this project we explore Internet Networks topics like VLAN segmentation, L2 loop protection (STP/RSTP), inter-VLAN routing (router-on-a-stick), static routing, and single-area OSPF.
+This networking project successfully demonstrates the end-to-end implementation of enterprise-grade network infrastructure, progressing systematically from basic Layer 2 segmentation to advanced dynamic routing with public addressing. The project validates theoretical concepts through practical implementation across multiple network domains, establishing a robust, scalable, and secure infrastructure meeting all specified business requirements.
+
+It served as a comprehensive practical demonstration of networking fundamentals:
+
+##### **Protocol Mastery**
+
+- **STP/RSTP**: Loop prevention and path optimization in Layer 2 networks
+- **OSPF**: Dynamic routing, neighbor relationships, and path calculation
+- **VLAN Trunking**: 802.1Q encapsulation and trunk management
+- **Subnetting**: Efficient address space utilization and hierarchical design
+
+##### **Troubleshooting Proficiency**
+
+- Methodical fault isolation across OSI layers
+- Effective use of show and debug commands
+- Systematic validation of connectivity and policies
+- Documentation of failure scenarios and resolutions
+
+##### **Design Principles**
+
+- Hierarchical network design
+- Redundancy and high availability
+- Security through segmentation
+- Scalability and future-proofing
 
 To accomplish this we will configure and simulate a network between two enterprises (A and B) and an ISP (Internet Service Provider).
 
@@ -89,10 +110,6 @@ The Enterprise A will be constituted of 1 router, 5 switches, 5 PCs and 3 VLANs,
 The Enterprise B will be constituted of 1 router, 1 switch, 1 server, 1 pc and 2 VLANs, VLAN 2 (Servers) and VLAN 3 (Engineering).
 
 The ISP will be constituted by 4 routers and 4 switches, that connects to "Internet" using a Loopback
-
-![VLAN/STP/OSPF MONO-AREA](./assets/01.png)
-
-___
 
 <div style="page-break-after: always"></div>
 
@@ -134,7 +151,7 @@ Switch(config-vlan)# name Computer_science
 Then, interface configuration by switch:
 
 ```txt
-# Switch SW_DC ##########################################
+# Switch SW_DC --------------------------------------------------
 # Gig1/0/1 -> sw1_piso1 - trunk
 # Gig1/0/2 -> sw2_piso1 - trunk
 # Gig1/0/5 -> Router A  - trunk
@@ -145,7 +162,7 @@ SW_DC(config-if-range)# switchport trunk native vlan 99
 SW_DC(config-if-range)# switchport trunk allowed vlan 11-13
 SW_DC(config-if-range)# switchport nonegociate
 
-# Switch sw1_piso1 #######################################
+# Switch sw1_piso1 -----------------------------------------------
 # Fa0/2     -> sw2_piso1 - trunk
 # Fa0/10    -> PC5       - access
 # Fa0/23-24 -> sw1_piso2 - trunk
@@ -162,7 +179,7 @@ sw1_piso1(config-if)# switchport mode access
 sw1_piso1(config-if)# switchport access vlan 12
 sw1_piso1(config-if)# switchport nonegociate
 
-# Switch sw2_piso1 #######################################
+# Switch sw2_piso1 ---------------------------------------------
 # Fa0/1     -> sw2_piso2 - trunk
 # Fa0/2     -> sw1_piso1 - trunk
 # Fa0/10    -> PC6       - access
@@ -181,7 +198,7 @@ sw2_piso1(config-if)# switchport mode access
 sw2_piso1(config-if)# switchport access vlan 13
 sw2_piso1(config-if)# switchport nonegociate
 
-# Switch sw1_piso2 #######################################
+# Switch sw1_piso2 ---------------------------------------------
 # Fa0/2     -> sw2_piso1 - trunk
 # Fa0/10    -> PC7       - access
 # Fa0/18    -> sw2_piso2 - trunk
@@ -198,7 +215,7 @@ sw1_piso2(config-if)# switchport mode access
 sw1_piso2(config-if)# switchport access vlan 11
 sw1_piso2(config-if)# switchport nonegociate
 
-# Switch sw2_piso2 #######################################
+# Switch sw2_piso2 ---------------------------------------------
 # Fa0/1     -> sw2_piso1 - trunk
 # Fa0/2     -> sw1_piso2 - trunk
 # Fa0/10    -> PC8       - access
@@ -535,7 +552,6 @@ sw1_piso1(config-if)#spanning-tree cost 18
 
 After doing this, this port changed from `Blocked` to `Root`, and the port `sw1_piso1 - fa0/24` from `Root` to `Blocked`. This was achieved because from the point of view of the spanning tree protocol, the port with lower cost is the one that is chosen.
 
-
 ### 1.3 Practical Questions
 
 #### 1. What is the purpose of this command - "no ip domain-lookup"?
@@ -563,24 +579,10 @@ __Other Pre-Configured VLANs__
 
 Depending on the switch model and IOS version, we might also see one or both of the following VLANs pre-created. They are used for internal switch management and communication.
 
-- VLAN 1002
-- VLAN 1003
-- VLAN 1004
-- VLAN 1005
-
-These are **default VLANs for legacy Token Ring and FDDI networks**.
-*   **Purpose:** They exist for backward compatibility with very old network types (Token Ring and FDDI) that modern networks no longer use.
-*   **Key Characteristic:** We **cannot delete these VLANs** (1002-1005). They are permanently reserved by the system.
-
-| VLAN ID | Name | Purpose | Can it be deleted? |
-| :--- | :--- | :--- | :--- |
-| **1** | **default** | Default Native VLAN. Carries control protocols like CDP, DTP, VTP, and PAgP. | **No** (but we can shut it down) |
-| **1002** | fddi-default | Legacy FDDI network default. | **No** |
-| **1003** | token-ring-default | Legacy Token Ring network default. | **No** |
-| **1004** | fddinet-default | Legacy FDDI Net default. | **No** |
-| **1005** | trnet-default | Legacy Token Ring Net default. | **No** |
-
-table 13 - Default VLANs
+- VLAN 1002 (fddi-default - Legacy FDDI network default)
+- VLAN 1003 (token-ring-default - Legacy Token Ring network default)
+- VLAN 1004 (fddinet-default - Legacy FDDI Net default)
+- VLAN 1005 (trnet-default - Legacy Token Ring Net default)
 
 
 #### 3. What is the format of the tags introduced in Ethernet frames in trunk connections?
@@ -592,9 +594,6 @@ On an **access link** (a link connected to a normal device like a PC), frames ar
 __The 802.1Q Tag Format__
 
 The 802.1Q tag is a **4-byte (32-bit)** field that is inserted into the original Ethernet frame, right after the **Source MAC Address** field.
-
-Here is a visual representation and breakdown of the frame structure:
-
 
 __BEFORE 802.1Q TAGGING (Standard Ethernet Frame)__:
 
@@ -608,45 +607,11 @@ __AFTER 802.1Q TAGGING (VLAN Tagged Frame on a Trunk)__:
 | --------------- | ---------- | ---------- | -------- | ----------- | -- |
 | 6 bytes         | 6 bytes    | 4 bytes    | 2 bytes  | 46-1500 bytes | 4 bytes |
 
-__Breakdown of the 4-Byte 802.1Q Tag Field:__
-
-The 4-byte tag itself is composed of the following parts:
-
-1.  **TPID (Tag Protocol Identifier) - 2 Bytes**
-    *   **Value:** `0x8100` (in hexadecimal)
-    *   **Purpose:** This is a special, well-known value that identifies the frame as an 802.1Q-tagged frame. When a network device sees `0x8100` in the "EtherType" position, it knows to look for a VLAN tag in the next 2 bytes.
-
-2.  **TCI (Tag Control Information) - 2 Bytes**
-    This 16-bit field is further subdivided into three parts:
-    *   **Priority (PCP) - 3 Bits**
-        *   **Purpose:** **Class of Service (CoS)** or **Priority Code Point**. It's used for quality of service (QoS) to prioritize different types of traffic (e.g., voice, video, data). Values 0 (lowest) to 7 (highest).
-    *   **CFI (Canonical Format Indicator) - 1 Bit**
-        *   **Purpose:** Primarily used for compatibility between Ethernet and Token Ring networks. It is almost always set to `0` for Ethernet networks.
-    *   **VLAN ID (VID) - 12 Bits**
-        *   **Purpose:** This is the most important part. It identifies the **VLAN** the frame belongs to.
-        *   **Range:** Because it's 12 bits, the VLAN ID range is from `0` to `4095`.
-            *   **VLAN 0:** Reserved for 802.1P priority-tagged frames.
-            *   **VLAN 1:** The default VLAN.
-            *   **VLANs 2-1001:** Normal range for user VLANs.
-            *   **VLAN 1002-1005:** Legacy default VLANs (FDDI, Token Ring).
-            *   **VLAN 1006-4094:** Extended range VLANs (not all switches support these).
-            *   **VLAN 4095:** Reserved.
-
 #### 4. Why is it that on a LAN that uses VLANs, on an Access-type connection the frames do not include tags?
 
 The reason frames are **untagged on Access ports** is fundamentally about **compatibility with end-user devices**. Most end devices (like PCs, printers, IP phones, servers) are completely unaware of VLANs and expect to send and receive standard, untagged Ethernet frames.
 
 An Access port is like a "VLAN translator" that sits between the switched network and the end device.
-
-1. **Transmitting from the Switch to the End Device (Egress)**
-    *   **On the Trunk/Inside the Switch:** The frame is tagged with a VLAN ID (e.g., VLAN 10).
-    *   **At the Access Port:** Before the switch sends the frame out the Access port, it **strips off the 802.1Q tag**.
-    *   **Result:** The end device receives a perfectly normal, standard Ethernet frame that it can understand. It has no idea the frame ever belonged to a VLAN.
-
-2. **Receiving from the End Device to the Switch (Ingress)**
-    *   **From the End Device:** The PC or server sends a standard, **untagged** Ethernet frame.
-    *   **At the Access Port:** The switch receives this untagged frame. Because the port is configured as an Access port for a specific VLAN (e.g., `switchport access vlan 11`), the switch **internally adds a VLAN 11 tag** to the frame.
-    *   **Result:** Now that the frame is tagged, the switch can process it correctly—forward it to other ports in VLAN 11, or tag it again to send it over a trunk to another switch.
 
 __Objective of this design__
 
@@ -658,15 +623,6 @@ __Objective of this design__
 #### 5. What is the tag that the ports/interfaces belonging to VLAN 1 carry?
 
 Ports belonging to VLAN 1 do not carry a tag; they are untagged. This is because VLAN 1 is the default Native VLAN on Cisco switches.
-
-The behaviour of a port in VLAN 1 depends on whether the port is configured as an access port or a trunk port.
-
-| Port Mode | VLAN 1 Traffic | Explanation |
-| :--- | :--- | :--- |
-| Access Port | Untagged | An access port is assigned to a single VLAN and does not add VLAN tags to frames. |
-| Trunk Port | Untagged | A trunk port carries multiple VLANs. Frames in the Native VLAN are sent without a tag, which by default is VLAN 1. |
-
-table 13 - VLAN 1 Tag
 
 #### 6. When a machine receives an Ethernet frame, how does it differ if it includes the Type/Length field after the source address field or if it includes the fields associated with a VLAN?
 
@@ -729,7 +685,7 @@ __Side-by-Side Comparison__
 | **4. Find Payload Type** | (Already found in step 2) | Reads the *next* 2-byte field. This value (e.g., `0x0800`) is the **real payload Type.** |
 | **5. Final Action** | Processes payload. | Sends "Data" to the protocol stack indicated by the Type found in step 4. |
 
-table 14 - VLAN Tag comparison
+table 13 - VLAN Tag comparison
 
 #### 7. What are the possible consequences of passing the timers "Max Age"=20 sec and "Forward Delay"= 15 sec to half of these values?
 
@@ -744,7 +700,7 @@ The table below summarizes the potential outcomes:
 | **Max Age: 20s → 10s** | Faster detection of link failures. | **Unstable Links**: Ports may flap between blocking/forwarding on poor links. **Topology Instability**: Increased risk of transient loops if BPDUs are delayed. |
 | **Forward Delay: 15s → 7s** | Drastically reduced time for ports to become active (from 30-50s to 15-25s). | **Network Loops**: High risk of temporary Layer 2 loops and broadcast storms. **Frame Duplication**: Switches may forward data frames from old topology. |
 
-table 15 - Pros and Cons of reducing timers of STP
+table 14 - Pros and Cons of reducing timers of STP
 
 The default values (Max Age=20, Forward Delay=15) are calculated based on a **maximum network diameter of seven switches** and account for BPDU propagation delays. Halving them assumes your network is smaller and has lower latency.
 
@@ -753,8 +709,6 @@ The default values (Max Age=20, Forward Delay=15) are calculated based on a **ma
 #### 8. What is the Root Bridge (RB)? Justify.
 
 In a network using the Spanning Tree Protocol (STP), the **Root Bridge** acts as the logical center or _boss_ of the network. Its primary purpose is to serve as a common reference point that all other switches use to build a loop-free topology, allowing for redundant links without the risk of switching loops or broadcast storms.
-
-The Root Bridge is a switch elected by the STP algorithm to be the root of the spanning tree. All paths in the network are calculated relative to this switch. We can think of the STP topology as an inverted tree, where the Root Bridge is the root, and all other switches connect to it through branches.
 
 Its key roles include:
 *   **BPDU Originator**: The Root Bridge is the source for Bridge Protocol Data Units (BPDUs), the special frames that switches use to share STP information. These BPDUs are relayed throughout the network from the root bridge _down_ to all other switches.
@@ -788,8 +742,6 @@ table 16 - Cost calculations from PC9 to Router A
 
 The cost of the shortest path to Router A since PC9 is `19 + 19 + 4 + 19 = 61`
 
----
-
 <div style="page-break-after: always"></div>
 
 ## 2. Enterprise A - VLAN Segmentation and Addressing
@@ -822,7 +774,7 @@ Already configured, in the point 1.1.1 VLANs
 | PC8 | 12   | 172.20.12.8 | 172.20.12.254 |
 | PC9 | 11   | 172.20.11.9 | 172.20.11.254 |
 
-table 18 - PCs IP addresse assignments
+table 18 - PCs IP address assignments
 
 We decided, that the last octet of the assigned IP address corresponds to the PC number
 
@@ -1146,7 +1098,7 @@ RouterA(config-if)# no ip address
 #### 3.1.3 Sub interfaces with encapsulation dot1Q and IPs (parent interface no IP)
 
 ```txt
-# VLAN 11 Accounting
+# VLAN 11 Accounting --------------------------------------------
 RouterA(config)# interface FastEthernet0/1.11
 RouterA(config-subif)# description VLAN 11
 RouterA(config-subif)# encapsulation dot1Q 11
@@ -1154,7 +1106,7 @@ RouterA(config-subif)# ip address 172.20.11.254 255.255.255.0
 RouterA(config-subif)# no shutdown
 RouterA(config-subif)# exit
 
-# VLAN 12 Secretariat
+# VLAN 12 Secretariat --------------------------------------------
 RouterA(config)# interface FastEthernet0/1.12
 RouterA(config-subif)# description VLAN 12
 RouterA(config-subif)# encapsulation dot1Q 12
@@ -1162,7 +1114,7 @@ RouterA(config-subif)# ip address 172.20.12.254 255.255.255.0
 RouterA(config-subif)# shutdown
 RouterA(config-if)# exit
 
-# VLAN 13 Computer_science
+# VLAN 13 Computer_science ----------------------------------------
 RouterA(config)# interface FastEthernet0/1.13
 RouterA(config-subif)# description VLAN 13
 RouterA(config-subif)# encapsulation dot1Q 13
@@ -1566,170 +1518,7 @@ To make VLAN 13 (Computer Science) communicate with VLAN 11 (Accounting), the ot
 
 #### 3. Provide short command outputs proving each rule is satisfied/blocked as required
 
-##### Communications from and to VLAN 11 (Accounting)
-
-```txt
-# From PC7 - VLAN 11 -------------------------------------------------
-C:\>ipconfig
-
-FastEthernet0 Connection:(default port)
-
-   Connection-specific DNS Suffix..: 
-   Link-local IPv6 Address.........: FE80::201:43FF:FE2A:258E
-   IPv6 Address....................: ::
-   IPv4 Address....................: 172.20.11.7
-   Subnet Mask.....................: 255.255.255.0
-   Default Gateway.................: ::
-                                     172.20.11.254
-                                     
-# To PC9 - VLAN 11 ---------------------------------------------------
-C:\>ping 172.20.11.9
-
-Pinging 172.20.11.9 with 32 bytes of data:
-
-Reply from 172.20.11.9: bytes=32 time<1ms TTL=128
-Reply from 172.20.11.9: bytes=32 time<1ms TTL=128
-Reply from 172.20.11.9: bytes=32 time<1ms TTL=128
-Reply from 172.20.11.9: bytes=32 time<1ms TTL=128
-
-Ping statistics for 172.20.11.9:
-    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
-Approximate round trip times in milli-seconds:
-    Minimum = 0ms, Maximum = 0ms, Average = 0ms
-    
-# To PC5 - VLAN 12 ---------------------------------------------------
-C:\>ping 172.20.12.5
-
-Pinging 172.20.12.5 with 32 bytes of data:
-
-Request timed out.
-Request timed out.
-Request timed out.
-Request timed out.
-
-Ping statistics for 172.20.12.5:
-    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss)
-
-# To PC6 - VLAN 13 ---------------------------------------------------
-C:\>ping 172.20.13.6
-
-Pinging 172.20.13.6 with 32 bytes of data:
-
-Request timed out.
-Request timed out.
-Request timed out.
-Request timed out.
-
-Ping statistics for 172.20.13.6:
-    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss)
-```
-
-##### Communications from and to VLAN 12 (Secretariat)   
-
-```txt
-# From PC5 - VLAN 12 -------------------------------------------------
-C:\>ipconfig
-
-FastEthernet0 Connection:(default port)
-
-   Connection-specific DNS Suffix..: 
-   Link-local IPv6 Address.........: FE80::230:A3FF:FEB5:B871
-   IPv6 Address....................: ::
-   IPv4 Address....................: 172.20.12.5
-   Subnet Mask.....................: 255.255.255.0
-   Default Gateway.................: ::
-                                     172.20.12.254
-
-# To PC6 - VLAN 13 ---------------------------------------------------
-C:\>ping 172.20.13.6
-
-Pinging 172.20.13.6 with 32 bytes of data:
-
-Reply from 172.20.13.6: bytes=32 time=16ms TTL=127
-Reply from 172.20.13.6: bytes=32 time<1ms TTL=127
-Reply from 172.20.13.6: bytes=32 time<1ms TTL=127
-Reply from 172.20.13.6: bytes=32 time<1ms TTL=127
-
-Ping statistics for 172.20.13.6:
-    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
-Approximate round trip times in milli-seconds:
-    Minimum = 0ms, Maximum = 16ms, Average = 4ms
-    
-# To PC7 - VLAN 11 ---------------------------------------------------
-C:\>ping 172.20.11.7
-
-Pinging 172.20.11.7 with 32 bytes of data:
-
-Request timed out.
-Request timed out.
-Request timed out.
-Request timed out.
-
-Ping statistics for 172.20.11.7:
-    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss)
-
-# To PC8 - VLAN 12 ---------------------------------------------------
-C:\>ping 172.20.12.8
-
-Pinging 172.20.12.8 with 32 bytes of data:
-
-Reply from 172.20.12.8: bytes=32 time<1ms TTL=128
-Reply from 172.20.12.8: bytes=32 time=12ms TTL=128
-Reply from 172.20.12.8: bytes=32 time<1ms TTL=128
-Reply from 172.20.12.8: bytes=32 time<1ms TTL=128
-
-Ping statistics for 172.20.12.8:
-    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
-Approximate round trip times in milli-seconds:
-    Minimum = 0ms, Maximum = 12ms, Average = 3ms
-```
-
-##### Communications from and to VLAN 13 (Computer Science)
-
-```txt
-# From PC6 - VLAN 13 -----------------------------------------------
-C:\>ipconfig
-
-FastEthernet0 Connection:(default port)
-
-   Connection-specific DNS Suffix..: 
-   Link-local IPv6 Address.........: FE80::290:CFF:FEC9:2A2
-   IPv6 Address....................: ::
-   IPv4 Address....................: 172.20.13.6
-   Subnet Mask.....................: 255.255.255.128
-   Default Gateway.................: ::
-                                     172.20.13.127
-                                     
-# To PC8 - VLAN 12 -------------------------------------------------
-C:\>ping 172.20.12.8
-
-Pinging 172.20.12.8 with 32 bytes of data:
-
-Request timed out.
-Request timed out.
-Reply from 172.20.12.8: bytes=32 time=1ms TTL=127
-Reply from 172.20.12.8: bytes=32 time<1ms TTL=127
-
-Ping statistics for 172.20.12.8:
-    Packets: Sent = 4, Received = 2, Lost = 2 (50% loss),
-Approximate round trip times in milli-seconds:
-    Minimum = 0ms, Maximum = 1ms, Average = 0ms
-
-# To PC9 - VLAN 11 -------------------------------------------------
-C:\>ping 172.20.11.9
-
-Pinging 172.20.11.9 with 32 bytes of data:
-
-Request timed out.
-Request timed out.
-Request timed out.
-Request timed out.
-
-Ping statistics for 172.20.11.9:
-    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss),
-```
-
----
+View 3.2
 
 <div style="page-break-after: always"></div>
 
@@ -1809,9 +1598,6 @@ RouterB(config-subif)#encapsulation dot1Q 3
 RouterB(config-subif)#ip address 192.168.2.30 255.255.255.224
 ```
 
-__TODO__: Maybe convert to rapid-PVST and convert access ports to `port fast` and enable the `bpdu guard`
-
-
 #### 4.1.2 Implementation of the ISP topology for interconnection with customers
 
 In all the router we turned of RIP with the command:
@@ -1882,8 +1668,6 @@ table 22 -  Interfaces configuration for Sdistribution-1
 
 table 23 -  Interfaces configuration for Sdistribution-2
 
-__TODO__: Rapid-PVST? Access ports to port fast, VLAN 99
-
 #### 4.1.4 Assignment of IP address to Router 1, Router 3, Router A, and Router B
 
 Interfaces already correctly configured in the `.pkt` file:
@@ -1906,9 +1690,6 @@ table 24 -  Interfaces configuration for Routers 1, 2, A and B
 ```txt
 Router1>ping 10.20.1.2
 
-Type escape sequence to abort.
-Sending 5, 100-byte ICMP Echos to 10.20.1.2, timeout is 2 seconds:
-!!!!!
 Success rate is 100 percent (5/5), round-trip min/avg/max = 0/2/12 ms
 ```
 
@@ -1917,9 +1698,6 @@ Success rate is 100 percent (5/5), round-trip min/avg/max = 0/2/12 ms
 ```txt
 Router3>ping 10.20.1.6
 
-Type escape sequence to abort.
-Sending 5, 100-byte ICMP Echos to 10.20.1.6, timeout is 2 seconds:
-!!!!!
 Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/0 ms
 ```
 
@@ -1954,7 +1732,6 @@ VLAN0099                     0         0        1          0          1
 ```
 
 #### 2. State the advantage/goal of trunk pruning in the ISP fabric.
-
 
 **Enhanced Security**
 
@@ -2064,8 +1841,6 @@ The RB for VLAN 90 (Company A) is the `Swdistribution-1`, in the same way, the R
 
 There is only a blocked (alternate) port between `Swacesso-A` and `Swacesso-B` to prevent a loop, as it's the least optimal path to the root bridge for one of them.
 
----
-
 <div style="page-break-after: always"></div>
 
 ## 5. Static Routing → OSPF Core & “Internet” Loopback → Public Addressing Test
@@ -2101,7 +1876,6 @@ RouterB(config)# ip route 0.0.0.0 0.0.0.0 10.20.1.5
 ```
 
 ##### 5.1.1.2 Static routing on R1–R4, add required static routes to reach company blocks.
-
 
 ###### Router1 Configuration:
 
@@ -2275,453 +2049,265 @@ Success rate is 100 percent (5/5), round-trip min/avg/max = 0/8/34 ms
 
 ##### 5.1.2.1 Configuration of OSPF on R1–R4 (single area) per design
 
-__TODO__: Not done in Packet Tracer
+######  Router1 Configuration:
 
-Excellent! Migrating from static routes to OSPF will provide dynamic routing with automatic failover. Let's configure OSPF across all four routers and then withdraw the static routes.
-
-## OSPF Configuration Plan
-
-**OSPF Design:**
-- **Single Area:** Area 0 (Backbone)
-- **Process ID:** 1 (standard)
-- **Networks to Advertise:** All directly connected networks between routers
-- **Static Routes to Withdraw:** The internal routes between R1-R4
-
-## Step 1: OSPF Configuration on All Routers
-
-### **Router1 Configuration:**
 ```txt
 Router1(config)# router ospf 1
 Router1(config-router)# router-id 1.1.1.1
-Router1(config-router)# network 10.0.0.0 0.0.0.63 area 0    # Fa0/0 network
-Router1(config-router)# network 10.20.1.0 0.0.0.3 area 0    # Fa1/0 to Company A
+Router1(config-router)# network 10.12.10.0 0.0.0.3 area 0    # Link para R2
+Router1(config-router)# network 10.14.10.0 0.0.0.3 area 0    # Link para R4
+Router1(config-router)# network 10.20.1.0 0.0.0.3 area 0     # Company A
 Router1(config-router)# passive-interface default
-Router1(config-router)# no passive-interface FastEthernet0/0
-Router1(config-router)# exit
+Router1(config-router)# no passive-interface FastEthernet0/0  # Para R2
+Router1(config-router)# no passive-interface FastEthernet0/1  # Para R4
 ```
 
-### **Router2 Configuration:**
+###### Router2 Configuration:
+
 ```txt
 Router2(config)# router ospf 1
 Router2(config-router)# router-id 2.2.2.2
-Router2(config-router)# network 10.0.0.0 0.0.0.63 area 0    # Fa0/0 network
-Router2(config-router)# network 8.8.8.8 0.0.0.0 area 0       # Loopback0
+Router2(config-router)# network 10.12.10.0 0.0.0.3 area 0    # Link para R1
+Router2(config-router)# network 10.23.10.0 0.0.0.3 area 0    # Link para R3
+Router2(config-router)# network 8.8.8.8 0.0.0.0 area 0       # Loopback0 (Internet)
 Router2(config-router)# passive-interface default
-Router2(config-router)# no passive-interface FastEthernet0/0
-Router2(config-router)# exit
+Router2(config-router)# no passive-interface FastEthernet0/0  # Para R1
+Router2(config-router)# no passive-interface FastEthernet0/1  # Para R3
 ```
 
-### **Router3 Configuration:**
+###### Router3 Configuration:
+
 ```txt
 Router3(config)# router ospf 1
 Router3(config-router)# router-id 3.3.3.3
-Router3(config-router)# network 10.0.0.64 0.0.0.63 area 0   # Fa0/0 network
-Router3(config-router)# network 10.20.1.4 0.0.0.3 area 0    # Fa1/0 to Company B
+Router3(config-router)# network 10.23.10.0 0.0.0.3 area 0    # Link para R2
+Router3(config-router)# network 10.34.10.0 0.0.0.3 area 0    # Link para R4
+Router3(config-router)# network 10.20.1.4 0.0.0.3 area 0     # Company B
 Router3(config-router)# passive-interface default
-Router3(config-router)# no passive-interface FastEthernet0/0
-Router3(config-router)# exit
+Router3(config-router)# no passive-interface FastEthernet0/0  # Para R2
+Router3(config-router)# no passive-interface FastEthernet0/1  # Para R4
 ```
 
-### **Router4 Configuration:**
+###### Router4 Configuration:
+
 ```txt
 Router4(config)# router ospf 1
 Router4(config-router)# router-id 4.4.4.4
-Router4(config-router)# network 10.0.0.64 0.0.0.63 area 0   # Fa0/0 network
-Router4(config-router)# network 8.8.4.4 0.0.0.0 area 0       # Loopback0
+Router4(config-router)# network 10.14.10.0 0.0.0.3 area 0    # Link para R1
+Router4(config-router)# network 10.34.10.0 0.0.0.3 area 0    # Link para R3
+Router4(config-router)# network 8.8.8.8 0.0.0.0 area 0       # Loopback0 único
 Router4(config-router)# passive-interface default
-Router4(config-router)# no passive-interface FastEthernet0/0
-Router4(config-router)# exit
+Router4(config-router)# no passive-interface FastEthernet0/0  # Para R1
+Router4(config-router)# no passive-interface FastEthernet0/1  # Para R3
 ```
 
-## Step 2: Verify OSPF Neighbor Relationships
+###### OSPF Neighbor Relationships
 
-Check that OSPF neighbors are forming:
-
-```bash
-# On each router, verify OSPF neighbors
+```txt
+# Router1 -------------------------------------------------------------------
 Router1# show ip ospf neighbor
 
-# Expected output:
-# Neighbor ID     Pri   State           Dead Time   Address         Interface
-# 2.2.2.2           1   FULL/DR         00:00:37    10.0.0.2        FastEthernet0/0
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+2.2.2.2           1   FULL/BDR        00:00:36    10.12.10.2      FastEthernet0/0
+4.4.4.4           1   FULL/BDR        00:00:38    10.14.10.2     
 
+# Router2 -------------------------------------------------------------------
 Router2# show ip ospf neighbor
-# Should see Router1 as neighbor
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+1.1.1.1           1   FULL/BDR        00:00:32    10.12.10.1      FastEthernet0/0
+3.3.3.3           1   FULL/BDR        00:00:33    10.23.10.2      FastEthernet0/1
 
+# Router3 -------------------------------------------------------------------
 Router3# show ip ospf neighbor  
-# Should see Router4 as neighbor
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+4.4.4.4           1   FULL/DR         00:00:33    10.34.10.2      FastEthernet0/0
+2.2.2.2           1   FULL/DR         00:00:33    10.23.10.1      FastEthernet0/1
 
+# Router4 -------------------------------------------------------------------
 Router4# show ip ospf neighbor
-# Should see Router3 as neighbor
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+1.1.1.1           1   FULL/BDR        00:00:39    10.14.10.1      FastEthernet0/0
+3.3.3.3           1   FULL/BDR        00:00:31    10.34.10.1      FastEthernet0/1
 ```
 
-## Step 3: Verify OSPF Routes in Routing Table
+###### OSPF Routes in Routing Table
 
-Check that OSPF is learning routes:
+```txt
+Router1 ---------------------------------------------------------------------
+Gateway of last resort is 10.12.10.2 to network 0.0.0.0
 
-```bash
-# Check OSPF routes specifically
-Router1# show ip route ospf
+     8.0.0.0/32 is subnetted, 1 subnets
+O       8.8.8.8 [110/2] via 10.12.10.2, 00:12:19, FastEthernet0/0
+                [110/2] via 10.14.10.2, 00:12:19, FastEthernet0/1
+     10.0.0.0/30 is subnetted, 6 subnets
+C       10.12.10.0 is directly connected, FastEthernet0/0
+C       10.14.10.0 is directly connected, FastEthernet0/1
+C       10.20.1.0 is directly connected, FastEthernet1/0
+O       10.20.1.4 [110/3] via 10.12.10.2, 00:01:39, FastEthernet0/0
+                  [110/3] via 10.14.10.2, 00:01:39, FastEthernet0/1
+O       10.23.10.0 [110/2] via 10.12.10.2, 00:01:59, FastEthernet0/0
+O       10.34.10.0 [110/2] via 10.14.10.2, 00:01:39, FastEthernet0/1
+     172.20.0.0/16 is variably subnetted, 2 subnets, 2 masks
+S       172.20.11.0/24 [1/0] via 10.20.1.2
+S       172.20.12.0/23 [1/0] via 10.20.1.2
+     192.168.1.0/27 is subnetted, 1 subnets
+S       192.168.1.0 [1/0] via 10.14.10.2
+                    [1/0] via 10.34.10.2
+     192.168.2.0/27 is subnetted, 1 subnets
+S       192.168.2.0 [1/0] via 10.14.10.2
+                    [1/0] via 10.34.10.2
+S*   0.0.0.0/0 [1/0] via 10.12.10.2
 
-# Expected to see:
-# O     10.0.0.64/26 [110/xx] via 10.0.0.2, FastEthernet0/0
-# O     8.8.8.8/32 [110/xx] via 10.0.0.2, FastEthernet0/0  
-# O     8.8.4.4/32 [110/xx] via 10.0.0.2, FastEthernet0/0
+Router2 ---------------------------------------------------------------------
+Gateway of last resort is 0.0.0.0 to network 0.0.0.0
 
-Router2# show ip route ospf
-# Should see routes to Router3/Router4 networks
+     8.0.0.0/32 is subnetted, 1 subnets
+C       8.8.8.8 is directly connected, Loopback0
+     10.0.0.0/30 is subnetted, 6 subnets
+C       10.12.10.0 is directly connected, FastEthernet0/0
+O       10.14.10.0 [110/2] via 10.12.10.1, 00:17:43, FastEthernet0/0
+S       10.20.1.0 [1/0] via 10.12.10.1
+S       10.20.1.4 [1/0] via 10.23.10.2
+C       10.23.10.0 is directly connected, FastEthernet0/1
+O       10.34.10.0 [110/2] via 10.23.10.2, 00:07:08, FastEthernet0/1
+     172.20.0.0/16 is variably subnetted, 2 subnets, 2 masks
+S       172.20.11.0/24 [1/0] via 10.12.10.1
+S       172.20.12.0/23 [1/0] via 10.12.10.1
+     192.168.1.0/27 is subnetted, 1 subnets
+S       192.168.1.0 [1/0] via 10.23.10.2
+     192.168.2.0/27 is subnetted, 1 subnets
+S       192.168.2.0 [1/0] via 10.23.10.2
+S*   0.0.0.0/0 is directly connected, Loopback0
 
-Router3# show ip route ospf
-# Should see routes to Router1/Router2 networks
+Router3 ---------------------------------------------------------------------
+Gateway of last resort is 10.23.10.1 to network 0.0.0.0
 
-Router4# show ip route ospf
-# Should see routes to Router1/Router2 networks
+     8.0.0.0/32 is subnetted, 1 subnets
+O       8.8.8.8 [110/2] via 10.23.10.1, 00:07:39, FastEthernet0/1
+                [110/2] via 10.34.10.2, 00:07:39, FastEthernet0/0
+     10.0.0.0/30 is subnetted, 6 subnets
+O       10.12.10.0 [110/2] via 10.23.10.1, 00:07:59, FastEthernet0/1
+O       10.14.10.0 [110/2] via 10.34.10.2, 00:07:39, FastEthernet0/0
+S       10.20.1.0 [1/0] via 10.14.10.1
+C       10.20.1.4 is directly connected, FastEthernet1/0
+C       10.23.10.0 is directly connected, FastEthernet0/1
+C       10.34.10.0 is directly connected, FastEthernet0/0
+     172.20.0.0/16 is variably subnetted, 2 subnets, 2 masks
+S       172.20.11.0/24 [1/0] via 10.34.10.2
+S       172.20.12.0/23 [1/0] via 10.34.10.2
+     192.168.1.0/27 is subnetted, 1 subnets
+S       192.168.1.0 [1/0] via 10.20.1.6
+     192.168.2.0/27 is subnetted, 1 subnets
+S       192.168.2.0 [1/0] via 10.20.1.6
+S*   0.0.0.0/0 [1/0] via 10.23.10.1
+
+Router4 ---------------------------------------------------------------------
+Gateway of last resort is 10.14.10.1 to network 0.0.0.0
+
+     8.0.0.0/32 is subnetted, 1 subnets
+C       8.8.8.8 is directly connected, Loopback0
+     10.0.0.0/30 is subnetted, 6 subnets
+O       10.12.10.0 [110/2] via 10.14.10.1, 00:18:43, FastEthernet0/0
+C       10.14.10.0 is directly connected, FastEthernet0/0
+S       10.20.1.0 [1/0] via 10.14.10.1
+S       10.20.1.4 [1/0] via 10.34.10.1
+O       10.23.10.0 [110/2] via 10.34.10.1, 00:08:03, FastEthernet0/1
+C       10.34.10.0 is directly connected, FastEthernet0/1
+     172.20.0.0/16 is variably subnetted, 2 subnets, 2 masks
+S       172.20.11.0/24 [1/0] via 10.14.10.1
+S       172.20.12.0/23 [1/0] via 10.14.10.1
+     192.168.1.0/27 is subnetted, 1 subnets
+S       192.168.1.0 [1/0] via 10.34.10.1
+     192.168.2.0/27 is subnetted, 1 subnets
+S       192.168.2.0 [1/0] via 10.34.10.1
+S*   0.0.0.0/0 [1/0] via 10.14.10.1
 ```
-
-## Step 4: Withdraw Static Routes (Once OSPF is Stable)
-
-After confirming OSPF is working and routes are being learned dynamically, remove the static routes for internal connectivity:
-
-### **Remove from Router1:**
-```bash
-Router1(config)# no ip route 10.0.0.0 255.255.255.192 10.0.0.2
-Router1(config)# no ip route 10.0.0.64 255.255.255.192 10.0.0.2
-Router1(config)# no ip route 8.8.8.8 255.255.255.255 10.0.0.2
-Router1(config)# no ip route 8.8.4.4 255.255.255.255 10.0.0.2
-# KEEP the Company B routes static for now:
-# ip route 172.32.1.0 255.255.255.224 10.0.0.2 
-# ip route 172.32.2.0 255.255.255.224 10.0.0.2
-```
-
-### **Remove from Router2:**
-```bash
-Router2(config)# no ip route 0.0.0.0 0.0.0.0 10.0.0.1
-Router2(config)# no ip route 10.0.0.64 255.255.255.192 10.0.0.3
-Router2(config)# no ip route 8.8.4.4 255.255.255.255 10.0.0.3
-Router2(config)# no ip route 192.168.64.0 255.255.255.0 10.0.0.1
-Router2(config)# no ip route 192.168.65.0 255.255.255.0 10.0.0.1
-Router2(config)# no ip route 172.32.1.0 255.255.255.224 10.0.0.3
-Router2(config)# no ip route 172.32.2.0 255.255.255.224 10.0.0.3
-```
-
-### **Remove from Router3:**
-```bash
-Router3(config)# no ip route 10.0.0.0 255.255.255.192 10.0.0.4
-Router3(config)# no ip route 8.8.8.8 255.255.255.255 10.0.0.4
-Router3(config)# no ip route 8.8.4.4 255.255.255.255 10.0.0.4
-Router3(config)# no ip route 192.168.64.0 255.255.255.0 10.0.0.4
-Router3(config)# no ip route 192.168.65.0 255.255.255.0 10.0.0.4
-# KEEP the Company A routes static for now:
-# ip route 192.168.64.0 255.255.255.0 10.20.1.2
-# ip route 192.168.65.0 255.255.255.0 10.20.1.2
-```
-
-### **Remove from Router4:**
-```bash
-Router4(config)# no ip route 0.0.0.0 0.0.0.0 10.0.0.3
-Router4(config)# no ip route 10.0.0.0 255.255.255.192 10.0.0.2
-Router4(config)# no ip route 8.8.8.8 255.255.255.255 10.0.0.2
-Router4(config)# no ip route 192.168.64.0 255.255.255.0 10.0.0.2
-Router4(config)# no ip route 192.168.65.0 255.255.255.0 10.0.0.2
-Router4(config)# no ip route 172.32.1.0 255.255.255.224 10.0.0.3
-Router4(config)# no ip route 172.32.2.0 255.255.255.224 10.0.0.3
-```
-
-## Step 5: Final Verification
-
-After withdrawing static routes, verify OSPF is maintaining connectivity:
-
-```bash
-# Test connectivity between all routers
-Router1# ping 8.8.8.8        # Should work via OSPF
-Router1# ping 8.8.4.4        # Should work via OSPF
-Router1# ping 10.0.0.3       # Should work via OSPF
-
-Router3# ping 8.8.8.8        # Should work via OSPF  
-Router3# ping 10.0.0.1       # Should work via OSPF
-
-# Verify OSPF database
-Router2# show ip ospf database
-Router4# show ip ospf interface brief
-```
-
-## Important Notes
-
-1. **Company Routes Remain Static:** The routes to Company A (`192.168.x.x`) and Company B (`172.32.x.x`) networks remain as static routes for now. These could later be redistributed into OSPF if desired.
-
-2. **Default Routes:** The default routes on Company routers (RouterA and RouterB) pointing to the ISP should remain static.
-
-3. **Passive Interfaces:** We set interfaces as passive by default for security, then explicitly enabled OSPF on the router-to-router links.
-
-4. **Next Phase:** Once this is stable, you could consider:
-   - Redistributing static company routes into OSPF
-   - Configuring OSPF authentication
-   - Adjusting OSPF metrics for optimal path selection
-
-The migration is now complete! Your ISP core routers are dynamically sharing routing information via OSPF while maintaining static connectivity to your customer networks.
 
 ##### 5.1.2.2 Internet Simulation - Configuration of R2 Loopback0 = 8.8.8.8/32
 
-__TODO__: Not done in Packet Tracer
+It was already configured in Router2
 
-Perfect! Configuring R2's Loopback0 as `8.8.8.8/32` simulates a public internet resource (Google's DNS) that your companies should be able to reach through the ISP. Let me show you the configuration and how to verify it works end-to-end.
-
-## Current Status Analysis
-
-From your previous configuration, I can see R2 already has:
-```bash
+```txt
 Router2# show run
 interface Loopback0
  ip address 8.8.8.8 255.255.255.255
 ```
 
-The Loopback0 is already configured! Now we need to ensure it's advertised via OSPF and reachable from the company networks.
-
-## Step 1: Verify OSPF Advertisement
-
-Check if the loopback is being advertised in OSPF:
-
-```bash
-Router2# show ip ospf interface loopback0
-# Should show Loopback0 as a passive interface in Area 0
-
-Router2# show ip route ospf
-# Should show OSPF routes learned from other routers
-
-Router1# show ip route 8.8.8.8
-# Should show: O        8.8.8.8/32 [110/xx] via 10.0.0.2, FastEthernet0/0
-```
-
-If it's not being advertised, ensure OSPF is configured correctly on R2:
-
-```bash
-Router2(config)# router ospf 1
-Router2(config-router)# network 8.8.8.8 0.0.0.0 area 0
-Router2(config-router)# passive-interface Loopback0
-```
-
-## Step 2: Verify End-to-End Connectivity
-
-### Test from ISP Core:
-```bash
-# From Router1
-Router1# ping 8.8.8.8 source 10.20.1.1
-# From Router3  
-Router3# ping 8.8.8.8 source 10.20.1.5
-# From Router4
-Router4# ping 8.8.8.8
-```
-
-### Test from Company Routers:
-```bash
-# From Company A (RouterA)
-RouterA# ping 8.8.8.8 source 10.20.1.2
-# From Company B (RouterB)
-RouterB# ping 8.8.8.8 source 10.20.1.6
-```
-
-## Step 3: Configure Static Routes on ISP Routers (If Needed)
-
-If the companies can't reach 8.8.8.8, ensure the ISP routers have routes back to the company networks:
-
-### On Router1 (toward Company A):
-```bash
-# These should already exist from previous static routing:
-Router1# show ip route | include 192.168
-# Should see static routes to Company A networks
-```
-
-### On Router3 (toward Company B):
-```bash
-# These should already exist:
-Router3# show ip route | include 172.32
-# Should see static routes to Company B networks
-```
-
-## Step 4: Enhanced Simulation (Optional)
-
-To make the simulation more realistic, you can add web server simulation:
-
-```bash
-# On Router2 - Enable HTTP server for testing
-Router2(config)# ip http server
-Router2(config)# ip http authentication local
-Router2(config)# username admin privilege 15 secret cisco
-```
-
-## Step 5: Complete Verification Path
-
-Test the complete path from company internal devices:
-
-### From Company A Computer:
-```bash
-# From PC6 (Computer_science VLAN)
-PC6> ping 8.8.8.8
-# Path: PC6 → RouterA → Router1 → Router2 (Loopback0)
-```
-
-### From Company B Engineering:
-```bash
-# From a PC in VLAN 3 (Engineering)
-PC> ping 8.8.8.8  
-# Path: PC → RouterB → Router3 → Router4 → Router2 (Loopback0)
-```
-
-### Traceroute to see the path:
-```bash
-# From Company A
-PC6> traceroute 8.8.8.8
-# Expected path: 
-# 1 - 172.20.13.126 (RouterA VLAN 13)
-# 2 - 10.20.1.1     (Router1) 
-# 3 - 10.0.0.2      (Router2)
-# 4 - 8.8.8.8       (Destination)
-
-# From Company B
-PC> traceroute 8.8.8.8
-# Expected path:
-# 1 - 192.168.2.30  (RouterB VLAN 3)
-# 2 - 10.20.1.5     (Router3)
-# 3 - 10.0.0.4      (Router4) 
-# 4 - 10.0.0.2      (Router2)
-# 5 - 8.8.8.8       (Destination)
-```
-
-## Step 6: Monitoring and Troubleshooting
-
-### Check OSPF Advertisements:
-```bash
-Router2# show ip ospf database router adv-router 2.2.2.2
-# Should show Loopback0 in the Type-1 LSA
-
-Router1# show ip ospf database network
-# Verify OSPF topology
-```
-
-### Verify Routing Tables:
-```bash
-# On each router, check for 8.8.8.8 route
-Router1# show ip route 8.8.8.8
-Router3# show ip route 8.8.8.8
-Router4# show ip route 8.8.8.8
-RouterA# show ip route 8.8.8.8  
-RouterB# show ip route 8.8.8.8
-```
-
-## Expected Final Result
-
-Once fully configured, your network should provide:
-
-- ✅ **ISP Core:** All routers see `8.8.8.8/32` as an OSPF route
-- ✅ **Company A:** Can ping `8.8.8.8` via default route to Router1
-- ✅ **Company B:** Can ping `8.8.8.8` via default route to Router3  
-- ✅ **Full Path:** End-to-end connectivity from company PCs to the "internet simulation"
-
-The `8.8.8.8/32` loopback now serves as a perfect test destination to validate that your companies have proper internet access through the ISP fabric!
-
 ##### 5.1.2.3 Global connectivity with redundancy
 
-__TODO__: Not done in packet Tracer
+###### Company A to "Internet" (8.8.8.8)
+```txt
+# From Company A Router ----------------------------------------------
+RouterA# ping 8.8.8.8
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/3/19 ms
 
-Excellent! Let me demonstrate global connectivity with redundancy by testing all possible paths and showing failover capabilities.
+RouterA# traceroute 8.8.8.8
+Tracing the route to 8.8.8.8
 
-## Step 1: Verify Current OSPF Topology
-
-First, let's check the OSPF neighbor relationships and routing tables:
-
-```bash
-# Check OSPF neighbors on all routers
-Router1# show ip ospf neighbor
-# Expected: Neighbor 2.2.2.2 (R2) on Fa0/0
-
-Router2# show ip ospf neighbor  
-# Expected: Neighbor 1.1.1.1 (R1) on Fa0/0
-
-Router3# show ip ospf neighbor
-# Expected: Neighbor 4.4.4.4 (R4) on Fa0/0
-
-Router4# show ip ospf neighbor
-# Expected: Neighbor 3.3.3.3 (R3) on Fa0/0
+  1   10.20.1.1       0 msec    0 msec    0 msec    
+  2   10.14.10.2      0 msec    0 msec    0 msec  
 ```
 
-## Step 2: Verify Complete Routing Tables
+###### Company B to "Internet" (8.8.8.8)
 
-```bash
-# On Router1 - should see routes to all networks
-Router1# show ip route ospf
-# Expected OSPF routes:
-# O     8.8.8.8/32 [110/11] via 10.0.0.2, FastEthernet0/0
-# O     8.8.4.4/32 [110/11] via 10.0.0.2, FastEthernet0/0
-# O     10.0.0.64/26 [110/20] via 10.0.0.2, FastEthernet0/0
+```txt
+# From Company B Router  ---------------------------------------------
+RouterB# ping 8.8.8.8 
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/0 ms
 
-# On Router3 - should see routes to all networks  
-Router3# show ip route ospf
-# Expected OSPF routes:
-# O     8.8.8.8/32 [110/21] via 10.0.0.4, FastEthernet0/0
-# O     8.8.4.4/32 [110/11] via 10.0.0.4, FastEthernet0/0
-# O     10.0.0.0/26 [110/20] via 10.0.0.4, FastEthernet0/0
+RouterB# traceroute 8.8.8.8
+Tracing the route to 8.8.8.8
+
+  1   10.20.1.5       0 msec    0 msec    0 msec    
+  2   10.34.10.2      0 msec    0 msec    0 msec   
 ```
 
-## Step 3: Demonstrate Global Connectivity
+###### Inter-Company Communication
 
-### Test 1: Company A to "Internet" (8.8.8.8)
-```bash
-# From Company A Router
-RouterA# ping 8.8.8.8 source 10.20.1.2 repeat 10
-# Success rate should be 100%
-# Path: RouterA → Router1 → Router2 → 8.8.8.8
+```txt
+# From Company A to Company B internal network -----------------------
+RouterA# ping 192.168.1.1
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/1 ms
 
-# Traceroute to see path
-RouterA# traceroute 8.8.8.8 source 10.20.1.2
+RouterA# traceroute 192.168.1.1
+Tracing the route to 192.168.1.1
+
+  1   10.20.1.1       0 msec    0 msec    0 msec    
+  2   10.14.10.2      0 msec    0 msec    0 msec    
+  3   10.34.10.1      0 msec    1 msec    0 msec    
+  4   10.20.1.6       0 msec    0 msec    0 msec    
+  5   192.168.1.1     0 msec    0 msec    20 msec 
+
+# From Company B to Company A internal network ----------------------- 
+RouterB# ping 172.20.13.6
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/2/13 ms
+
+RouterB# traceroute 172.20.13.6
+Type escape sequence to abort.
+Tracing the route to 172.20.13.6
+
+  1   10.20.1.5       0 msec    0 msec    0 msec    
+  2   10.34.10.2      0 msec    0 msec    0 msec    
+  3   10.12.10.1      0 msec    0 msec    0 msec    
+  4   10.20.1.2       0 msec    0 msec    0 msec    
+  5   172.20.13.6     0 msec    0 msec    0 msec 
 ```
 
-### Test 2: Company B to "Internet" (8.8.8.8)
-```bash
-# From Company B Router  
-RouterB# ping 8.8.8.8 source 10.20.1.6 repeat 10
-# Success rate should be 100%
-# Path: RouterB → Router3 → Router4 → Router2 → 8.8.8.8
+###### Redundancy with Link Failure
 
-RouterB# traceroute 8.8.8.8 source 10.20.1.6
-```
+# TODO
 
-### Test 3: Inter-Company Communication
-```bash
-# From Company A to Company B internal network
-RouterA# ping 172.32.1.1 source 10.20.1.2
-# Path: RouterA → Router1 → Router2 → Router4 → Router3 → RouterB → 172.32.1.1
+Simulation a failure in the primary path between Router2 and Router1:
 
-# From Company B to Company A internal network  
-RouterB# ping 192.168.64.1 source 10.20.1.6
-# Path: RouterB → Router3 → Router4 → Router2 → Router1 → RouterA → 192.168.64.1
-```
-
-### Test 4: Internal PC Connectivity
-```bash
-# From PC6 (Computer_science) in Company A
-PC6> ping 8.8.8.8
-PC6> ping 192.168.1.10  # Company B server
-PC6> traceroute 8.8.8.8
-
-# From Engineering PC in Company B  
-PC> ping 8.8.8.8
-PC> ping 172.20.13.10   # Company A computer science PC
-PC> traceroute 8.8.8.8
-```
-
-## Step 4: Demonstrate Redundancy with Link Failure
-
-### Simulate Primary Path Failure
-Let's simulate a failure in the primary path between Router2 and Router1:
-
-```bash
+```txt
 # On Router2 - shutdown interface to Router1
 Router2(config)# interface FastEthernet0/0
 Router2(config-if)# shutdown
 ```
 
-### Monitor OSPF Reconvergence
-```bash
+Monitor OSPF Reconvergence
+
+```txt
 # On Router4 - watch OSPF reconverge
 Router4# debug ip ospf events
 # You should see OSPF detecting the neighbor down and recalculating routes
@@ -2730,8 +2316,9 @@ Router4# show ip ospf neighbor
 # Router2 should disappear from neighbor table temporarily
 ```
 
-### Verify Alternative Paths
-```bash
+Verify Alternative Paths
+
+```txt
 # Check new routes on Router3 after convergence
 Router3# show ip route ospf
 # Should now show: O 8.8.8.8/32 [110/11] via 10.0.0.4, FastEthernet0/0
@@ -2746,8 +2333,9 @@ RouterA# ping 8.8.8.8 source 10.20.1.2
 # This will FAIL because Company A's path to internet is through Router1→Router2
 ```
 
-### Restore the Link and Verify Recovery
-```bash
+Restore the Link and Verify Recovery
+
+```txt
 # On Router2 - restore the interface
 Router2(config)# interface FastEthernet0/0
 Router2(config-if)# no shutdown
@@ -2761,108 +2349,11 @@ Router1# show ip route 8.8.8.8
 # Should be via 10.0.0.2 (direct path)
 ```
 
-## Step 5: Load Balancing Demonstration
-
-### Check Equal-Cost Paths (if any)
-```bash
-# On routers that might have multiple paths
-Router2# show ip route 10.0.0.64
-# Check if multiple equal-cost paths exist
-```
-
-### Traffic Flow with Multiple Paths
-```bash
-# Generate continuous traffic to see load distribution
-RouterA# ping 8.8.8.8 source 10.20.1.2 size 1500 repeat 100
-RouterB# ping 8.8.8.8 source 10.20.1.6 size 1500 repeat 100
-
-# Monitor interface counters to see traffic distribution
-Router2# show interface FastEthernet0/0 counters
-Router4# show interface FastEthernet0/0 counters
-```
-
-## Step 6: Comprehensive Redundancy Test
-
-### Test Multiple Failure Scenarios
-
-**Scenario 1: Router1 Failure Simulation**
-```bash
-# On Router1 - shutdown ISP-facing interface
-Router1(config)# interface FastEthernet1/0
-Router1(config-if)# shutdown
-
-# Company A should lose internet connectivity
-RouterA# ping 8.8.8.8
-# Expected: 100% packet loss
-
-# Company B should remain operational
-RouterB# ping 8.8.8.8  
-# Expected: 100% success
-```
-
-**Scenario 2: Router3 Failure Simulation**
-```bash
-# On Router3 - shutdown ISP-facing interface
-Router3(config)# interface FastEthernet1/0
-Router3(config-if)# shutdown
-
-# Company B should lose internet connectivity
-RouterB# ping 8.8.8.8
-# Expected: 100% packet loss
-
-# Company A should remain operational
-RouterA# ping 8.8.8.8
-# Expected: 100% success
-```
-
-## Step 7: Final Connectivity Validation
-
-After all tests, restore everything and verify full connectivity:
-
-```bash
-# Restore all interfaces
-Router1(config)# interface FastEthernet1/0
-Router1(config-if)# no shutdown
-
-Router3(config)# interface FastEthernet1/0  
-Router3(config-if)# no shutdown
-
-# Final comprehensive test
-RouterA# ping 8.8.8.8 source 10.20.1.2
-RouterB# ping 8.8.8.8 source 10.20.1.6
-RouterA# ping 172.32.1.1 source 10.20.1.2
-RouterB# ping 192.168.64.1 source 10.20.1.6
-
-# From end devices
-PC6> ping 8.8.8.8
-PC6> ping 192.168.1.10
-PC> ping 8.8.8.8
-PC> ping 172.20.13.10
-```
-
-## Step 8: Documentation of Redundancy Capabilities
-
-**Proven Redundancy Features:**
-1. ✅ **Path Redundancy:** Multiple paths through ISP core
-2. ✅ **OSPF Fast Convergence:** Automatic rerouting around failures
-3. ✅ **Load Distribution:** Traffic uses optimal paths
-4. ✅ **Partial Failure Resilience:** Single component failures don't take down entire network
-5. ✅ **End-to-End Reachability:** All critical paths maintained
-
-**Failure Recovery Times:**
-- OSPF convergence: < 5 seconds typically
-- TCP session persistence during brief outages
-- Transparent failover for end users
-
-This demonstration proves your network provides robust global connectivity with automatic redundancy through OSPF dynamic routing!
-
 #### 5.1.3 Public addressing test
 
 ##### 5.1.3.1 Change of configs so each company and the operator use public IPs
 
 __TODO__: Not done in Packet Tracer
-
-Excellent! Let's convert your network to use public IP addressing while maintaining the same topology. I'll use RFC 5737 documentation addresses that are safe for testing.
 
 ## Step 1: Public IP Address Allocation Plan
 
@@ -3155,17 +2646,6 @@ Router1# show ip route static
 Router3# show ip route static
 ```
 
-## Summary
-
-Your network is now using **public IP addresses** throughout while maintaining:
-- ✅ **Full connectivity** between all networks
-- ✅ **OSPF dynamic routing** with public IPs
-- ✅ **Redundancy** and failover capabilities
-- ✅ **Inter-company communication** with public addressing
-- ✅ **Internet access** simulation via 8.8.8.8
-
-The migration from private to public addressing is complete while preserving all functionality and policies!
-
 ### 5.2 Testing and Validation
 
 __TODO__
@@ -3360,67 +2840,9 @@ The OSPF path selection toward **8.8.8.8** demonstrates:
 
 This proves OSPF is successfully replacing manual static routing with intelligent, dynamic path selection based on the actual network topology and link costs.
 
----
-
 <div style="page-break-after: always"></div>
 
 ## Conclusion
-
-__TODO__: Review and Resume
-
-In the first part we did not understand that the objective was to only observe and describe the given Packet Tracer file, and we start implementing VLANS from part 2
-
-### Comprehensive Project Conclusion
-
-#### Executive Summary
-
-This comprehensive networking project successfully demonstrates the end-to-end implementation of enterprise-grade network infrastructure, progressing systematically from basic Layer 2 segmentation to advanced dynamic routing with public addressing. The project validates theoretical concepts through practical implementation across multiple network domains, establishing a robust, scalable, and secure infrastructure meeting all specified business requirements.
-
-#### Educational Value Demonstrated
-
-This project served as a comprehensive practical demonstration of networking fundamentals:
-
-##### **Protocol Mastery**
-- **STP/RSTP**: Loop prevention and path optimization in Layer 2 networks
-- **OSPF**: Dynamic routing, neighbor relationships, and path calculation
-- **VLAN Trunking**: 802.1Q encapsulation and trunk management
-- **Subnetting**: Efficient address space utilization and hierarchical design
-
-##### **Troubleshooting Proficiency**
-- Methodical fault isolation across OSI layers
-- Effective use of show and debug commands
-- Systematic validation of connectivity and policies
-- Documentation of failure scenarios and resolutions
-
-##### **Design Principles**
-- Hierarchical network design
-- Redundancy and high availability
-- Security through segmentation
-- Scalability and future-proofing
-
-#### Business Value Delivered
-
-The implemented infrastructure provides significant business advantages:
-
-##### **Operational Efficiency**
-- Reduced administrative overhead through dynamic routing
-- Faster troubleshooting with predictable network behavior
-- Simplified expansion capabilities for future growth
-- Comprehensive monitoring and management access
-
-##### **Risk Mitigation**
-- Elimination of single points of failure
-- Automated failover ensuring service continuity
-- Security compliance through proven access controls
-- Stable, predictable network performance
-
-##### **Strategic Foundation**
-- Enterprise-ready architecture supporting business applications
-- Scalable design accommodating organizational growth
-- Carrier-grade reliability meeting service level requirements
-- Future-proof foundation for emerging technologies
-
-#### Conclusion
 
 This project successfully bridges theoretical networking concepts with real-world implementation, demonstrating that a methodical, phased approach to network design yields robust, enterprise-grade infrastructure. The seamless integration of Layer 2 segmentation, inter-VLAN routing, dynamic path selection, and multi-tenant ISP services validates the comprehensive understanding of modern networking principles.
 
