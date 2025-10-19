@@ -1058,8 +1058,6 @@ To accommodate this topology requirements we need to configure, the VLANs, trunk
 
 No. Because switches cannot change VLAN tags, we cannot communicate between PCs that are connected in distinct VLANs. To achieve that we need to configure a Router with Router-on-a-Stick.
 
----
-
 <div style="page-break-after: always"></div>
 
 ## 3. Enterprise A — Router-on-a-Stick (RoS) & L3 Rules (no ACLs)
