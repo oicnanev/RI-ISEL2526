@@ -537,9 +537,9 @@ table 12 - Port Roles and Root Port Costs (VLAN 1)
 
 For the switch `SW_DC` to be the __Root Bridge__ in all VLANs, we force his priority. Previously it was __Root Bridge__ only to VLANs 11, 12 and 13, but VLAN 1 has his __Root Bridge__ at `sw1_piso2`. 
 
-__TODO__: comando para baixar a prioridade do SW_DC
-
-__TODO__: mostrar as novas portas root/designated/blocked
+```txt
+SW_DC(config) #spanning-tree vlan X priority 4096
+```
 
 #### 1.2.3 Modification of settings between `sw1_piso1` and `sw1_piso2` to exchange blocked by forward links
 
@@ -738,7 +738,7 @@ View point 1.2.1
 | __sw2_piso1__ - Gig0/1        | __SW_DC__ - Gig1/0/2     | 4 |
 | __SW_DC__ - Gig1/0/5      | __RouterA__ - Fa0/1        | 19 |
 
-table 16 - Cost calculations from PC9 to Router A
+table 15 - Cost calculations from PC9 to Router A
 
 The cost of the shortest path to Router A since PC9 is `19 + 19 + 4 + 19 = 61`
 
@@ -756,7 +756,7 @@ The cost of the shortest path to Router A since PC9 is `19 + 19 + 4 + 19 = 61`
 | 12 | Secretariat        | 172.20.12.254 | 172.20.12.0/24   | PC5, PC8 |
 | 13 | Computer science   | 172.20.13.126 | 172.20.13.0/25   | PC6 |
 
-table 17 - VLANs and corresponding Networks and Gateway 
+table 16 - VLANs and corresponding Networks and Gateway 
 
 Already configured, view point 1.1.1 VLANs
 
@@ -774,7 +774,7 @@ Already configured, in the point 1.1.1 VLANs
 | PC8 | 12   | 172.20.12.8 | 172.20.12.254 |
 | PC9 | 11   | 172.20.11.9 | 172.20.11.254 |
 
-table 18 - PCs IP address assignments
+table 17 - PCs IP address assignments
 
 We decided, that the last octet of the assigned IP address corresponds to the PC number
 
@@ -1046,7 +1046,7 @@ VLAN 13 (Computer_science) has only one PC connected, PC6
 | __sw2_piso1__ - Gig0/1        | __SW_DC__ - Gig1/0/2     | 4 |
 | __SW_DC__ - Gig1/0/5      | __RouterA__ - Fa0/1        | 19 |
 
-table 19 - Costs from PC9 to Router A
+table 18 - Costs from PC9 to Router A
 
 The cost of the shortest path to Router A since PC9 is `19 + 19 + 4 + 19 = 61`
 
@@ -1636,7 +1636,7 @@ The switch fabric was already configured, using PVST, with VLAN 90 (Company A) a
 | Fa0/2     | access | 90     | RouterA |
 | Fa0/24    | trunk  | 90, 95 | swacesso-B |
 
-table 20 - Interfaces configuration for Swacesso-A
+table 19 - Interfaces configuration for Swacesso-A
 
 ##### Swacesso-B 
 
@@ -1646,7 +1646,7 @@ table 20 - Interfaces configuration for Swacesso-A
 | Fa0/2     | access | 95     | RouterB |
 | Fa0/24    | trunk  | 90, 95 | swacesso-A |
 
-table 21 - Interfaces configuration for Swacesso-B
+table 20 - Interfaces configuration for Swacesso-B
 
 ##### Sdistribution-1 
 
@@ -1656,7 +1656,7 @@ table 21 - Interfaces configuration for Swacesso-B
 | Fa0/2     | trunk  | 90, 95 | swacesso-A |
 | Fa0/24    | trunk  | 90, 95 | swdistribution-2 |
 
-table 22 -  Interfaces configuration for Sdistribution-1
+table 21 -  Interfaces configuration for Sdistribution-1
 
 ##### Sdistribution-2 
 
@@ -1666,7 +1666,7 @@ table 22 -  Interfaces configuration for Sdistribution-1
 | Fa0/2     | trunk  | 90, 95 | swacesso-B |
 | Fa0/24    | trunk  | 90, 95 | swdistribution-1 |
 
-table 23 -  Interfaces configuration for Sdistribution-2
+table 22 -  Interfaces configuration for Sdistribution-2
 
 #### 4.1.4 Assignment of IP address to Router 1, Router 3, Router A, and Router B
 
@@ -1679,7 +1679,7 @@ Interfaces already correctly configured in the `.pkt` file:
 | RouterA | Fa0/0     | 10.20.1.2/30 | Swacesso-A |
 | RouterB | Fa0/0     | 10.20.1.6/30 | Swacesso-B |
 
-table 24 -  Interfaces configuration for Routers 1, 2, A and B
+table 23 -  Interfaces configuration for Routers 1, 2, A and B
 
 ### 4.2 Test and Validation
 
@@ -2295,360 +2295,545 @@ Tracing the route to 172.20.13.6
 
 ###### Redundancy with Link Failure
 
-# TODO
-
 Simulation a failure in the primary path between Router2 and Router1:
 
 ```txt
 # On Router2 - shutdown interface to Router1
-Router2(config)# interface FastEthernet0/0
+Router2(config)# interface Fa0/0
 Router2(config-if)# shutdown
 ```
 
-Monitor OSPF Reconvergence
+Verification of alternative paths:
 
 ```txt
-# On Router4 - watch OSPF reconverge
-Router4# debug ip ospf events
-# You should see OSPF detecting the neighbor down and recalculating routes
+# New route on Router1 after convergence  -----------------------------------
+Router1#sh ip ospf neighbor 
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+4.4.4.4           1   2WAY/DROTHER    00:00:30    10.14.10.2      FastEthernet0/1
 
-Router4# show ip ospf neighbor
-# Router2 should disappear from neighbor table temporarily
+Router1#ping 8.8.8.8
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/1 ms
+
+Router1#traceroute 8.8.8.8
+Tracing the route to 8.8.8.8
+
+  1   10.14.10.2      0 msec    0 msec    0 msec  
+
+# Test from Company B  -----------------------------------------------------
+RouterB# ping 8.8.8.8
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/3/15 ms
+
+# Test from Company A ------------------------------------------------------
+RouterA# ping 8.8.8.8 
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/0 ms
 ```
 
-Verify Alternative Paths
-
-```txt
-# Check new routes on Router3 after convergence
-Router3# show ip route ospf
-# Should now show: O 8.8.8.8/32 [110/11] via 10.0.0.4, FastEthernet0/0
-# (Direct via Router4's connection to Router2)
-
-# Test connectivity from Company B during outage
-RouterB# ping 8.8.8.8 source 10.20.1.6 repeat 20
-# Should see brief packet loss then recovery
-
-# Test from Company A 
-RouterA# ping 8.8.8.8 source 10.20.1.2
-# This will FAIL because Company A's path to internet is through Router1→Router2
-```
-
-Restore the Link and Verify Recovery
-
-```txt
-# On Router2 - restore the interface
-Router2(config)# interface FastEthernet0/0
-Router2(config-if)# no shutdown
-
-# Monitor convergence back to optimal paths
-Router1# show ip ospf neighbor
-# Should see Router2 neighbor relationship restore
-
-# Verify routes return to optimal paths
-Router1# show ip route 8.8.8.8
-# Should be via 10.0.0.2 (direct path)
-```
+After the test we restored the Router2 - Fa0/0 with `no shutdown` and all was restored as initially configurated
 
 #### 5.1.3 Public addressing test
 
 ##### 5.1.3.1 Change of configs so each company and the operator use public IPs
 
-__TODO__: Not done in Packet Tracer
+###### Public IP Address Allocation Plan
 
-## Step 1: Public IP Address Allocation Plan
+For simplicity, we decided to use the following __IP Addresses__:
+- __200.X.10.Y__ - ISP Core
+- __200.20.X.Y__ - Company A
+- __200.168.X.Y__ - Company B  
 
-I'll use the following **RFC 5737 Documentation Addresses**:
-- **198.51.100.0/24** - Company A and ISP Core
-- **203.0.113.0/24** - Company B  
-- **192.0.2.0/24** - Loopbacks and special addresses
+###### Address Assignment Plan:
 
-### **Address Assignment Plan:**
+__ISP Core Network__:
 
-#### **ISP Core Network:**
-- **Router1-Router2 Link:** 198.51.100.0/30
-- **Router3-Router4 Link:** 198.51.100.4/30  
-- **Router1-RouterA Link:** 198.51.100.8/30
-- **Router3-RouterB Link:** 203.0.113.0/30
-- **Router1 Loopback:** 192.0.2.1/32
-- **Router2 Loopback:** 8.8.8.8/32 (Internet simulation)
-- **Router3 Loopback:** 192.0.2.3/32
-- **Router4 Loopback:** 192.0.2.4/32
+- __Router1-Router2 Link (fa0/0):__ 200.12.10.1/30
+- __Router1-Router4 Link (fa0/1):__ 200.14.10.1/30
+- __Router1-RouterA Link:__ 200.20.1.1/30
+- __Router2 Loopback:__ 8.8.8.8/32 (Internet simulation)
+- __Router2-Router1 Link__: 200.12.10.2/30
+- __Router2-Router3 Link__: 200.23.10.1/30
+- __Router3-Router2 Link__: 200.23.10.2/30 
+- __Router3-Router4 Link:__ 200.34.10.1/30
+- __Router3-RouterB Link:__ 200.20.1.5/30  
+- __Router4-Router1 Link:__ 200.14.10.2/30
+- __Router4-Router3 Linkk:__ 200.34.10.2/30
 
-#### **Company A Internal Networks:**
-- **VLAN 11 (Accounting):** 198.51.100.16/28
-- **VLAN 12 (Secretariat):** 198.51.100.32/28
-- **VLAN 13 (Computer_science):** 198.51.100.48/28
+__Company A Internal Networks:__
 
-#### **Company B Internal Networks:**
-- **VLAN 2 (Servers):** 203.0.113.16/28
-- **VLAN 3 (Engineering):** 203.0.113.32/28
+- **VLAN 11 (Accounting):** 200.20.11.0/24
+- **VLAN 12 (Secretariat):** 200.20.12.0/24
+- **VLAN 13 (Computer_science):** 200.20.13.0/25
 
-## Step 2: ISP Core Reconfiguration
+__Company B Internal Networks:__
 
-### **Router1 Configuration:**
-```bash
+- __VLAN 2 (Servers):__ 200.168.1.30/27
+- __VLAN 3 (Engineering):__ 200.168.2.30/27
+
+###### ISP Core Reconfiguration
+
+```txt
+Router1 Reconfiguration ----------------------------------------------
 Router1(config)# interface FastEthernet0/0
-Router1(config-if)# no ip address 10.0.0.1 255.255.255.192
-Router1(config-if)# ip address 198.51.100.1 255.255.255.252
+Router1(config-if)# no ip address 10.12.10.1 255.255.255.252
+Router1(config-if)# ip address 200.12.10.1 255.255.255.252
+
+Router1(config)# interface FastEthernet0/1
+Router1(config-if)# no ip address 10.14.10.1 255.255.255.252
+Router1(config-if)# ip address 200.14.10.1 255.255.255.252
 
 Router1(config)# interface FastEthernet1/0
 Router1(config-if)# no ip address 10.20.1.1 255.255.255.252
-Router1(config-if)# ip address 198.51.100.9 255.255.255.252
+Router1(config-if)# ip address 200.20.1.1 255.255.255.252
 
-Router1(config)# interface Loopback0
-Router1(config-if)# ip address 192.0.2.1 255.255.255.255
+Router1(config)# ip route 200.20.11.0 255.255.255.0 200.20.1.2
+Router1(config)# ip route 200.20.12.0 255.255.254.0 200.20.1.2
 
-Router1(config)# no ip route 192.168.64.0 255.255.255.0 198.51.100.10
-Router1(config)# no ip route 192.168.65.0 255.255.255.0 198.51.100.10
-Router1(config)# ip route 198.51.100.16 255.255.255.240 198.51.100.10
-Router1(config)# ip route 198.51.100.32 255.255.255.240 198.51.100.10
-Router1(config)# ip route 198.51.100.48 255.255.255.240 198.51.100.10
+Router1(config)# ip route 200.168.1.0 255.255.255.224 200.14.10.2
+Router1(config)# ip route 200.168.1.0 255.255.255.224 200.14.10.2
 
-! OSPF reconfiguration
+Router1(config)# ip route 0.0.0.0 0.0.0.0 200.12.10.2
+
+# OSPF reconfiguration
+Router1(config)# no router ospf 1
 Router1(config)# router ospf 1
-Router1(config-router)# no network 10.0.0.0 0.0.0.63 area 0
-Router1(config-router)# no network 10.20.1.0 0.0.0.3 area 0
-Router1(config-router)# network 198.51.100.0 0.0.0.3 area 0
-Router1(config-router)# network 198.51.100.8 0.0.0.3 area 0
-Router1(config-router)# network 192.0.2.1 0.0.0.0 area 0
-```
+Router1(config-router)# router-id 1.1.1.1
+Router1(config-router)# network 200.12.10.0 0.0.0.3 area 0    # Link para R2
+Router1(config-router)# network 200.14.10.0 0.0.0.3 area 0    # Link para R4
+Router1(config-router)# network 200.20.1.0 0.0.0.3 area 0     # Company A
+Router1(config-router)# passive-interface default
+Router1(config-router)# no passive-interface FastEthernet0/0  # Para R2
+Router1(config-router)# no passive-interface FastEthernet0/1  # Para R4
 
-### **Router2 Configuration:**
-```bash
+Router2 Reconfiguration -----------------------------------------------------
 Router2(config)# interface FastEthernet0/0
-Router2(config-if)# no ip address 10.0.0.2 255.255.255.192
-Router2(config-if)# ip address 198.51.100.2 255.255.255.252
+Router2(config-if)# no ip address 10.12.10.2 255.255.255.192
+Router2(config-if)# ip address 200.12.10.2 255.255.255.252
 
-! Loopback0 already 8.8.8.8/32 (good for internet simulation)
+Router2(config)# interface FastEthernet0/1
+Router2(config-if)# no ip address 10.23.10.1 255.255.255.192
+Router2(config-if)# ip address 200.23.10.1 255.255.255.252
 
-! OSPF reconfiguration
+Router2(config)# ip route 200.20.11.0 255.255.255.0 200.12.10.1
+Router2(config)# ip route 200.20.12.0 255.255.254.0 200.12.10.1
+
+Router2(config)# ip route 200.168.1.0 255.255.255.224 200.23.10.2
+Router2(config)# ip route 200.168.1.0 255.255.255.224 200.23.10.2
+
+# OSPF reconfiguration
+Router2(config)# no router ospf 1
 Router2(config)# router ospf 1
-Router2(config-router)# no network 10.0.0.0 0.0.0.63 area 0
-Router2(config-router)# network 198.51.100.0 0.0.0.3 area 0
-Router2(config-router)# network 8.8.8.8 0.0.0.0 area 0
-```
+Router2(config-router)# router-id 2.2.2.2
+Router2(config-router)# network 200.12.10.0 0.0.0.3 area 0    # Link para R1
+Router2(config-router)# network 200.23.10.0 0.0.0.3 area 0    # Link para R3
+Router2(config-router)# network 8.8.8.8 0.0.0.0 area 0       # Loopback0 (Internet)
+Router2(config-router)# passive-interface default
+Router2(config-router)# no passive-interface FastEthernet0/0  # Para R1
+Router2(config-router)# no passive-interface FastEthernet0/1  # Para R3
 
-### **Router3 Configuration:**
-```bash
+Router3 Reconfiguration -----------------------------------------------------
 Router3(config)# interface FastEthernet0/0
-Router3(config-if)# no ip address 10.0.0.3 255.255.255.192
-Router3(config-if)# ip address 198.51.100.5 255.255.255.252
+Router3(config-if)# no ip address 10.34.10.1 255.255.255.192
+Router3(config-if)# ip address 200.34.10.1 255.255.255.192
+
+Router3(config)# interface FastEthernet0/1
+Router3(config-if)# no ip address 10.23.10.2 255.255.255.252
+Router3(config-if)# ip address 200.23.10.2 255.255.255.252
 
 Router3(config)# interface FastEthernet1/0
 Router3(config-if)# no ip address 10.20.1.5 255.255.255.252
-Router3(config-if)# ip address 203.0.113.1 255.255.255.252
+Router3(config-if)# ip address 200.20.1.5 255.255.255.252
 
-Router3(config)# interface Loopback0
-Router3(config-if)# ip address 192.0.2.3 255.255.255.255
+Router3(config)# ip route 200.20.11.0 255.255.255.0 200.34.10.2
+Router3(config)# ip route 200.20.12.0 255.255.254.0 200.34.10.2
 
-Router3(config)# no ip route 172.32.1.0 255.255.255.224 203.0.113.2
-Router3(config)# no ip route 172.32.2.0 255.255.255.224 203.0.113.2
-Router3(config)# ip route 203.0.113.16 255.255.255.240 203.0.113.2
-Router3(config)# ip route 203.0.113.32 255.255.255.240 203.0.113.2
+Router3(config)# ip route 200.168.1.0 255.255.255.224 200.20.1.6
+Router3(config)# ip route 200.168.2.0 255.255.255.224 200.20.1.6
 
-! OSPF reconfiguration
+Router3(config)# ip route 0.0.0.0 0.0.0.0 200.23.10.1
+
+# OSPF reconfiguration
+Router3(config)# no router ospf 1
 Router3(config)# router ospf 1
-Router3(config-router)# no network 10.0.0.64 0.0.0.63 area 0
-Router3(config-router)# no network 10.20.1.4 0.0.0.3 area 0
-Router3(config-router)# network 198.51.100.4 0.0.0.3 area 0
-Router3(config-router)# network 203.0.113.0 0.0.0.3 area 0
-Router3(config-router)# network 192.0.2.3 0.0.0.0 area 0
-```
+Router3(config-router)# router-id 3.3.3.3
+Router3(config-router)# network 200.23.10.0 0.0.0.3 area 0    # Link para R2
+Router3(config-router)# network 200.34.10.0 0.0.0.3 area 0    # Link para R4
+Router3(config-router)# network 200.20.1.4 0.0.0.3 area 0     # Company B
+Router3(config-router)# passive-interface default
+Router3(config-router)# no passive-interface FastEthernet0/0  # Para R2
+Router3(config-router)# no passive-interface FastEthernet0/1  # Para R4
 
-### **Router4 Configuration:**
-```bash
+Router4 Reconfiguration -----------------------------------------------------
 Router4(config)# interface FastEthernet0/0
-Router4(config-if)# no ip address 10.0.0.4 255.255.255.192
-Router4(config-if)# ip address 198.51.100.6 255.255.255.252
+Router4(config-if)# no ip address 10.14.10.2 255.255.255.252
+Router4(config-if)# ip address 200.14.10.2 255.255.255.252
 
-Router4(config)# interface Loopback0
-Router4(config-if)# no ip address 8.8.4.4 255.255.255.255
-Router4(config-if)# ip address 192.0.2.4 255.255.255.255
+Router4(config)# interface FastEthernet0/1
+Router4(config-if)# no ip address 10.34.10.2 255.255.255.252
+Router4(config-if)# ip address 200.34.10.2 255.255.255.252
 
-! OSPF reconfiguration
+Router4(config)# ip route 0.0.0.0 0.0.0.0 200.14.10.1
+
+Router4(config)# ip route 200.20.11.0 255.255.255.0 200.14.10.1
+Router4(config)# ip route 200.20.12.0 255.255.254.0 200.14.10.1
+
+Router4(config)# ip route 200.168.1.0 255.255.255.224 200.34.10.1
+Router4(config)# ip route 200.168.2.0 255.255.255.224 200.34.10.1
+
+# OSPF reconfiguration
+Router4(config)# no router ospf 1
 Router4(config)# router ospf 1
-Router4(config-router)# no network 10.0.0.64 0.0.0.63 area 0
-Router4(config-router)# no network 8.8.4.4 0.0.0.0 area 0
-Router4(config-router)# network 198.51.100.4 0.0.0.3 area 0
-Router4(config-router)# network 192.0.2.4 0.0.0.0 area 0
+Router4(config-router)# router-id 4.4.4.4
+Router4(config-router)# network 200.14.10.0 0.0.0.3 area 0    # Link para R1
+Router4(config-router)# network 200.34.10.0 0.0.0.3 area 0    # Link para R3
+Router4(config-router)# network 8.8.8.8 0.0.0.0 area 0       # Loopback0
+Router4(config-router)# passive-interface default
+Router4(config-router)# no passive-interface FastEthernet0/0  # Para R1
+Router4(config-router)# no passive-interface FastEthernet0/1  # Para R3
 ```
 
-## Step 3: Company A Reconfiguration (RouterA)
+###### Company A Reconfiguration (RouterA)
 
-```bash
-! WAN Interface
+```txt
+# WAN Interface
 RouterA(config)# interface FastEthernet0/0
 RouterA(config-if)# no ip address 10.20.1.2 255.255.255.252
-RouterA(config-if)# ip address 198.51.100.10 255.255.255.252
+RouterA(config-if)# ip address 200.20.1.2 255.255.255.252
 
-! Subinterfaces for VLANs
+# Subinterfaces for VLANs - Router-on-a-Stick
 RouterA(config)# interface FastEthernet0/1.11
 RouterA(config-subif)# no ip address 172.20.11.254 255.255.255.0
-RouterA(config-subif)# ip address 198.51.100.17 255.255.255.240
+RouterA(config-subif)# ip address 200.20.11.254 255.255.255.0
 
 RouterA(config)# interface FastEthernet0/1.12
 RouterA(config-subif)# no ip address 172.20.12.254 255.255.255.0
-RouterA(config-subif)# ip address 198.51.100.33 255.255.255.240
+RouterA(config-subif)# ip address 200.20.12.254 255.255.255.0
 
 RouterA(config)# interface FastEthernet0/1.13
 RouterA(config-subif)# no ip address 172.20.13.126 255.255.255.128
-RouterA(config-subif)# ip address 198.51.100.49 255.255.255.240
+RouterA(config-subif)# ip address 200.20.13.126 255.255.255.128
 
-! Update default route
-RouterA(config)# no ip route 0.0.0.0 0.0.0.0 10.20.1.1
-RouterA(config)# ip route 0.0.0.0 0.0.0.0 198.51.100.9
+# Default route
+RouterA(config)# ip route 0.0.0.0 0.0.0.0 200.20.1.1
 ```
 
-## Step 4: Company B Reconfiguration (RouterB)
+###### Company B Reconfiguration (RouterB)
 
-```bash
-! WAN Interface
+```txt
+# WAN Interface
 RouterB(config)# interface FastEthernet0/0
 RouterB(config-if)# no ip address 10.20.1.6 255.255.255.252
-RouterB(config-if)# ip address 203.0.113.2 255.255.255.252
+RouterB(config-if)# ip address 200.20.1.6 255.255.255.252
 
-! Subinterfaces for VLANs
+# Subinterfaces for VLANs
 RouterB(config)# interface FastEthernet0/1.2
 RouterB(config-subif)# no ip address 192.168.1.30 255.255.255.224
-RouterB(config-subif)# ip address 203.0.113.17 255.255.255.240
+RouterB(config-subif)# ip address 200.168.1.30 255.255.255.224
 
 RouterB(config)# interface FastEthernet0/1.3
 RouterB(config-subif)# no ip address 192.168.2.30 255.255.255.224
-RouterB(config-subif)# ip address 203.0.113.33 255.255.255.240
+RouterB(config-subif)# ip address 200.168.2.30 255.255.255.224
 
-! Update default route
-RouterB(config)# no ip route 0.0.0.0 0.0.0.0 10.20.1.5
-RouterB(config)# ip route 0.0.0.0 0.0.0.0 203.0.113.1
+# Default route
+RouterB(config)# ip route 0.0.0.0 0.0.0.0 200.20.1.5
 ```
 
-## Step 5: Update End Device IPs
+###### End Device IPs
 
-### **Company A PCs:**
-```bash
+Company A PCs:
+
+```txt
 # PC7 & PC9 (Accounting VLAN 11)
-PC7> ip 198.51.100.18 255.255.255.240 198.51.100.17
-PC9> ip 198.51.100.19 255.255.255.240 198.51.100.17
+PC7> ip 200.20.11.7 255.255.255.0 200.20.11.254
+PC9> ip 200.20.11.9 255.255.255.0 200.20.11.254
 
 # PC5 & PC8 (Secretariat VLAN 12)  
-PC5> ip 198.51.100.34 255.255.255.240 198.51.100.33
-PC8> ip 198.51.100.35 255.255.255.240 198.51.100.33
+PC5> ip 200.20.12.5 255.255.255.0 200.20.12.254
+PC8> ip 200.20.12.8 255.255.255.0 200.20.12.254
 
 # PC6 (Computer_science VLAN 13)
-PC6> ip 198.51.100.50 255.255.255.240 198.51.100.49
+PC6> ip 200.20.13.6 255.255.255.128 200.20.13.226
 ```
 
-### **Company B PCs:**
-```bash
+Company B PCs:
+
+```txt
 # Server (VLAN 2)
-Server> ip 203.0.113.18 255.255.255.240 203.0.113.17
+Server> ip 200.168.1.1 255.255.255.224 200.168.1.30
 
 # Engineering PCs (VLAN 3)
-PC> ip 203.0.113.34 255.255.255.240 203.0.113.33
-PC> ip 203.0.113.35 255.255.255.240 203.0.113.33
+PC1> ip 200.168.2.1 255.255.255.224 200.168.2.30
+PC2> ip ip 200.168.2.2 255.255.255.224 200.168.2.30
 ```
 
-## Step 6: Public Addressing Connectivity Tests
+###### Public Addressing Connectivity Tests
 
-### **Test 1: Basic ISP Core Connectivity**
-```bash
+Basic ISP Core Connectivity
+
+```txt
 # From Router1
-Router1# ping 198.51.100.2      # Router2
-Router1# ping 198.51.100.9      # RouterA
-Router1# ping 198.51.100.5      # Router3 via OSPF
-Router1# ping 8.8.8.8           # Internet simulation
+Router1# ping 200.12.10.2      # Router2
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/0 ms
 
-# From Router3  
-Router3# ping 203.0.113.2       # RouterB
-Router3# ping 198.51.100.1      # Router1 via OSPF
+Router1# ping 200.20.1.2       # RouterA
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/1 ms
+
+Router1# ping 200.20.1.6       # RouterB via OSPF
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/0 ms
+
+Router1# ping 200.34.10.1       # Router3 via OSPF
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/0 ms
+
+Router1# ping 200.14.10.2       # Router4
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/0 ms
+
+Router1# ping 8.8.8.8          # Internet simulation
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/0 ms
 ```
 
-### **Test 2: Company to Internet**
-```bash
-# From Company A
-RouterA# ping 8.8.8.8 source 198.51.100.10
-# Path: RouterA(198.51.100.10) → Router1 → Router2 → 8.8.8.8
+Inter-Company Communication
 
-# From Company B
-RouterB# ping 8.8.8.8 source 203.0.113.2
-# Path: RouterB(203.0.113.2) → Router3 → Router4 → Router2 → 8.8.8.8
-```
-
-### **Test 3: Inter-Company Communication**
-```bash
+```txt
 # Company A to Company B
-RouterA# ping 203.0.113.18 source 198.51.100.10
-# Company B to Company A  
-RouterB# ping 198.51.100.50 source 203.0.113.2
+RouterA# ping 200.20.1.6
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/3/18 ms
+
+RouterA# traceroute 200.20.1.6
+Tracing the route to 200.20.1.6
+
+  1   200.20.1.1      0 msec    0 msec    0 msec    
+  2   200.12.10.2     0 msec    0 msec    0 msec    
+  3   200.23.10.2     0 msec    0 msec    0 msec    
+  4   200.20.1.6      0 msec    0 msec    0 msec  
 ```
 
-### **Test 4: End-to-End from PCs**
-```bash
+End-to-End from PCs
+
+```txt
 # From Company A PC6 to Internet
 PC6> ping 8.8.8.8
-# Path: PC6(198.51.100.50) → RouterA → Router1 → Router2 → 8.8.8.8
+Pinging 8.8.8.8 with 32 bytes of data:
+
+Reply from 8.8.8.8: bytes=32 time=30ms TTL=253
+Reply from 8.8.8.8: bytes=32 time<1ms TTL=253
+Reply from 8.8.8.8: bytes=32 time<1ms TTL=253
+Reply from 8.8.8.8: bytes=32 time<1ms TTL=253
+
+Ping statistics for 8.8.8.8:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 30ms, Average = 7ms
+
 
 # From Company A to Company B Server
-PC6> ping 203.0.113.18
-# Path: PC6 → RouterA → Router1 → Router2 → Router4 → Router3 → RouterB → Server
+PC6> ping 200.168.1.1
+Pinging 200.168.1.1 with 32 bytes of data:
 
-# From Company B to Company A
-PC> ping 198.51.100.34
-# Path: PC → RouterB → Router3 → Router4 → Router2 → Router1 → RouterA → PC5
-```
+Reply from 200.168.1.1: bytes=32 time=1ms TTL=123
+Reply from 200.168.1.1: bytes=32 time<1ms TTL=123
+Reply from 200.168.1.1: bytes=32 time<1ms TTL=123
+Reply from 200.168.1.1: bytes=32 time=1ms TTL=123
 
-### **Test 5: OSPF Verification with Public IPs**
-```bash
-# Check OSPF neighbors with new IPs
-Router1# show ip ospf neighbor
-# Should see neighbors with public IPs
-
-# Verify routing tables
-Router1# show ip route ospf
-# Should see public networks: 203.0.113.0/30, 192.0.2.3/32, 192.0.2.4/32, 8.8.8.8/32
-
-Router3# show ip route ospf  
-# Should see public networks: 198.51.100.0/30, 198.51.100.8/30, 192.0.2.1/32, 192.0.2.4/32, 8.8.8.8/32
-```
-
-### **Test 6: Redundancy with Public IPs**
-```bash
-# Simulate link failure
-Router2(config)# interface FastEthernet0/0
-Router2(config-if)# shutdown
-
-# Test connectivity during failure
-RouterB# ping 8.8.8.8 source 203.0.113.2
-# Should still work via Router4 → Router2 path
-
-# Restore and verify
-Router2(config-if)# no shutdown
-RouterA# ping 8.8.8.8 source 198.51.100.10
-# Should return to optimal path
-```
-
-## Step 7: Final Validation
-
-```bash
-# Comprehensive connectivity test
-RouterA# ping 8.8.8.8
-RouterB# ping 8.8.8.8
-RouterA# ping 203.0.113.18
-RouterB# ping 198.51.100.50
-
-# From end devices
-PC6> ping 8.8.8.8
-PC6> ping 203.0.113.34
-PC> ping 8.8.8.8  
-PC> ping 198.51.100.34
-
-# Verify all static routes are correct
-Router1# show ip route static
-Router3# show ip route static
+Ping statistics for 200.168.1.1:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 1ms, Average = 0ms
 ```
 
 ### 5.2 Testing and Validation
 
-__TODO__
+#### 5.2.1 show ip route, show ip ospf neighbor, show ip ospf interface brief
+
+Router1
+
+```txt
+Router1>sh ip route
+
+Gateway of last resort is 200.12.10.2 to network 0.0.0.0
+
+     8.0.0.0/32 is subnetted, 1 subnets
+O       8.8.8.8 [110/2] via 200.12.10.2, 00:13:05, FastEthernet0/0
+                [110/2] via 200.14.10.2, 00:13:05, FastEthernet0/1
+     200.12.10.0/30 is subnetted, 1 subnets
+C       200.12.10.0 is directly connected, FastEthernet0/0
+     200.14.10.0/30 is subnetted, 1 subnets
+C       200.14.10.0 is directly connected, FastEthernet0/1
+     200.20.1.0/30 is subnetted, 2 subnets
+C       200.20.1.0 is directly connected, FastEthernet1/0
+O       200.20.1.4 [110/3] via 200.12.10.2, 00:18:28, FastEthernet0/0
+S    200.20.11.0/24 [1/0] via 200.20.1.2
+S    200.20.12.0/23 [1/0] via 200.20.1.2
+     200.23.10.0/30 is subnetted, 1 subnets
+O       200.23.10.0 [110/2] via 200.12.10.2, 00:18:38, FastEthernet0/0
+     200.34.10.0/30 is subnetted, 1 subnets
+O       200.34.10.0 [110/2] via 200.14.10.2, 00:13:05, FastEthernet0/1
+     200.168.1.0/27 is subnetted, 1 subnets
+S       200.168.1.0 [1/0] via 200.14.10.2
+S*   0.0.0.0/0 [1/0] via 200.12.10.2
+
+Router1>show ip ospf neighbor 
+
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+2.2.2.2           1   FULL/BDR        00:00:34    200.12.10.2     FastEthernet0/0
+4.4.4.4           1   FULL/BDR        00:00:34    200.14.10.2     FastEthernet0/1
+
+Router1>show ip ospf neighbor 
+
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+2.2.2.2           1   FULL/BDR        00:00:34    200.12.10.2     FastEthernet0/0
+4.4.4.4           1   FULL/BDR        00:00:34    200.14.10.2     FastEthernet0/1
+Router1>show ip ospf interface brief
+Interface     PID   Area                     IP Address/Mask          Cost  State  Nbrs F/C
+Fa0/0           1   0                    200.12.10.1/255.255.255.252   1       DR  0/0
+Fa0/1           1   0                    200.14.10.1/255.255.255.252   1       DR  0/0
+Fa1/0           1   0                     200.20.1.1/255.255.255.252   1     WAIT  0/0
+```
+
+Router2
+
+```txt
+Router2>sh ip route
+Gateway of last resort is 0.0.0.0 to network 0.0.0.0
+
+     8.0.0.0/32 is subnetted, 1 subnets
+C       8.8.8.8 is directly connected, Loopback0
+     200.12.10.0/30 is subnetted, 1 subnets
+C       200.12.10.0 is directly connected, FastEthernet0/0
+     200.14.10.0/30 is subnetted, 1 subnets
+O       200.14.10.0 [110/2] via 200.12.10.1, 00:18:17, FastEthernet0/0
+     200.20.1.0/30 is subnetted, 2 subnets
+O       200.20.1.0 [110/2] via 200.12.10.1, 00:31:27, FastEthernet0/0
+O       200.20.1.4 [110/2] via 200.23.10.2, 00:23:40, FastEthernet0/1
+S    200.20.11.0/24 [1/0] via 200.12.10.1
+S    200.20.12.0/23 [1/0] via 200.12.10.1
+     200.23.10.0/30 is subnetted, 1 subnets
+C       200.23.10.0 is directly connected, FastEthernet0/1
+     200.34.10.0/26 is subnetted, 1 subnets
+O       200.34.10.0 [110/2] via 200.23.10.2, 00:23:50, FastEthernet0/1
+     200.168.1.0/27 is subnetted, 1 subnets
+S       200.168.1.0 [1/0] via 200.23.10.2
+S*   0.0.0.0/0 is directly connected, Loopback0
+
+Router2>sh ip ospf neighbor
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+1.1.1.1           1   FULL/DR         00:00:39    200.12.10.1     FastEthernet0/0
+3.3.3.3           1   FULL/BDR        00:00:34    200.23.10.2     FastEthernet0/1
+
+Router2>sh ip ospf interface brief
+Interface     PID   Area                     IP Address/Mask          Cost  State  Nbrs F/C
+Fa0/0           1   0                    200.12.10.2/255.255.255.252   1      BDR  0/0
+Fa0/1           1   0                    200.23.10.1/255.255.255.252   1       DR  0/0
+Lo0             1   0                        8.8.8.8/255.255.255.255   1     WAIT  0/0
+```
+
+Router3
+
+```txt
+Router3>sh ip route
+Gateway of last resort is 200.23.10.1 to network 0.0.0.0
+
+     8.0.0.0/32 is subnetted, 1 subnets
+O       8.8.8.8 [110/2] via 200.23.10.1, 00:24:42, FastEthernet0/1
+     200.12.10.0/30 is subnetted, 1 subnets
+O       200.12.10.0 [110/2] via 200.23.10.1, 00:24:42, FastEthernet0/1
+     200.14.10.0/30 is subnetted, 1 subnets
+O       200.14.10.0 [110/3] via 200.23.10.1, 00:19:51, FastEthernet0/1
+     200.20.1.0/30 is subnetted, 2 subnets
+O       200.20.1.0 [110/3] via 200.23.10.1, 00:24:42, FastEthernet0/1
+C       200.20.1.4 is directly connected, FastEthernet1/0
+S    200.20.11.0/24 [1/0] via 200.34.10.2
+S    200.20.12.0/23 [1/0] via 200.34.10.2
+     200.23.10.0/30 is subnetted, 1 subnets
+C       200.23.10.0 is directly connected, FastEthernet0/1
+     200.34.10.0/26 is subnetted, 1 subnets
+C       200.34.10.0 is directly connected, FastEthernet0/0
+     200.168.1.0/27 is subnetted, 1 subnets
+S       200.168.1.0 [1/0] via 200.20.1.6
+     200.168.2.0/27 is subnetted, 1 subnets
+S       200.168.2.0 [1/0] via 200.20.1.6
+S*   0.0.0.0/0 [1/0] via 200.23.10.1
+
+Router3>sh ip ospf neighbor
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+2.2.2.2           1   FULL/DR         00:00:30    200.23.10.1     FastEthernet0/1
+
+Router3>sh ip ospf interface brief
+Interface     PID   Area                     IP Address/Mask          Cost  State  Nbrs F/C
+Fa0/1           1   0                    200.23.10.2/255.255.255.252   1      BDR  0/0
+Fa0/0           1   0                    200.34.10.1/255.255.255.192   1       DR  0/0
+Fa1/0           1   0                     200.20.1.5/255.255.255.252   1     WAIT  0/0
+```
+
+Router4
+
+```txt
+Router4>sh ip route
+Gateway of last resort is 200.14.10.1 to network 0.0.0.0
+
+     8.0.0.0/32 is subnetted, 1 subnets
+C       8.8.8.8 is directly connected, Loopback0
+     200.12.10.0/30 is subnetted, 1 subnets
+O       200.12.10.0 [110/2] via 200.14.10.1, 00:21:15, FastEthernet0/0
+     200.14.10.0/30 is subnetted, 1 subnets
+C       200.14.10.0 is directly connected, FastEthernet0/0
+     200.20.1.0/30 is subnetted, 2 subnets
+O       200.20.1.0 [110/2] via 200.14.10.1, 00:21:15, FastEthernet0/0
+O       200.20.1.4 [110/4] via 200.14.10.1, 00:21:15, FastEthernet0/0
+S    200.20.11.0/24 [1/0] via 200.14.10.1
+S    200.20.12.0/23 [1/0] via 200.14.10.1
+     200.23.10.0/30 is subnetted, 1 subnets
+O       200.23.10.0 [110/3] via 200.14.10.1, 00:21:15, FastEthernet0/0
+     200.34.10.0/30 is subnetted, 1 subnets
+C       200.34.10.0 is directly connected, FastEthernet0/1
+     200.168.1.0/27 is subnetted, 1 subnets
+S       200.168.1.0 [1/0] via 200.34.10.1
+     200.168.2.0/27 is subnetted, 1 subnets
+S       200.168.2.0 [1/0] via 200.34.10.1
+S*   0.0.0.0/0 [1/0] via 200.14.10.1
+
+Router4>sh ip ospf neighbor
+
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+1.1.1.1           1   FULL/DR         00:00:37    200.14.10.1     FastEthernet0/0
+
+Router4>sh ip ospf interface brief
+Interface     PID   Area                     IP Address/Mask          Cost  State  Nbrs F/C
+Fa0/0           1   0                    200.14.10.2/255.255.255.252   1      BDR  0/0
+Fa0/1           1   0                    200.34.10.2/255.255.255.252   1       DR  0/0
+Lo0             1   0                        8.8.8.8/255.255.255.255   1     WAIT  0/0
+```
+
+#### 5.2.2 ping/traceroute from company PCs to ISP and to 8.8.8.8
+
+```txt
+# From Company A
+RouterA>ping 8.8.8.8
+
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 8.8.8.8, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/5/14 ms
+
+RouterA>traceroute 8.8.8.8
+Type escape sequence to abort.
+Tracing the route to 8.8.8.8
+
+  1   200.20.1.1      12 msec   0 msec    0 msec    
+  2   200.12.10.2     0 msec    0 msec    0 msec  
+
+# From Company B
+RouterB>ping 8.8.8.8
+
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 8.8.8.8, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/0 ms
+
+RouterB>traceroute 8.8.8.8
+Type escape sequence to abort.
+Tracing the route to 8.8.8.8
+
+  1   200.20.1.5      0 msec    0 msec    0 msec    
+  2   200.23.10.1     0 msec    0 msec    0 msec    
+```
 
 ### 5.3 Practical Questions
 
@@ -2667,6 +2852,8 @@ Yes, with exception of PC7 and PC9 from Company A, because the sub-interface for
 | Router3 | 10.23.10.1 | Router2 Fa0/1 - Connects to Loopback0 internally |
 | Router4 | 10.14.10.1 | Router1 F0/1 - Has internal route to default too. Could have been 10.34.10.1, the result will be the same |
 
+table 24 - next-hop per Router
+
 #### 3. Describe the purpose of static routes on R1–R4 and what changes once OSPF runs. 
 
 Static routes on R1-R4 provide **manual path instruction** to create complete connectivity across the ISP fabric when dynamic routing is unavailable.
@@ -2675,127 +2862,13 @@ The transition from static to OSPF routing transforms the network from a **manua
 
 #### 4. After enabling OSPF, explain the path selection you observe towards __8.8.8.8.__
 
-__TODO__: REVIEW
-
-After enabling OSPF, let me analyze the path selection toward **8.8.8.8** (Router2's Loopback0) from various points in the network.
-
-## OSPF Path Selection Fundamentals
-
 OSPF uses **cost** as its metric, which is calculated as:
 **Cost = Reference Bandwidth (100 Mbps) / Interface Bandwidth**
 
 For FastEthernet (100 Mbps): `100 / 100 = Cost 1`
 For Loopback interfaces: `Cost = 1` (very low)
 
-## Observed Paths to 8.8.8.8
-
-### **1. From Router1 to 8.8.8.8**
-```bash
-Router1# show ip route 8.8.8.8
-# O      8.8.8.8/32 [110/11] via 10.0.0.2, FastEthernet0/0
-```
-
-**Path:** `Router1 → Router2 → 8.8.8.8`
-**Cost Calculation:** 
-- Router1 to Router2: Cost 1 (FastEthernet)
-- Router2 to 8.8.8.8: Cost 1 (Loopback)
-- **Total Cost: 2** (not 11 as shown - the 11 includes administrative distance)
-
-**Why this path?** Direct connection to Router2 - shortest possible path.
-
-### **2. From Router3 to 8.8.8.8**
-```bash
-Router3# show ip route 8.8.8.8
-# O      8.8.8.8/32 [110/21] via 10.0.0.4, FastEthernet0/0
-```
-
-**Path:** `Router3 → Router4 → Router2 → 8.8.8.8`
-**Cost Calculation:**
-- Router3 to Router4: Cost 1
-- Router4 to Router2: Cost 1  
-- Router2 to 8.8.8.8: Cost 1
-- **Total Cost: 3**
-
-**Why this path?** Through the core rather than direct to Router1, because:
-- No direct connection between Router3 and Router2
-- Must traverse Router4 and Router2
-
-### **3. From Router4 to 8.8.8.8**
-```bash
-Router4# show ip route 8.8.8.8
-# O      8.8.8.8/32 [110/11] via 10.0.0.2, FastEthernet0/0
-```
-
-**Path:** `Router4 → Router2 → 8.8.8.8`
-**Cost Calculation:**
-- Router4 to Router2: Cost 1
-- Router2 to 8.8.8.8: Cost 1
-- **Total Cost: 2**
-
-**Why this path?** Direct connection to Router2 - optimal path.
-
-### **4. From Company A (RouterA) to 8.8.8.8**
-```bash
-RouterA# traceroute 8.8.8.8
-# 1 10.20.1.1 (Router1)
-# 2 10.0.0.2 (Router2) 
-# 3 8.8.8.8
-```
-
-**Path:** `RouterA → Router1 → Router2 → 8.8.8.8`
-**Why this path?** 
-- RouterA's default route points to Router1
-- Router1 has optimal OSPF path directly to Router2
-
-### **5. From Company B (RouterB) to 8.8.8.8**
-```bash
-RouterB# traceroute 8.8.8.8  
-# 1 10.20.1.5 (Router3)
-# 2 10.0.0.4 (Router4)
-# 3 10.0.0.2 (Router2)
-# 4 8.8.8.8
-```
-
-**Path:** `RouterB → Router3 → Router4 → Router2 → 8.8.8.8`
-**Why this path?**
-- RouterB's default route points to Router3
-- Router3's OSPF path goes through Router4 to reach Router2
-
-## OSPF Path Selection Evidence
-
-### **View the OSPF Database:**
-```bash
-Router1# show ip ospf database router 2.2.2.2
-# Shows Router2's Type-1 LSA advertising:
-# - 10.0.0.2/32 (Router2's Fa0/0)
-# - 8.8.8.8/32 (Loopback0)
-# - Connected networks
-
-Router3# show ip ospf database
-# Can see multiple paths to 8.8.8.8 but chooses lowest cost
-```
-
-### **Multiple Path Analysis:**
-If there were equal-cost paths, OSPF would load balance. Let's check:
-
-```bash
-Router4# show ip ospf interface brief
-# Verify all interfaces have cost 1 (100 Mbps)
-
-Router4# show ip route 8.8.8.8
-# Only shows one path - no equal-cost multipath
-```
-
-## Why These Specific Paths Are Chosen
-
-### **Key OSPF Decisions:**
-
-1. **Router1 → Router2 (Direct):** Obvious choice - single hop
-2. **Router3 → Router4 → Router2:** Must traverse core, chooses shortest path through Router4
-3. **Router4 → Router2 (Direct):** Direct connection available
-4. **No Router3 → Router1 Path:** These routers aren't directly connected in your topology
-
-### **Path Cost Comparison Table:**
+**Path Cost Comparison Table:**
 
 | Source Router | Possible Paths | Total Cost | Chosen Path |
 |---------------|----------------|------------|-------------|
@@ -2804,31 +2877,7 @@ Router4# show ip route 8.8.8.8
 | | R3 → R1 → R2 | N/A | Not possible (no direct link) |
 | **Router4** | Direct to R2 | 2 | **R4 → R2** |
 
-## Verification Commands
-
-### **Prove the Path with Traceroute:**
-```bash
-# From Router3
-Router3# traceroute 8.8.8.8
-# 1 10.0.0.4 (Router4)
-# 2 10.0.0.2 (Router2) 
-# 3 8.8.8.8
-
-# From Company A PC
-PC6> traceroute 8.8.8.8
-# 1 172.20.13.126 (RouterA)
-# 2 10.20.1.1 (Router1)
-# 3 10.0.0.2 (Router2)
-# 4 8.8.8.8
-```
-
-### **Check OSPF Topology:**
-```bash
-Router2# show ip ospf database router self-originate
-# Shows what Router2 advertises to the OSPF domain
-```
-
-## Path Selection Summary
+table 25 - OSPF path costs
 
 The OSPF path selection toward **8.8.8.8** demonstrates:
 
