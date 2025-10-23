@@ -372,3 +372,338 @@ Router # clear ip ospf process
 # Confirm before resetting the OSPF process
 Reset ALL OSPF processes ? [ no ]: yes
 ```
+
+## OSPF Hello Messages: Fields and Behavior
+
+### OSPF Router-to-Router Communication
+
+__How are OSPF messages exchanged?__
+
+- OSPF messages are sent using IP datagrams:
+	+ Protocol number __89__ in IP header
+	+ Type of Service (TOS) = 0
+	+ Preference = _Internetwork Control_ (if suported)
+- Messages are exchanged directly between routers on the same subnet
+- __LSU retransmissions__ always use the unicast IP of the neighbor
+
+__Multicast Usage (when possible)__:
+
+- `224.0.0.5` - __AllSPFRouters__ (all OSPF-speaking routers)
+- `224.0.0.6` - __AllDRouters__ (DRs and BDRs only)
+
+> Multicast is not used in point-to-point links, devices without multicast support, or NBMA networks
+
+### OSPF Hello Communication Between Neighbors
+
+__Purpose of Hello Messages__
+
+- Responsible for discovering and maintaining neighbor relationships
+- Ensure bidirectional communication and router availability
+
+__Key Fields in Hello Packets__
+
+- __Router Priority__ - influences DR election
+- __Hello Interval__ - time between Hello packets
+- __Dead Interval__ - time to wait before declaring neighbor down
+- __Subnet Mask__ - 0.0.0.0 allowed in p2p or virtual links
+- __Options Field__ - indicates supported capabilities:
+	+ Bit E = AS-external-LSA support (0 in stub areas)
+	
+#### Transport Mode by Network Type
+
+- __Broadcast & Point-to-Point__: `multicast 224.0.0.5` AllSPFRouters
+- __Virtual Links__: `unicast` to remote IP
+- __Point-to-Multipoint__: `unicast` - Hello sent individually per link
+
+1. __Networks with _multicast_ support__
+	- __Hello packets__ are sent to `224.0.0.5` (AllSPFRouters)
+	- __DR and BDR__ send LSUs and LSAcks to `224.0.0.5`
+	- __Other routers__ send LSUs and LSAcks to `224.0.0.6` (AllDRRouters)
+2. __Networks without _multicast_ support__ (including virtual links)
+	- All OSPF messages are sent via __unicast__ to the neighbor’s IP address
+3. __Point-to-Point Links__
+	- All OSPF messages are sent to `224.0.0.5` (AllSPFRouters)
+	
+> Note: Multicast usage reduces overhead and improves OSPF scalability
+
+### Receiving OSPF Messages
+
+- __Multicast to AllDRouters__ is only processed if the receiving router is a __DR__ or __BDR__
+- The message __must be authenticated__ before being processed
+- If the message is a __Hello__, it is handled by the Hello protocol
+- __All other OSPF message types__ are exchanged only between __adjacent routers__
+- Message must come from an __active neighbor__, or it is discarded
+- In __broadcast__, __point-to-multipoint__, and __NBMA__ networks, the origin is identified by the __source IP address__ of the datagram.
+- In __point-to-point__ and __virtual links__, the origin is identified by the __Router ID__ field in the OSPF header
+
+> These rules help ensure that only trusted, relevant OSPF messages are processed — minimizing risk and maintaining database synchronization
+
+### OSPF Timers and Their Role
+
+OSPF uses two types of timers to coordinate protocol behavior:
+
+- __Single-shot timers__ - trigger once to initiate an internal event
+	+ Example: After detecting a topology change, this timer starts the countdown to flush outdated routing entries
+- __Interval timers__ - trigger periodically to send control packets
+	+ Example: Used for sending Hello packets at regular intervals
+	
+__Timer resolution__: 1 second (OSPF uses coarse granularity)
+
+To __avoid synchronization spikes__, OSPF introduces _rando jitter_ when sending periodic messages like Hello or LSAs
+
+### OSPF Message Authentication
+
+- OSPF allows __authentication of routing messages__
+- Different interfaces can use different authentication methods
+- Ensures secure exchange of routing information between routers
+- __Authentication types__:
+	+ __None__ - no authentication used
+	+ __Simple password__ - key sent in plaintext
+	+ __MD5__ - key hash included in the packet
+- Authentication can be defined __per instance__ and __per area__
+
+### OSPF Message Header Format
+
+Each OSPF packet begins with a fixed 24-byte header:
+
+| Field                   | # bytes | Notes |
+| ----------------------- | ------- | ----- |
+| __Version__             | 1 | OSPF version (eg. 2) |
+| __Type__                | 1 | Hello, DBD, LSR, LSU, LSack |
+| __Packet Length__       | 2 | Total length |
+| __Router ID__           | 4 | Originating router |
+| __Area ID__             | 4 | Originating area |
+| __Checksum__            | 2 | Validates integrity |
+| __Authentication Type__ | 2 | no auth, plaintext, md5 |
+| __Authentication Data__ | 8 | 64-bit auth info |
+
+![OSPF Message Header](./img/10.png)
+
+### OSPF Packet Types (Header Field: Type)
+
+All OSPF packets share a common header
+
+The __Type__ field (byte 2) defines the message kind:
+
+| # | Message kind | Notes |
+| - | ------------ | ----- |
+| 1 | __Hello__    | Used to discover and maintain neighbor relationships |
+| 2 | __Database Descritpion (DD)__ | Summarizes LSDB contents for synchronization | 
+| 3 | __Link State Request (LSR)__ | Requests specific LSAs from a neighbor |
+| 4 | __Link State Update (LSU)__ | Carries one or more LSAs to update neighbors |
+| 5 | __Link State Acknowledgment (LSAck)__ | Confirms receipt of LSAs for reliability |
+
+
+#### Hello Message Format
+
+Structure of an OSPF Hello packet:
+
+- __Header fields__ (common to all OSPF packets):
+	+ Version, type __1__
+	+ Packet length
+	+ Router ID
+	+ Area ID
+	+ Checksum
+	+ Auth Type
+	+ Auth Data
+- __Hello-specific fields__:
+	+ Network Mask
+	+ Hello Interval
+	+ Dead Interval
+	+ Options
+	+ Router Priority
+	+ Designated Router ID
+	+ Backup Designated Router ID
+	+ Neighbor List
+	
+![Hello Message Fields](./img/11.png)
+
+##### Hello Message - Options Field
+
+Bit order in Options field
+
+| 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
+| - | - | - | - | - | - | - | - | 
+|   |   | DC|EA |N/P|MC | E |   |
+
+The OSPF __Options field__ is included in Hello, DBD, and LSA packets to signal optional capabilities:
+
+- __E-bit__: External routing capability (AS-external-LSA support)
+- __MC-bit__: Support for IP multicast routing [RFC 1584]
+- __N/P-bit__: NSSA capability (Type-7 LSAs) [RFC 1587]
+- __EA-bit__: Router can receive/send AS-external-LSA
+- __DC-bit__: Demand Circuit support [RFC 1793]
+
+> Routers must agree on these capabilities to form adjacencies
+
+#### Data Description (DD) Message Format
+
+Structure of a DD message:
+
+- __Header fields__ (common to all OSPF packets):
+	+ Version, __type 2__ 
+	+ Packet length
+	+ Router ID
+	+ Area ID
+	+ Checksum
+	+ Auth Type
+	+ Auth Data
+- __DD-specific fields__:
+	+ __Interface MTU__ - Maximum size of OSPF packets on the link
+	+ __Options__ - CApabilities like E-bit, DC-bit, etc
+	+ __Flags__ - Init, More, Master/Slave
+	+ __LSA Headers[]__ - Summary of LSAs in the router's database
+	
+![DD Message Fields](./img/12.png)
+
+#### Link State Request (LSR) Message Format
+
+Structure of an LSR message:
+
+- __Header fields__ (common to all OSPF packets):
+	+ Version, __type 3__ 
+	+ Packet length
+	+ Router ID
+	+ Area ID
+	+ Checksum
+	+ Auth Type
+	+ Auth Data
+- __LSR-specific fields__:
+	+ __LS Type__ - Type of LSA requested (e.g., Router-LSA, Network-LSA)
+	+ __Link-State ID__ - Identifies the specific LSA instance
+	+ __Advertising Router__ -  Router ID of the LSA originator
+
+![LSR Message Fields](./img/13.png)
+
+#### Link State Update (LSU) Message Format
+
+Structure of an LSU message:
+
+- __Header fields__ (common to all OSPF packets):
+	+ Version, __type 4__ 
+	+ Packet length
+	+ Router ID
+	+ Area ID
+	+ Checksum
+	+ Auth Type
+	+ Auth Data
+- __LSU-specific fields__:
+	+ __Number of LSAs__ - Indicates how many LSAs are included
+	+ __LSAs__ - One or more full LSAs follow in the packet
+	
+![LSU Message Fields](./img/14.png)
+
+#### Link State Acknowledgment (LSAck) Message Format
+
+Structure of an LSAck message:
+
+- __Header fields__ (common to all OSPF packets):
+	+ Version, __type 5__ 
+	+ Packet length
+	+ Router ID
+	+ Area ID
+	+ Checksum
+	+ Auth Type
+	+ Auth Data
+- __LSU-specific fields__:
+	+ __LSA Header(s)__ - Each acknowledged LSA is represented by its header
+	+ One LSAck message may carry multiple LSA Headers
+	
+![LSAck Message Fields](./img/15.png)
+
+---
+
+## Neighbors and Adjacencies
+
+### OSPF Relations
+
+OSPF defines two levels of router association:
+
+1. NEIGHBOR routers
+2. ADJACENT routers
+
+- __Adjacency__ is a stronger relation: routers synchronize __routing tables__
+- In a __neighbor__ state, routers only __exchange Hello packets__ to establish potential adjacency
+
+![OSPF relations](./img/16.png)
+
+### Establishing OSPF Neighbor and Adjacency Relationships
+
+1. __HELLO PROTOCOL__: OSPF uses this protocol to discover neighbors and establish adjacencies
+	- Messages help identify routers and ensure compatibility
+	- Exchange happens over IP protocol number 89
+	- Multicast address `224.0.0.5` is used whenever possible
+2. __ROUTER ID (RID)__: Each router must have a __unique 32-bit identifier__
+	- Can be manually assigned or derived from the __highest__ loopback IP
+3. __HELLO MESSAGE FIELDS__: Include critical information for compatibility checks
+	- __Router ID__, __Area ID__, __Hello/Dead Intervals__, and __Priority__
+	- Neighbor list and __authentication information__
+	- __Network mask__, stub area flags, and more
+4. __COMPATIBILITY__: Only compatible HELLO messages allow routers to become neighbors and eventually6 adajacent
+
+### Hello Protocol in BMA Networks
+
+__Objective__
+
+- Establish and maintain bidirectional neighbor relationships.
+- Elect the __Designated Router (DR)__ and __Backup DR (BDR)__ per segment
+- DR decides which routers should form adjacencies
+- Acts as a “keepalive” mechanism
+
+__Operation__
+
+Routers periodically send __Hello__ messages:
+
+- Use multicast IP `224.0.0.5` (AllSPFRouters)
+- List know neighbors' addresses
+- Indicates current DR and BDR perceptions
+
+Routers receiving __Hello__ messages:
+
+- Consider sender as a neighbor if their own address is listed
+- DR election: highest priority, the highest __Router ID__
+
+![OSPF Hello Exchange](./img/17.png)
+
+### OSPF Neighbor State Transitions
+
+OSPF neighbor formation follows a Finite State Machine (FSM) with 7 states:
+
+| State | Description |
+| ----- | ----------- |
+| Down | No Hello received |
+| Init | Hello received (router ID not seen) |
+| 2-Way | Bidirectional communication established |
+| ExStart | Master/Slave negotiation |
+| Exchange | DBD packets exchanged |
+| Loading | Missing LSAs are requested |
+| Full | Databases are synchronized |
+
+- Routers become fully adjacent only with designated peers
+- State transitions depend on network type and DR/BDR roles
+
+![Neighbor FSM States](./img/18.png)
+
+> In gray - computing neighbors
+
+> In violet - computing adjacency
+
+> In green - computations complete
+
+#### OSPF Neighbor and Adjacency Requirements
+
+Conditions for __Neighborship__ (2-Way neighbors):
+
+1. Interfaces must be in the same __area__
+2. Interfaces must belong to the same __subnet__ (mask)
+3. Matching __Hello__ and __Dead intervals__
+4. Same __authentication method__ [optional]
+5. Same __area type__ (eg., stub, NSSA)
+6. __Router IDs__ must be unique
+
+__Additional Conditions__ for Adjacency (full state adjacencies):
+
+7. On BMA networks, one router must be a __DR__ or __BDR__
+8. On __point-to-(multi)point__ links, adjacency forms without DR election
+
+## OSPF Synchronization and Flooding
