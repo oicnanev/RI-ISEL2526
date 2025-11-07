@@ -1,0 +1,70 @@
+Nov 05 17:07:24.427 HYPERVISOR: Release 0.2.23-amd64/Darwin (tag 2023010200)
+Nov 05 17:07:24.428 HYPERVISOR: Started on IP = 127.0.0.1, TCP port = 60804.
+Nov 05 17:07:24.428 HYPERVISOR: exec_cmd: hypervisor version 
+Nov 05 17:07:24.429 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/GNS3/projects/Aula 08 - BGP Basic v1/project-files/dynamips 
+Nov 05 17:07:24.429 GENERAL: working_dir=/Users/oicnanev/GNS3/projects/Aula 08 - BGP Basic v1/project-files/dynamips
+Nov 05 17:07:24.429 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/GNS3/projects/Aula 08 - BGP Basic v1/project-files/dynamips/7e00da16-92fe-466d-acf3-393b87c9655b 
+Nov 05 17:07:24.429 GENERAL: working_dir=/Users/oicnanev/GNS3/projects/Aula 08 - BGP Basic v1/project-files/dynamips/7e00da16-92fe-466d-acf3-393b87c9655b
+Nov 05 17:07:24.429 HYPERVISOR: exec_cmd: vm create Router-Lisboa1 2 c7200 
+Nov 05 17:07:24.429 VM: VM Router-Lisboa1 created.
+Nov 05 17:07:24.430 HYPERVISOR: exec_cmd: vm set_con_tcp_port Router-Lisboa1 5002 
+Nov 05 17:07:24.430 HYPERVISOR: exec_cmd: c7200 get_mac_addr Router-Lisboa1 
+Nov 05 17:07:24.431 HYPERVISOR: exec_cmd: vm get_status Router-Lisboa1 
+Nov 05 17:07:24.431 HYPERVISOR: exec_cmd: vm slot_add_binding Router-Lisboa1 0 0 C7200-IO-FE 
+Nov 05 17:07:24.431 HYPERVISOR: exec_cmd: vm set_disk0 Router-Lisboa1 0 
+Nov 05 17:07:24.431 HYPERVISOR: exec_cmd: vm get_status Router-Lisboa1 
+Nov 05 17:07:24.431 HYPERVISOR: exec_cmd: vm set_idle_pc Router-Lisboa1 0x6076abd0 
+Nov 05 17:07:24.432 HYPERVISOR: exec_cmd: vm set_ios Router-Lisboa1 /Users/oicnanev/GNS3/images/IOS/c7200-advipservicesk9-mz.124-24.T8.image 
+Nov 05 17:07:24.432 HYPERVISOR: exec_cmd: c7200 set_mac_addr Router-Lisboa1 ca02.e08e.0000 
+Nov 05 17:07:24.432 HYPERVISOR: exec_cmd: vm set_nvram Router-Lisboa1 512 
+Nov 05 17:07:24.432 HYPERVISOR: exec_cmd: vm set_ram Router-Lisboa1 512 
+Nov 05 17:07:24.433 HYPERVISOR: exec_cmd: vm get_status Router-Lisboa1 
+Nov 05 17:07:24.433 HYPERVISOR: exec_cmd: vm slot_add_binding Router-Lisboa1 1 0 PA-FE-TX 
+Nov 05 17:07:24.433 HYPERVISOR: exec_cmd: vm get_status Router-Lisboa1 
+Nov 05 17:07:24.433 HYPERVISOR: exec_cmd: vm slot_add_binding Router-Lisboa1 2 0 PA-2FE-TX 
+Nov 05 17:07:24.433 HYPERVISOR: exec_cmd: vm get_status Router-Lisboa1 
+Nov 05 17:07:24.433 HYPERVISOR: exec_cmd: vm slot_add_binding Router-Lisboa1 3 0 PA-GE 
+Nov 05 17:07:24.433 HYPERVISOR: exec_cmd: vm get_status Router-Lisboa1 
+Nov 05 17:07:24.433 HYPERVISOR: exec_cmd: vm slot_add_binding Router-Lisboa1 4 0 PA-4T+ 
+Nov 05 17:07:24.434 HYPERVISOR: exec_cmd: vm get_status Router-Lisboa1 
+Nov 05 17:07:24.434 HYPERVISOR: exec_cmd: vm slot_add_binding Router-Lisboa1 5 0 PA-4E 
+Nov 05 17:07:24.434 HYPERVISOR: exec_cmd: vm get_status Router-Lisboa1 
+Nov 05 17:07:24.434 HYPERVISOR: exec_cmd: vm slot_add_binding Router-Lisboa1 6 0 PA-8E 
+Nov 05 17:07:25.167 HYPERVISOR: exec_cmd: nio create_udp udp-ee988099-3ece-4e0f-b2c3-079eca0adcb0 10010 127.0.0.1 10011 
+Nov 05 17:07:25.388 HYPERVISOR: exec_cmd: vm slot_add_nio_binding Router-Lisboa1 0 0 udp-ee988099-3ece-4e0f-b2c3-079eca0adcb0 
+Nov 05 17:07:25.389 HYPERVISOR: exec_cmd: vm get_status Router-Lisboa1 
+Nov 05 17:07:25.410 HYPERVISOR: exec_cmd: nio create_udp udp-4b0932ee-e33f-4c78-ac31-79f11e3d0a93 10014 127.0.0.1 10015 
+Nov 05 17:07:25.411 HYPERVISOR: exec_cmd: vm slot_add_nio_binding Router-Lisboa1 1 0 udp-4b0932ee-e33f-4c78-ac31-79f11e3d0a93 
+Nov 05 17:07:25.412 HYPERVISOR: exec_cmd: vm get_status Router-Lisboa1 
+Nov 05 17:16:10.289 HYPERVISOR: exec_cmd: vm set_ghost_status Router-Lisboa1 2 
+Nov 05 17:16:10.289 HYPERVISOR: exec_cmd: vm set_ghost_file Router-Lisboa1 /Users/oicnanev/GNS3/projects/Aula 08 - BGP Basic v1/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Nov 05 17:16:10.289 HYPERVISOR: exec_cmd: vm get_status Router-Lisboa1 
+Nov 05 17:16:10.289 HYPERVISOR: exec_cmd: vm set_config Router-Lisboa1 configs/i2_startup-config.cfg configs/i2_private-config.cfg 
+Nov 05 17:16:10.290 HYPERVISOR: exec_cmd: vm start Router-Lisboa1 
+Nov 05 17:16:40.541 HYPERVISOR: exec_cmd: vm extract_config Router-Lisboa1 
+Nov 05 18:08:49.597 HYPERVISOR: exec_cmd: vm get_status Router-Lisboa1 
+Nov 05 18:08:49.597 HYPERVISOR: exec_cmd: vm set_idle_pc_online Router-Lisboa1 0 0x0 
+Nov 05 18:08:49.598 HYPERVISOR: exec_cmd: vm get_status Router-Lisboa1 
+Nov 05 18:08:49.598 HYPERVISOR: exec_cmd: vm get_idle_pc_prop Router-Lisboa1 0 
+Nov 05 18:09:08.531 HYPERVISOR: exec_cmd: vm get_status Router-Lisboa1 
+Nov 05 18:09:08.532 HYPERVISOR: exec_cmd: vm set_idle_pc_online Router-Lisboa1 0 0x606e056c 
+Nov 05 18:09:14.885 HYPERVISOR: exec_cmd: vm get_status Router-Lisboa1 
+Nov 05 18:09:14.885 HYPERVISOR: exec_cmd: vm stop Router-Lisboa1 
+Nov 05 18:09:14.973 VM: VM Router-Lisboa1 shutdown.
+Nov 05 18:09:14.974 HYPERVISOR: exec_cmd: vm extract_config Router-Lisboa1 
+Nov 05 18:09:22.309 HYPERVISOR: exec_cmd: vm set_ghost_status Router-Lisboa1 2 
+Nov 05 18:09:22.310 HYPERVISOR: exec_cmd: vm set_ghost_file Router-Lisboa1 /Users/oicnanev/GNS3/projects/Aula 08 - BGP Basic v1/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Nov 05 18:09:22.310 HYPERVISOR: exec_cmd: vm get_status Router-Lisboa1 
+Nov 05 18:09:22.310 HYPERVISOR: exec_cmd: vm set_config Router-Lisboa1 configs/i2_startup-config.cfg configs/i2_private-config.cfg 
+Nov 05 18:09:22.310 HYPERVISOR: exec_cmd: vm start Router-Lisboa1 
+Nov 06 16:22:09.340 HYPERVISOR: exec_cmd: vm get_status Router-Lisboa1 
+Nov 06 16:22:09.340 HYPERVISOR: exec_cmd: vm stop Router-Lisboa1 
+Nov 06 16:22:09.416 VM: VM Router-Lisboa1 shutdown.
+Nov 06 16:22:09.417 HYPERVISOR: exec_cmd: vm extract_config Router-Lisboa1 
+Nov 06 16:22:10.069 HYPERVISOR: exec_cmd: vm get_status Router-Lisboa1 
+Nov 06 16:22:10.069 HYPERVISOR: exec_cmd: vm extract_config Router-Lisboa1 
+Nov 06 16:22:10.070 HYPERVISOR: exec_cmd: vm delete Router-Lisboa1 
+Nov 06 16:22:10.070 VM: VM Router-Lisboa1 destroyed.
+Nov 06 16:22:10.070 HYPERVISOR: exec_cmd: hypervisor stop 
+Nov 06 16:22:10.541 HYPERVISOR: Stopped.
+Nov 06 16:22:10.541 GENERAL: reset done.
