@@ -18,8 +18,8 @@
 
 ## Practical Assignments
 
-1. [VLAN/STP/OSPF MONO-AREA](./1_practical_assignment/report.md)
-2. [BGP ROUTING CONFIGURATIONS](./2_practical_assignment/report.md)
+1. [VLAN/STP/OSPF MONO-AREA](./Practical_Assignments/1_VLANs_STP_and_OSPF_MONO_AREA/report.md)
+2. [BGP ROUTING CONFIGURATIONS](./Practical_Assignments/2_BGP_Routing_Configurations/report.md)
 
 ## Cisco IOS Commands
 
