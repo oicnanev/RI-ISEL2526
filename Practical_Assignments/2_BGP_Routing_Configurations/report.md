@@ -2,6 +2,9 @@
 
 > REDES DE INTERNET (RI) 2025-2026
 
+g5/0 do R10 sem IP
+area 1 stub não vimos 0.0.0.0 no R12
+
 ---
 
 ## Group 1 - Class 51D
@@ -99,7 +102,7 @@ Server example:
 
 ```txt
 ip 130.41.46.1 130.41.46.2 30
-set pcname Server1-130.41.46.1
+set pcname Server1
 ```
 
 #### OSPF Configuration
@@ -1024,7 +1027,8 @@ __Example from AS 1273 to AS 17390__
 | From | To | Interface | IP Address | Connectivity Success |
 | ---- | -- | --------- | ---------- | ------- |
 | R1   | R8 | Lo1 | 130.41.46.88     | No      |
-| R1   | R8 | g4/0 | 48.73.240.2     | No     |  | R1   | R8 | g5/0 | 130.41.46.2     | No      |
+| R1   | R8 | g4/0 | 48.73.240.2     | No     |  
+| R1   | R8 | g5/0 | 130.41.46.2     | No      |
 | R1   | R7 | Lo1  | 130.41.46.77    | No |
 | R1   | R7 | f0/0 | 130.41.46.9     | No |
 | R1   | R7 | g4/0 | 48.73.240.6     | No |
@@ -1032,13 +1036,14 @@ __Example from AS 1273 to AS 17390__
 
 We have no connectivity between ASes, even in direct connected liks. To have connectivity between ASes we need to configure BGP.
 
-__TODO__
-
 ### 1.4 Practical Questions
 
 #### 1.4.1 - Create a comprehensive table presenting all the connectivity tests carried out and the respective outcome (e.g., success, failure). You don’t need to provide exhaustive snapshots for all test results. Choose only **three example cases**, from different ASes, to include in your report and briefly comment on each selected case.
 
 __TODO__
+pings do R1 para os routers do mesmo AS e para R7, R8
+pings do AS com area 0 e area 1
+pings do AS que tem um AS privado
 
 #### 1.4.2 - Identification of the ASes entities involved in the lab topology
 
@@ -1064,23 +1069,91 @@ Portugal's Internet infrastructure consists of numerous independent networks. Th
 
 #### 1.4.4 - Classification of each AS in the lab project as Tier-1 or Tier-2. For each classification, describe the evidence you find in the lab topology that justifies it
 
-__TODO__
+
+### Classification of Autonomous Systems
+
+| AS Number | AS Name / Entity | Classification | Evidence from Lab Topology |
+| :--- | :--- | :--- | :--- |
+| **AS701** | Verizon Business | **Tier-1** | Described as a "Tier 1" AS in the project overview (Section 3.2). It peers with multiple other major ASes (AS1273, AS17390) and does not need to purchase transit from anyone, fitting the definition of a top-level provider. |
+| **AS1** | Level 3 Parent, LLC | **Tier-1** | A historically well-known Tier-1 ISP. The topology shows it is directly connected to other major networks (AS4637), and it is mentioned as part of the "Tier 1 and Tier 2" ecosystem. |
+| **AS1273** | Vodafone | **Tier-2** | A large telecommunications provider. While global, it acts as a customer of AS701 (purchasing transit), which is a key indicator of a Tier-2. It also peers with multiple other ASes (AS17390, AS20717, AS5511) to reduce its transit costs. |
+| **AS4637** | Telstra Global | **Tier-2** | A dominant national provider in Australia, but on the global stage, it functions as a Tier-2. The topology shows it connecting to other major ASes (AS1, AS20717, AS23344), engaging in a mix of peering and transit relationships. |
+| **AS5511** | Orange (FTRSI) | **Tier-2** | Another major international telecom operator. Its role in the lab is that of a large provider that peers with others (e.g., via AS20717) but is not depicted as part of the exclusive Tier-1 core. |
+| **AS17390** | IBM | **Enterprise (Tier-3)** | This is a corporate enterprise network. Its purpose is to connect its own services (like IBM Cloud) to the internet, not to sell transit to others. It purchases transit from AS1273, making it a classic Tier-3 / "stub" AS. |
+| **AS23344** | Disney | **Enterprise (Tier-3)** | This is a content/enterprise network for Disney. It has only one eBGP peering to the internet (with AS4637) and is configured to receive only a default route, which is typical behavior for an enterprise customer. |
+| **AS20717** | DE-CIX Management GmbH | **Internet Exchange (IXP)** | This is not a transit provider. It is the AS for the DE-CIX Internet Exchange Point. Its function is to provide a neutral fabric for other ASes to peer, which places it outside the Tier hierarchy. |
+| **AS64513** | (Private AS) | **Unclassifiable** | This is a Private AS number (range 64512-65534) used internally, likely for a multihomed customer within AS17390. It is not advertised to the global internet and has no tier classification. |
+
+---
+
+### Justification and Analysis
+
+The classification is based on the core differentiator between tiers: **transit and peering relationships**.
+
+1.  **Tier-1 Evidence:** AS701 and AS1 are presented as the foundational providers in the topology. A key piece of evidence is that **AS1273 (Vodafone) purchases transit from AS701**. The fact that one AS is a customer of another immediately defines the provider (AS701) as higher in the hierarchy. Tier-1 networks form a club that can reach the entire internet via settlement-free peering with each other, and they sell transit to all others.
+
+2.  **Tier-2 Evidence:** AS1273, AS4637, and AS5511 are all massive telecommunications companies. However, their behavior in the lab aligns with Tier-2s:
+    *   They operate large backbones and provide transit to their own customers (e.g., AS1273 provides transit to AS17390).
+    *   Crucially, they also **purchase transit** from Tier-1s (as seen with AS1273 and AS701).
+    *   They engage in extensive **peering** at neutral points (like AS20717) to exchange traffic directly with other networks, reducing their reliance on expensive Tier-1 transit links. This mixed strategy of buying transit and peering for free is the hallmark of a Tier-2.
+
+3.  **Enterprise (Tier-3) Evidence:** AS17390 (IBM) and AS23344 (Disney) are "leaf" networks. Their primary goal is to have their services reachable on the internet. They do not sell transit to any other AS. Instead, they are customers of larger ISPs. Disney's requirement to receive "only the default route" from its provider is a common configuration for enterprise networks that do not want to hold the full internet routing table.
+
+4.  **Special Case - IXP:** AS20717 (DE-CIX) is not a tiered AS. It is infrastructure. It does not buy or sell transit. It exists so that ASes from all tiers (including the Tier-1s, Tier-2s, and Enterprises in this lab) can connect and exchange traffic efficiently.
 
 #### 1.4.5 - Table showcasing all the peering relations established in the provided topology
 
-__TODO__
+| AS | Peers |
+| --- | --- |
+| 1273 | 20717, 4637, 701, 17390, 5511 (falta a g5/0) |
+| 17390 | 701, 1273 |
+| 701 | 17390, 1273, 4637 |
+| 4637 | 701, 1273, 1, 5511 |
+| 1 | 4637 |
+| 20717 | 1273, 5511 |
+| 5511 | 20717, 23344, 1273 (g5/0), 4537 |
+| 23344 | 5511 |
 
 #### 1.4.6 - Explain how a Tier-2 benefits from peering instead of buying everything from a Tier-1
 
-__TODO__
+A Tier-2 ISP operates on a simple principle: it must pay a Tier-1 for access to the entire internet. However, a significant portion of its traffic is often destined for a handful of other large networks (like other Tier-2s, cloud providers, or content giants like Google and Netflix).
+
+Peering is the strategy of connecting directly with these specific networks to exchange traffic, creating a "shortcut" that bypasses the Tier-1 transit path.
+
+Key Benefits of Peering for a Tier-2:
+
+- Cost Reduction
+- Improved Performance and Lower Latency
+- Increased Reliability and Redundancy
+- Greater Control over Routing
 
 #### 1.4.7 - Identify the neutral public peering interconnections in this lab topology. Elaborate on why they are called neutral and provide examples of real-world implementations of such public interconnections
 
-__TODO__
+The neutral public peering interconnection is represented by AS20717 - DE-CIX Management GmbH.
+
+Instead of setting up direct, individual links between each other (private peering), these ASes can all connect to the shared switch fabric of AS20717
+
+Examples of real world implementations:
+
+- DE-CIX (Frankfurt) - de-cix.net (lab)
+- AMS-IX (Amsterdam) - ams-ix.net
+- LINX (London) - linx.net
+- EQUINIX IX (Various) - equinix.com/ix
+- NYIIX (New York) - nyiix.net
+
+By connecting to these neutral hubs, the Tier-2 ISPs can exchange a large volume of their traffic directly, locally, and for free, achieving the significant benefits of peering.
 
 #### 1.4.8 - Explain the role of R12 in AS 5511, and how are its interfaces divided between the OSPF areas involved
 
-__TODO__
+R12 serves as an Area Border Router (ABR). This is its primary and most important role.
+
+As an ABR, R12 has the following key responsibilities:
+
+Connecting Different OSPF Areas: It has interfaces in two separate OSPF areas: the backbone area (Area 0) and a stub area (Area 1). It is the sole router providing a pathway between these two parts of the network.
+
+Summarizing and Filtering LSAs: It controls the flow of Link-State Advertisements (LSAs) between Area 0 and Area 1.
+
+Injecting a Default Route: As Area 1 is a stub area, R12 does not flood external LSAs (Type 5 LSAs) into it. Instead, it injects a default route (0.0.0.0/0) into Area 1, telling all routers in that area, "if you don't have a more specific route, send the traffic to me to reach external destinations."
 
 #### 1.4.9 - Explain what a stub area is and discuss the resulting advantages and potential limitations. In your discussion, please detail under what conditions would multi-area OSPF be preferred over a single backbone area in real networks
 
@@ -1115,7 +1188,16 @@ __Potential Limitations__
 
 #### 1.4.10 - Discuss why the subnet 46.87.162.0/24 was not placed on the backbone area, considering the OSPF design principles
 
-__TODO__
+The fundamental rule is: "Keep the backbone clean." Area 0 should be a high-speed transit core for inter-area traffic, not a place for end-user or server subnets.
+
+Key Reasons for Stub Area Placement:
+
+- Hierarchy & Stability
+- Reduced Routing Overhead
+- Controlled Traffic Flow
+- Scalability
+
+Putting end-user subnets in Area 0 violates OSPF hierarchy, unnecessarily exposes the core to edge network instability, and eliminates the benefits of LSA filtering, leading to a less scalable and resilient network.
 
 <div style="page-break-after: always"></div>
 
@@ -1127,8 +1209,8 @@ In this phase we have as objectives:
 
 - Establish eBGP sessions between the AS’s
 - Inside the AS 1273, establish iBGP sessions between the clients and the two route reflectors, R3 and R4 to avoid the full mesh
-- Server subnet public IPs are listed in the internet rouXng table
-- Implement connecXvity between the ASes from any routers using the Lo1 and from any server
+- Server subnet public IPs are listed in the internet routing table
+- Implement connectivity between the ASes from any routers using the Lo1 and from any server
 
 ### 2.2 - Implementation
 
@@ -1144,7 +1226,7 @@ __TODO__
 
 __TODO__  next-hop self????
 
-#### 2.4.2 - Why is it a good pracXce to use the loopback IP address in the iBGP sessions? 
+#### 2.4.2 - Why is it a good practice to use the loopback IP address in the iBGP sessions? 
 
 __TODO__  Resiliency in case of phisical ports went down?
 
@@ -1247,7 +1329,7 @@ __TODO__
 
 In this phase the objectives are:
 
-- Enable authenXcaXon on eBGP peerings in __AS701__
+- Enable authentication on eBGP peerings in __AS701__
 - Filter Bogon prefixes received from the _“BadGuy”_ router
 - Apply __Remote Triggered Black Hole (RTBH)__ filtering to mitigate a DoS attack within __AS1273__
 
@@ -1282,7 +1364,7 @@ __TODO__
 In this last phase, the objectives are:
 
 - Activate the MD5 authentication on all the eBGP peering’s on the AS701. This a good practice for all the peers nevertheless for the lab proposes will be ok to test on this AS only
-- Filter the Bogon prefixes on the peer routers from AS 1273. The BadGuy router is adverXsing Bogons (see: [link](https://conference.apnic.net/22/docs/tut-routing-pres-bgp-bcp.pdf))
+- Filter the Bogon prefixes on the peer routers from AS 1273. The BadGuy router is advertising Bogons (see: [link](https://conference.apnic.net/22/docs/tut-routing-pres-bgp-bcp.pdf))
 - Implement Remote Triggered Black Hole (RTBH) filtering - a popular and effective technique for the mitigation of denial-of-service (DoS) attack on AS1273 coming from the prefix `63.96.0.115` [link](https://www.cisco.com/c/dam/en_us/about/security/intelligence/blackhole)
 
 ### 5.2 - Implementation
