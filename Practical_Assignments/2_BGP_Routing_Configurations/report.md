@@ -14,7 +14,7 @@
 - 49420 André Carrilho
 - 51454 Hugo Leal
 
-![Lab Project 2 topology](./assets/01.png)
+![Lab Project 2 topology](./assets/img/01.png)
 
 <div style="page-break-after: always"></div>
 
@@ -76,41 +76,30 @@ We assign IP addresses to all interfaces according to table 1 in Appendice _IP A
 Router example:
 
 ```txt
-R1(config)#Int Loopback 0
-R1(config-if)#ip address 10.1.1.1 255.255.255.255
-
-R1(config-if)#int Loopback 1
-R1(config-if)#ip address 48.73.239.11 255.255.255.255
-
-R1(config-if)#int g1/0
-R1(config-if)#ip address 10.1.2.1 255.255.255.252
-R1(config-if)#no shut
-
-R1(config-if)#int g2/0
-R1(config-if)#ip address 10.1.3.1 255.255.255.252
-R1(config-if)#no shut
-
-R1(config-if)#int g4/0
-R1(config-if)#ip address 48.73.240.1 255.255.255.252
-R1(config-if)#no shut
-
-R1(config-if)#do wr
-Building configuration...
-[OK]
+interface Loopback0
+ ip address 10.1.1.1 255.255.255.255
+!
+interface Loopback1
+ ip address 48.73.239.11 255.255.255.255
+!
+interface GigabitEthernet1/0
+ ip address 10.1.2.1 255.255.255.252
+ no shutdown
+!
+interface GigabitEthernet2/0
+ ip address 10.1.3.1 255.255.255.252
+ no shutdown
+!
+interface GigabitEthernet3/0
+ ip address 48.73.240.1 255.255.255.252
+ no shutdown
 ```
 
 Server example:
 
 ```txt
-VPCS> set pcname Server1
-
-Server1> ip 130.41.46.1/30 130.41.46.2
-Checking for duplicate address...
-Server1 : 130.41.46.1 255.255.255.252 gateway 130.41.46.2
-
-Server1> save
-Saving startup configuration to startup.vpc
-.  done
+ip 130.41.46.1 130.41.46.2 30
+set pcname Server1-130.41.46.1
 ```
 
 #### OSPF Configuration
@@ -119,87 +108,148 @@ __AS 1273__ - Vodafone
 
 ```txt
 ! All Routers -------------------------------------------------------------
-R#(config) router ospf 1
+router ospf 1
 
 ! ROUTER 1 ----------------------------------------------------------------
-R1(config-router)# router-id 10.1.1.1
-R1(config-router)# network 10.1.2.0 0.0.0.3 area 0      ! g1/0 -> R2
-R1(config-router)# network 10.1.3.0 0.0.0.3 area 0      ! g2/0 -> R3
-R1(config-router)# network 10.1.1.1 0.0.0.0 area 0      ! Lo0
+router-id 10.1.1.1
+passive-interface default               ! block all interfaces from talk OSPF 
+network 10.1.1.1 0.0.0.0 area 0         ! Lo0
+network 48.73.239.11 0.0.0.0 area 0     ! Lo1
+network 10.1.2.1 0.0.0.0 area 0         ! g1/0 -> R2
+network 10.1.3.1 0.0.0.0 area 0         ! g2/0 -> R3
+network 48.73.240.1 0.0.0.3 area 0      ! g3/0 - route for AS 17390
+no passive-interface GigabitEthernet1/0 ! unlock OSPF g1/0 
+no passive-interface GigabitEthernet2/0 ! unlock OSPF g2/0
 
 ! ROUTER 2 ----------------------------------------------------------------
-R2(config-router)# router-id 10.2.2.2
-R2(config-router)# network 10.1.2.0 0.0.0.3 area 0      ! g1/0 -> R1
-R2(config-router)# network 10.2.4.0 0.0.0.3 area 0      ! g2/0 -> R4
-R2(config-router)# network 10.2.2.2 0.0.0.0 area 0      ! Lo0
+router-id 10.2.2.2
+passive-interface default               ! block all interfaces from talk OSPF
+network 10.2.2.2 0.0.0.0 area 0         ! Lo0
+network 48.73.239.22 0.0.0.0 area 0     ! Lo1
+network 48.73.239.2 0.0.0.3 area 0      ! fa0/0 - route to AS 20717
+network 10.1.2.2 0.0.0.0 area 0         ! g1/0 -> R1
+network 10.2.4.1 0.0.0.0 area 0         ! g2/0 -> R4 
+no passive-interface GigabitEthernet1/0 ! unlock OSPF on g1/0
+no passive-interface GigabitEthernet2/0 ! unlock OSPF on g2/0
 
 ! ROUTER 3 ----------------------------------------------------------------
-R3(config-router)# router-id 10.3.3.3
-R3(config-router)# network 10.3.4.0 0.0.0.3 area 0      ! g1/0 -> R4
-R3(config-router)# network 10.1.3.0 0.0.0.3 area 0      ! g2/0 -> R1
-R3(config-router)# network 10.3.5.0 0.0.0.3 area 0      ! g3/0 -> R5
-R3(config-router)# network 10.3.3.3 0.0.0.0 area 0      ! Lo0
+router-id 10.3.3.3
+passive-interface default               ! block all interfaces from talk OSPF
+network 10.3.3.3 0.0.0.0 area 0         ! Lo0
+network 48.73.239.33 0.0.0.0 area 0     ! Lo1 
+network 10.3.4.1 0.0.0.0 area 0         ! g1/0 -> R4
+network 10.1.3.2 0.0.0.0 area 0         ! g2/0 -> R1
+network 10.3.5.1 0.0.0.0 area 0         ! g3/0 -> R5
+network 48.73.240.5 0.0.0.3 area 0      ! g4/0 - route to AS 17390
+! activate internal interfaces to establish adjacencies
+no passive-interface GigabitEthernet1/0
+no passive-interface GigabitEthernet2/0
+no passive-interface GigabitEthernet3/0
 
 ! ROUTER 4 ----------------------------------------------------------------
-R4(config-router)#router-id 10.4.4.4
-R4(config-router)#network 10.3.4.2 0.0.0.3 area 0       ! g1/0 -> R3
-R4(config-router)#network 10.2.4.2 0.0.0.3 area 0       ! g2/0 -> R2
-R4(config-router)#network 10.4.6.1 0.0.0.3 area 0       ! g3/0 -> R6
-R4(config-router)#network 10.4.4.4 0.0.0.0 area 0       ! lo0
+router-id 10.4.4.4
+network 10.4.4.4 0.0.0.0 area 0         ! Lo0
+network 48.73.239.44 0.0.0.0 area 0     ! Lo1
+network 10.3.4.2 0.0.0.0 area 0         ! g1/0 -> R3
+network 10.2.4.2 0.0.0.0 area 0         ! g2/0 -> R2
+network 10.4.6.1 0.0.0.0 area 0         ! g3/0 -> R6
+! Block Loopbacks from talking OSPF
+passive-interface Loopback0
+passive-interface Loopback1
 
 ! ROUTER 5 ----------------------------------------------------------------
-R5(config-router)#router-id 10.5.5.5
-R5(config-router)#network 10.3.5.0 0.0.0.3 area 0       ! g3/0 -> R3
-R5(config-router)#network 10.5.5.5 0.0.0.0 area 0       !lo0
+router-id 10.5.5.5
+passive-interface default               ! block all interfaces from talk OSPF
+network 10.5.5.5 0.0.0.0 area 0         ! Lo0
+network 48.73.239.55 0.0.0.0 area 0     ! Lo1
+network 64.112.0.2 0.0.0.3 area 0       ! g1/0 - Route to AS 701
+network 10.3.5.2 0.0.0.0 area 0         ! g3/0 -> R3
+no passive-interface GigabitEthernet3/0 ! unlock OSPF on g3/0
 
 ! ROUTER 6 ----------------------------------------------------------------
-R6(config-router)#router-id 10.6.6.6
-R6(config-router)#network 10.4.6.0 0.0.0.3 area 0       ! g3/0 -> R4
-R6(config-router)#network 10.6.6.6 0.0.0.0 area 0       ! lo0
+router-id 10.6.6.6
+passive-interface default               ! block all interfaces from talk OSPF
+network 10.6.6.6 0.0.0.0 area 0         ! Lo0
+network 48.73.239.66 0.0.0.0 area 0     ! Lo1
+network 48.73.240.17 0.0.0.3 area 0     ! fa0/0 - Route to AS 5511
+network 48.73.240.13 0.0.0.3 area 0     ! g1/0  - Route to AS 4637
+network 48.73.240.21 0.0.0.3 area 0     ! g2/0  - Route to AS 20717
+network 10.4.6.2 0.0.0.0 area 0         ! g3/0 -> R4
+no passive-interface GigabitEthernet3/0 ! unlock OSPF on g3/0
 ```
 
 __AS 17390__ - IBM
 
 ```txt
 ! ROUTER 7 ----------------------------------------------------------------
-R7(config-if)#router ospf 1
-R7(config-router)#router-id 10.7.7.7
-R7(config-router)#network 10.7.8.0 0.0.0.3 area 0       ! g1/0 -> R8
-R7(config-router)#network 10.7.7.7 0.0.0.0 area 0       ! lo0
+outer ospf 1
+ router-id 10.7.7.7
+ passive-interface default               ! block all interfaces from talk OSPF
+ network 10.7.7.7 0.0.0.0 area 0         ! Lo0
+ network 130.41.46.77 0.0.0.0 area 0     ! Lo1
+ network 130.41.46.9 0.0.0.3 area 0      ! fa0/0 - Route to AS 64513 (private)
+ network 10.7.8.1 0.0.0.0 area 0         ! g1/0 -> R8
+ network 48.73.240.6 0.0.0.3 area 0      ! g4/0 - Route to AS 1273
+ network 64.112.0.6 0.0.0.3 area 0       ! g5/0 - Route to AS 701
+ no passive-interface GigabitEthernet1/0 ! unlock to talk OSPF
 
 ! ROUTER 8 ----------------------------------------------------------------
-R8(config-if)#router ospf 1
-R8(config-router)#router-id 10.8.8.8
-R8(config-router)#network 10.7.8.0 0.0.0.3 area 0       ! g1/0 -> R7
-R8(config-router)#network 10.8.8.8 0.0.0.0 area 0       ! lo0
+router ospf 1
+ router-id 10.8.8.8
+ passive-interface default               ! block all interfaces from talk OSPF
+ network 10.8.8.8 0.0.0.0 area 0         ! Lo0
+ network 130.41.46.88 0.0.0.0 area 0     ! Lo1
+ network 130.41.46.5 0.0.0.3 area 0      ! fa0/0 - Route to AS 64513 (private)
+ network 10.7.8.2 0.0.0.0 area 0         ! g1/0 -> R7
+ network 48.73.240.2 0.0.0.3 area 0      ! g4/0 - Route to AS 1273
+ network 130.41.46.2 0.0.0.3 area 0      ! g5/0 -> Server1
+ no passive-interface GigabitEthernet1/0 ! Unlock interface to run OSPF
 ```
 
 __AS 5511__ - FTRSI (Orange - Worldwide IP Backbone)
 
 ```txt
 ! ROUTER 10 ---------------------------------------------------------------
-R10(config-if)#router ospf 1
-R10(config-router)#router-id 10.10.10.10
-R10(config-router)#network 10.10.11.0 0.0.0.3 area 0    ! g1/0 -> R11
-R10(config-router)#network 10.10.12.0 0.0.0.3 area 1    ! g3/0 -> R12
-R10(config-router)#area 1 stub no-summary               ! Totally Stub
-R10(config-router)#network 10.10.10.10 0.0.0.0 area 0   ! lo0
+router ospf 1
+ router-id 10.10.10.10
+ passive-interface default             ! block all interfaces from talk OSPF
+ network 10.10.10.10 0.0.0.0 area 0    ! Lo0
+ network 46.87.162.110 0.0.0.0 area 0  ! Lo1
+ network 10.10.11.1 0.0.0.0 area 0     ! g1/0 -> R11
+ network 211.176.129.2 0.0.0.3 area 0  ! g2/0 - Route to AS 4637
+ network 10.10.12.1 0.0.0.0 area 0     ! g3/0 -> R12
+ network 46.88.20.1 0.0.0.3 area 0     ! g4/0 - Route to AS 20717
+ ! FALTA a interface G5/0 -> IXP1 -> AS1273 (falar com o professor)
+ ! unlock OSPF interfaces
+ no passive-interface GigabitEthernet1/0
+ no passive-interface GigabitEthernet3/0
 
 ! ROUTER 11 ---------------------------------------------------------------
-R11(config-if)#router ospf 1
-R11(config-router)#router-id 10.11.11.11
-R11(config-router)#network 10.10.11.0 0.0.0.3 area 0  ! g1/0 -> R10
-R11(config-router)#network 10.11.12.0 0.0.0.3 area 1  ! g2/0 -> R12
-R11(config-router)#area 1 stub no-summary
-R11(config-router)#network 10.11.11.11 0.0.0.0 area 0 ! lo0
+router ospf 1
+ router-id 10.11.11.11
+ passive-interface default             ! block all interfaces from talk OSPF
+ network 10.11.11.11 0.0.0.0 area 0    ! Lo0
+ network 46.87.162.111 0.0.0.0 area 0  ! Lo1
+ network 46.88.20.5 0.0.0.3 area 0     ! fa0/0 - Route to AS 23344
+ network 10.10.11.2 0.0.0.0 area 0     ! g1/0 -> R10
+ network 10.11.12.1 0.0.0.0 area 0     ! g2/0 -> R12
+ ! unlock OSPF interfaces
+ no passive-interface GigabitEthernet1/0
+ no passive-interface GigabitEthernet2/0
 
 ! ROUTER 12 ---------------------------------------------------------------
-R12(config-if)#router ospf 1
-R12(config-router)#router-id 10.12.12.12
-R12(config-router)#network 10.11.12.0 0.0.0.3 area 1  ! g2/0 -> R11
-R12(config-router)#network 10.10.12.0 0.0.0.3 area 1  ! g3/0 -> R10
-R12(config-router)#network 10.12.12.12 0.0.0.0 area 1 ! lo0
-R12(config-router)#area 1 stub no-summary
+router ospf 1
+ router-id 10.12.12.12
+ passive-interface default             ! block all interfaces from talk OSPF
+ network 10.12.12.12 0.0.0.0 area 0    ! Lo0
+ network 46.87.162.112 0.0.0.0 area 1  ! Lo1
+ network 46.87.162.2 0.0.0.3 area 1    ! fa0/0 -> Server5
+ network 10.11.12.2 0.0.0.0 area 0     ! g2/0 -> R11
+ network 10.10.12.2 0.0.0.0 area 0     ! g3/0 -> R10
+ area 1 stub                           ! area 1 as stub
+ ! Unlock interfaces to exchange OSPF Hellos
+ no passive-interface GigabitEthernet2/0
+ no passive-interface GigabitEthernet3/0
 ```
 
 ### 1.3 Test and Validation
@@ -258,50 +308,73 @@ R1#sh ip ospf database
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.1.1.1        10.1.1.1        764         0x8000000B 0x00B2F1 3
-10.2.2.2        10.2.2.2        952         0x8000000E 0x001281 3
-10.3.3.3        10.3.3.3        394         0x8000000E 0x00E06F 4
-10.4.4.4        10.4.4.4        205         0x80000012 0x00D465 4
-10.5.5.5        10.5.5.5        338         0x8000000B 0x00960F 2
-10.6.6.6        10.6.6.6        353         0x8000000A 0x00D7C1 2
+10.1.1.1        10.1.1.1        1190        0x80000004 0x00CCE0 5
+10.2.2.2        10.2.2.2        1175        0x80000004 0x001F76 5
+10.3.3.3        10.3.3.3        1219        0x80000003 0x0054ED 6
+10.4.4.4        10.4.4.4        1232        0x80000004 0x004A56 5
+10.5.5.5        10.5.5.5        1219        0x80000003 0x0080BB 4
+10.6.6.6        10.6.6.6        1185        0x80000003 0x006ADE 6
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.1.2.2        10.2.2.2        952         0x8000000A 0x0050A7
-10.1.3.2        10.3.3.3        1148        0x8000000A 0x004BA5
-10.2.4.2        10.4.4.4        957         0x8000000A 0x006184
-10.3.4.2        10.4.4.4        1460        0x80000008 0x008063
-10.3.5.1        10.3.3.3        394         0x80000008 0x00C71C
-10.4.6.1        10.4.4.4        205         0x80000008 0x00DDFA
+10.1.2.2        10.2.2.2        1175        0x80000002 0x00609F
+10.1.3.2        10.3.3.3        1219        0x80000002 0x005B9D
+10.2.4.2        10.4.4.4        1232        0x80000002 0x00717C
+10.3.4.2        10.4.4.4        1232        0x80000002 0x008C5D
+10.3.5.2        10.5.5.5        1219        0x80000002 0x00875B
+10.4.6.2        10.6.6.6        1185        0x80000002 0x009D3A
             
 R1#sh ip route ospf
+     48.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
+O       48.73.239.22/32 [110/2] via 10.1.2.2, 00:53:45, GigabitEthernet1/0
+O       48.73.240.12/30 [110/4] via 10.1.3.2, 00:53:45, GigabitEthernet2/0
+                        [110/4] via 10.1.2.2, 00:53:45, GigabitEthernet1/0
+O       48.73.240.4/30 [110/2] via 10.1.3.2, 00:53:55, GigabitEthernet2/0
+O       48.73.239.0/30 [110/2] via 10.1.2.2, 00:53:45, GigabitEthernet1/0
+O       48.73.240.16/30 [110/4] via 10.1.3.2, 00:53:45, GigabitEthernet2/0
+                        [110/4] via 10.1.2.2, 00:53:45, GigabitEthernet1/0
+O       48.73.240.20/30 [110/4] via 10.1.3.2, 00:53:45, GigabitEthernet2/0
+                        [110/4] via 10.1.2.2, 00:53:45, GigabitEthernet1/0
+O       48.73.239.55/32 [110/3] via 10.1.3.2, 00:53:45, GigabitEthernet2/0
+O       48.73.239.33/32 [110/2] via 10.1.3.2, 00:53:55, GigabitEthernet2/0
+O       48.73.239.44/32 [110/3] via 10.1.3.2, 00:53:45, GigabitEthernet2/0
+                        [110/3] via 10.1.2.2, 00:53:45, GigabitEthernet1/0
+O       48.73.239.66/32 [110/4] via 10.1.3.2, 00:53:45, GigabitEthernet2/0
+                        [110/4] via 10.1.2.2, 00:53:45, GigabitEthernet1/0
+     64.0.0.0/30 is subnetted, 1 subnets
+O       64.112.0.0 [110/3] via 10.1.3.2, 00:53:45, GigabitEthernet2/0
      10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       10.4.6.0/30 [110/3] via 10.1.3.2, 03:53:04, GigabitEthernet2/0
-                    [110/3] via 10.1.2.2, 03:53:14, GigabitEthernet1/0
-O       10.2.2.2/32 [110/2] via 10.1.2.2, 03:53:14, GigabitEthernet1/0
-O       10.3.3.3/32 [110/2] via 10.1.3.2, 03:53:04, GigabitEthernet2/0
-O       10.6.6.6/32 [110/4] via 10.1.3.2, 03:42:56, GigabitEthernet2/0
-                    [110/4] via 10.1.2.2, 03:42:56, GigabitEthernet1/0
-O       10.3.5.0/30 [110/2] via 10.1.3.2, 03:53:04, GigabitEthernet2/0
-O       10.2.4.0/30 [110/2] via 10.1.2.2, 03:53:14, GigabitEthernet1/0
-O       10.3.4.0/30 [110/2] via 10.1.3.2, 03:53:04, GigabitEthernet2/0
-O       10.4.4.4/32 [110/3] via 10.1.3.2, 03:53:04, GigabitEthernet2/0
-                    [110/3] via 10.1.2.2, 03:53:14, GigabitEthernet1/0
-O       10.5.5.5/32 [110/3] via 10.1.3.2, 03:46:47, GigabitEthernet2/0
+O       10.4.6.0/30 [110/3] via 10.1.3.2, 00:53:45, GigabitEthernet2/0
+                    [110/3] via 10.1.2.2, 00:53:45, GigabitEthernet1/0
+O       10.2.2.2/32 [110/2] via 10.1.2.2, 00:53:45, GigabitEthernet1/0
+O       10.3.3.3/32 [110/2] via 10.1.3.2, 00:53:55, GigabitEthernet2/0
+O       10.6.6.6/32 [110/4] via 10.1.3.2, 00:53:51, GigabitEthernet2/0
+                    [110/4] via 10.1.2.2, 00:53:51, GigabitEthernet1/0
+O       10.3.5.0/30 [110/2] via 10.1.3.2, 00:54:01, GigabitEthernet2/0
+O       10.2.4.0/30 [110/2] via 10.1.2.2, 00:53:51, GigabitEthernet1/0
+O       10.3.4.0/30 [110/2] via 10.1.3.2, 00:54:01, GigabitEthernet2/0
+O       10.4.4.4/32 [110/3] via 10.1.3.2, 00:53:51, GigabitEthernet2/0
+                    [110/3] via 10.1.2.2, 00:53:51, GigabitEthernet1/0
+O       10.5.5.5/32 [110/3] via 10.1.3.2, 00:53:51, GigabitEthernet2/0
 
 R1#sh ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.3.3.3          1   FULL/DR         00:00:31    10.1.3.2        GigabitEthernet2/0
+10.3.3.3          1   FULL/DR         00:00:38    10.1.3.2        GigabitEthernet2/0
 10.2.2.2          1   FULL/DR         00:00:32    10.1.2.2        GigabitEthernet1/0
 
 R1#sh ip ospf interface brief
+
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.1.1.1/32        1     LOOP  0/0
+Lo1          1     0               48.73.239.11/32    1     LOOP  0/0
+Gi3/0        1     0               48.73.240.1/30     1     DR    0/0
 Gi2/0        1     0               10.1.3.1/30        1     BDR   1/1
 Gi1/0        1     0               10.1.2.1/30        1     BDR   1/1
+```
 
+```txt
 ! ROUTER 2 --------------------------------------------------------------
 R2#sh ip ospf database
 
@@ -310,50 +383,71 @@ R2#sh ip ospf database
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.1.1.1        10.1.1.1        822         0x8000000B 0x00B2F1 3
-10.2.2.2        10.2.2.2        1008        0x8000000E 0x001281 3
-10.3.3.3        10.3.3.3        452         0x8000000E 0x00E06F 4
-10.4.4.4        10.4.4.4        261         0x80000012 0x00D465 4
-10.5.5.5        10.5.5.5        396         0x8000000B 0x00960F 2
-10.6.6.6        10.6.6.6        409         0x8000000A 0x00D7C1 2
+10.1.1.1        10.1.1.1        1497        0x80000004 0x00CCE0 5
+10.2.2.2        10.2.2.2        1480        0x80000004 0x001F76 5
+10.3.3.3        10.3.3.3        1526        0x80000003 0x0054ED 6
+10.4.4.4        10.4.4.4        1537        0x80000004 0x004A56 5
+10.5.5.5        10.5.5.5        1526        0x80000003 0x0080BB 4
+10.6.6.6        10.6.6.6        1490        0x80000003 0x006ADE 6
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.1.2.2        10.2.2.2        1008        0x8000000A 0x0050A7
-10.1.3.2        10.3.3.3        1206        0x8000000A 0x004BA5
-10.2.4.2        10.4.4.4        1013        0x8000000A 0x006184
-10.3.4.2        10.4.4.4        1516        0x80000008 0x008063
-10.3.5.1        10.3.3.3        452         0x80000008 0x00C71C
-10.4.6.1        10.4.4.4        261         0x80000008 0x00DDFA
+10.1.2.2        10.2.2.2        1480        0x80000002 0x00609F
+10.1.3.2        10.3.3.3        1526        0x80000002 0x005B9D
+10.2.4.2        10.4.4.4        1537        0x80000002 0x00717C
+10.3.4.2        10.4.4.4        1537        0x80000002 0x008C5D
+10.3.5.2        10.5.5.5        1526        0x80000002 0x00875B
+10.4.6.2        10.6.6.6        1490        0x80000002 0x009D3A
             
 R2#sh ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.4.4.4          1   FULL/DR         00:00:33    10.2.4.2        GigabitEthernet2/0
+10.4.4.4          1   FULL/DR         00:00:32    10.2.4.2        GigabitEthernet2/0
 10.1.1.1          1   FULL/BDR        00:00:32    10.1.2.1        GigabitEthernet1/0
 
 R2#sh ip route ospf
+     48.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
+O       48.73.240.12/30 [110/3] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
+O       48.73.240.0/30 [110/2] via 10.1.2.1, 00:58:48, GigabitEthernet1/0
+O       48.73.240.4/30 [110/3] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
+                       [110/3] via 10.1.2.1, 00:58:48, GigabitEthernet1/0
+O       48.73.240.16/30 [110/3] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
+O       48.73.240.20/30 [110/3] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
+O       48.73.239.11/32 [110/2] via 10.1.2.1, 00:58:48, GigabitEthernet1/0
+O       48.73.239.55/32 [110/4] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
+                        [110/4] via 10.1.2.1, 00:58:48, GigabitEthernet1/0
+O       48.73.239.33/32 [110/3] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
+                        [110/3] via 10.1.2.1, 00:58:48, GigabitEthernet1/0
+O       48.73.239.44/32 [110/2] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
+O       48.73.239.66/32 [110/3] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
+     64.0.0.0/30 is subnetted, 1 subnets
+O       64.112.0.0 [110/4] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
+                   [110/4] via 10.1.2.1, 00:58:48, GigabitEthernet1/0
      10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       10.4.6.0/30 [110/2] via 10.2.4.2, 03:59:28, GigabitEthernet2/0
-O       10.1.3.0/30 [110/2] via 10.1.2.1, 03:57:47, GigabitEthernet1/0
-O       10.3.3.3/32 [110/3] via 10.2.4.2, 03:59:28, GigabitEthernet2/0
-                    [110/3] via 10.1.2.1, 03:57:47, GigabitEthernet1/0
-O       10.1.1.1/32 [110/2] via 10.1.2.1, 03:57:57, GigabitEthernet1/0
-O       10.6.6.6/32 [110/3] via 10.2.4.2, 03:47:38, GigabitEthernet2/0
-O       10.3.5.0/30 [110/3] via 10.2.4.2, 03:59:28, GigabitEthernet2/0
-                    [110/3] via 10.1.2.1, 03:57:47, GigabitEthernet1/0
-O       10.3.4.0/30 [110/2] via 10.2.4.2, 03:59:28, GigabitEthernet2/0
-O       10.4.4.4/32 [110/2] via 10.2.4.2, 03:59:28, GigabitEthernet2/0
-O       10.5.5.5/32 [110/4] via 10.2.4.2, 03:51:29, GigabitEthernet2/0
-                    [110/4] via 10.1.2.1, 03:51:29, GigabitEthernet1/0
+O       10.4.6.0/30 [110/2] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
+O       10.1.3.0/30 [110/2] via 10.1.2.1, 00:58:48, GigabitEthernet1/0
+O       10.3.3.3/32 [110/3] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
+                    [110/3] via 10.1.2.1, 00:58:48, GigabitEthernet1/0
+O       10.1.1.1/32 [110/2] via 10.1.2.1, 00:58:48, GigabitEthernet1/0
+O       10.6.6.6/32 [110/3] via 10.2.4.2, 00:58:43, GigabitEthernet2/0
+O       10.3.5.0/30 [110/3] via 10.2.4.2, 00:58:43, GigabitEthernet2/0
+                    [110/3] via 10.1.2.1, 00:58:53, GigabitEthernet1/0
+O       10.3.4.0/30 [110/2] via 10.2.4.2, 00:58:43, GigabitEthernet2/0
+O       10.4.4.4/32 [110/2] via 10.2.4.2, 00:58:43, GigabitEthernet2/0
+O       10.5.5.5/32 [110/4] via 10.2.4.2, 00:58:43, GigabitEthernet2/0
+                    [110/4] via 10.1.2.1, 00:58:53, GigabitEthernet1/0
                     
 R2#sh ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.2.2.2/32        1     LOOP  0/0
+Lo1          1     0               48.73.239.22/32    1     LOOP  0/0
 Gi2/0        1     0               10.2.4.1/30        1     BDR   1/1
 Gi1/0        1     0               10.1.2.2/30        1     DR    1/1
+Fa0/0        1     0               48.73.239.2/30     1     DR    0/0
+```
 
+```txt
 ! ROUTER 3 --------------------------------------------------------------
 R3#sh ip ospf database
 
@@ -362,49 +456,68 @@ R3#sh ip ospf database
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.1.1.1        10.1.1.1        555         0x8000000B 0x00B2F1 3
-10.2.2.2        10.2.2.2        743         0x8000000E 0x001281 3
-10.3.3.3        10.3.3.3        183         0x8000000E 0x00E06F 4
-10.4.4.4        10.4.4.4        2023        0x80000011 0x00D664 4
-10.5.5.5        10.5.5.5        127         0x8000000B 0x00960F 2
-10.6.6.6        10.6.6.6        142         0x8000000A 0x00D7C1 2
+10.1.1.1        10.1.1.1        1688        0x80000004 0x00CCE0 5
+10.2.2.2        10.2.2.2        1673        0x80000004 0x001F76 5
+10.3.3.3        10.3.3.3        1716        0x80000003 0x0054ED 6
+10.4.4.4        10.4.4.4        1729        0x80000004 0x004A56 5
+10.5.5.5        10.5.5.5        1716        0x80000003 0x0080BB 4
+10.6.6.6        10.6.6.6        1682        0x80000003 0x006ADE 6
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.1.2.2        10.2.2.2        743         0x8000000A 0x0050A7
-10.1.3.2        10.3.3.3        936         0x8000000A 0x004BA5
-10.2.4.2        10.4.4.4        746         0x8000000A 0x006184
-10.3.4.2        10.4.4.4        1249        0x80000008 0x008063
-10.3.5.1        10.3.3.3        183         0x80000008 0x00C71C
-10.4.6.1        10.4.4.4        2023        0x80000007 0x00DFF9
+10.1.2.2        10.2.2.2        1673        0x80000002 0x00609F
+10.1.3.2        10.3.3.3        1716        0x80000002 0x005B9D
+10.2.4.2        10.4.4.4        1729        0x80000002 0x00717C
+10.3.4.2        10.4.4.4        1729        0x80000002 0x008C5D
+10.3.5.2        10.5.5.5        1715        0x80000002 0x00875B
+10.4.6.2        10.6.6.6        1682        0x80000002 0x009D3A
             
 R3#sh ip route ospf
+     48.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
+O       48.73.239.22/32 [110/3] via 10.3.4.2, 01:01:23, GigabitEthernet1/0
+                        [110/3] via 10.1.3.1, 01:01:23, GigabitEthernet2/0
+O       48.73.240.12/30 [110/3] via 10.3.4.2, 01:01:23, GigabitEthernet1/0
+O       48.73.240.0/30 [110/2] via 10.1.3.1, 01:01:33, GigabitEthernet2/0
+O       48.73.239.0/30 [110/3] via 10.3.4.2, 01:01:23, GigabitEthernet1/0
+                       [110/3] via 10.1.3.1, 01:01:23, GigabitEthernet2/0
+O       48.73.240.16/30 [110/3] via 10.3.4.2, 01:01:23, GigabitEthernet1/0
+O       48.73.240.20/30 [110/3] via 10.3.4.2, 01:01:23, GigabitEthernet1/0
+O       48.73.239.11/32 [110/2] via 10.1.3.1, 01:01:33, GigabitEthernet2/0
+O       48.73.239.55/32 [110/2] via 10.3.5.2, 01:01:33, GigabitEthernet3/0
+O       48.73.239.44/32 [110/2] via 10.3.4.2, 01:01:33, GigabitEthernet1/0
+O       48.73.239.66/32 [110/3] via 10.3.4.2, 01:01:23, GigabitEthernet1/0
+     64.0.0.0/30 is subnetted, 1 subnets
+O       64.112.0.0 [110/2] via 10.3.5.2, 01:01:33, GigabitEthernet3/0
      10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       10.4.6.0/30 [110/2] via 10.3.4.2, 04:09:19, GigabitEthernet1/0
-O       10.2.2.2/32 [110/3] via 10.3.4.2, 04:02:50, GigabitEthernet1/0
-                    [110/3] via 10.1.3.1, 04:01:16, GigabitEthernet2/0
-O       10.1.2.0/30 [110/2] via 10.1.3.1, 04:01:16, GigabitEthernet2/0
-O       10.1.1.1/32 [110/2] via 10.1.3.1, 04:01:16, GigabitEthernet2/0
-O       10.6.6.6/32 [110/3] via 10.3.4.2, 03:51:07, GigabitEthernet1/0
-O       10.2.4.0/30 [110/2] via 10.3.4.2, 04:04:26, GigabitEthernet1/0
-O       10.4.4.4/32 [110/2] via 10.3.4.2, 04:09:19, GigabitEthernet1/0
-O       10.5.5.5/32 [110/2] via 10.3.5.2, 03:55:08, GigabitEthernet3/0
+O       10.4.6.0/30 [110/2] via 10.3.4.2, 01:01:23, GigabitEthernet1/0
+O       10.2.2.2/32 [110/3] via 10.3.4.2, 01:01:23, GigabitEthernet1/0
+                    [110/3] via 10.1.3.1, 01:01:23, GigabitEthernet2/0
+O       10.1.2.0/30 [110/2] via 10.1.3.1, 01:01:23, GigabitEthernet2/0
+O       10.1.1.1/32 [110/2] via 10.1.3.1, 01:01:33, GigabitEthernet2/0
+O       10.6.6.6/32 [110/3] via 10.3.4.2, 01:01:23, GigabitEthernet1/0
+O       10.2.4.0/30 [110/2] via 10.3.4.2, 01:01:33, GigabitEthernet1/0
+O       10.4.4.4/32 [110/2] via 10.3.4.2, 01:01:37, GigabitEthernet1/0
+O       10.5.5.5/32 [110/2] via 10.3.5.2, 01:01:37, GigabitEthernet3/0
 
 R3#sh ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.5.5.5          1   FULL/BDR        00:00:33    10.3.5.2        GigabitEthernet3/0
-10.1.1.1          1   FULL/BDR        00:00:35    10.1.3.1        GigabitEthernet2/0
-10.4.4.4          1   FULL/DR         00:00:36    10.3.4.2        GigabitEthernet1/0
+10.5.5.5          1   FULL/DR         00:00:33    10.3.5.2        GigabitEthernet3/0
+10.1.1.1          1   FULL/BDR        00:00:39    10.1.3.1        GigabitEthernet2/0
+10.4.4.4          1   FULL/DR         00:00:33    10.3.4.2        GigabitEthernet1/0
 
 R3#sh ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.3.3.3/32        1     LOOP  0/0
-Gi3/0        1     0               10.3.5.1/30        1     DR    1/1
+Lo1          1     0               48.73.239.33/32    1     LOOP  0/0
+Gi4/0        1     0               48.73.240.5/30     1     DR    0/0
+Gi3/0        1     0               10.3.5.1/30        1     BDR   1/1
 Gi2/0        1     0               10.1.3.2/30        1     DR    1/1
 Gi1/0        1     0               10.3.4.1/30        1     BDR   1/1
+```
 
+```txt 
 ! ROUTER 4 --------------------------------------------------------------
 R4#sh ip ospf database
 
@@ -413,55 +526,68 @@ R4#sh ip ospf database
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.1.1.1        10.1.1.1        882         0x8000000B 0x00B2F1 3
-10.2.2.2        10.2.2.2        1068        0x8000000E 0x001281 3
-10.3.3.3        10.3.3.3        510         0x8000000E 0x00E06F 4
-10.4.4.4        10.4.4.4        319         0x80000012 0x00D465 4
-10.5.5.5        10.5.5.5        454         0x8000000B 0x00960F 2
-10.6.6.6        10.6.6.6        467         0x8000000A 0x00D7C1 2
+10.1.1.1        10.1.1.1        1834        0x80000004 0x00CCE0 5
+10.2.2.2        10.2.2.2        14          0x80000005 0x001D77 5
+10.3.3.3        10.3.3.3        1862        0x80000003 0x0054ED 6
+10.4.4.4        10.4.4.4        1873        0x80000004 0x004A56 5
+10.5.5.5        10.5.5.5        1861        0x80000003 0x0080BB 4
+10.6.6.6        10.6.6.6        1826        0x80000003 0x006ADE 6
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.1.2.2        10.2.2.2        1068        0x8000000A 0x0050A7
-10.1.3.2        10.3.3.3        1263        0x8000000A 0x004BA5
-10.2.4.2        10.4.4.4        1071        0x8000000A 0x006184
-10.3.4.2        10.4.4.4        1574        0x80000008 0x008063
-10.3.5.1        10.3.3.3        510         0x80000008 0x00C71C
-10.4.6.1        10.4.4.4        319         0x80000008 0x00DDFA
+10.1.2.2        10.2.2.2        14          0x80000003 0x005EA0
+10.1.3.2        10.3.3.3        1862        0x80000002 0x005B9D
+10.2.4.2        10.4.4.4        1873        0x80000002 0x00717C
+10.3.4.2        10.4.4.4        1873        0x80000002 0x008C5D
+10.3.5.2        10.5.5.5        1861        0x80000002 0x00875B
+10.4.6.2        10.6.6.6        1826        0x80000002 0x009D3A
 
 R4#sh ip route ospf
+     48.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
+O       48.73.239.22/32 [110/2] via 10.2.4.1, 01:03:38, GigabitEthernet2/0
+O       48.73.240.12/30 [110/2] via 10.4.6.2, 01:03:38, GigabitEthernet3/0
+O       48.73.240.0/30 [110/3] via 10.3.4.1, 01:03:48, GigabitEthernet1/0
+                       [110/3] via 10.2.4.1, 01:03:38, GigabitEthernet2/0
+O       48.73.240.4/30 [110/2] via 10.3.4.1, 01:03:48, GigabitEthernet1/0
+O       48.73.239.0/30 [110/2] via 10.2.4.1, 01:03:38, GigabitEthernet2/0
+O       48.73.240.16/30 [110/2] via 10.4.6.2, 01:03:38, GigabitEthernet3/0
+O       48.73.240.20/30 [110/2] via 10.4.6.2, 01:03:38, GigabitEthernet3/0
+O       48.73.239.11/32 [110/3] via 10.3.4.1, 01:03:48, GigabitEthernet1/0
+                        [110/3] via 10.2.4.1, 01:03:38, GigabitEthernet2/0
+O       48.73.239.55/32 [110/3] via 10.3.4.1, 01:03:48, GigabitEthernet1/0
+O       48.73.239.33/32 [110/2] via 10.3.4.1, 01:03:48, GigabitEthernet1/0
+O       48.73.239.66/32 [110/2] via 10.4.6.2, 01:03:38, GigabitEthernet3/0
+     64.0.0.0/30 is subnetted, 1 subnets
+O       64.112.0.0 [110/3] via 10.3.4.1, 01:03:48, GigabitEthernet1/0
      10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       10.2.2.2/32 [110/2] via 10.2.4.1, 04:12:53, GigabitEthernet2/0
-O       10.1.3.0/30 [110/2] via 10.3.4.1, 04:12:14, GigabitEthernet1/0
-O       10.3.3.3/32 [110/2] via 10.3.4.1, 04:17:27, GigabitEthernet1/0
-O       10.1.2.0/30 [110/2] via 10.2.4.1, 04:12:14, GigabitEthernet2/0
-O       10.1.1.1/32 [110/3] via 10.3.4.1, 04:11:10, GigabitEthernet1/0
-                    [110/3] via 10.2.4.1, 04:11:10, GigabitEthernet2/0
-O       10.6.6.6/32 [110/2] via 10.4.6.2, 04:01:11, GigabitEthernet3/0
-O       10.3.5.0/30 [110/2] via 10.3.4.1, 04:19:13, GigabitEthernet1/0
-O       10.5.5.5/32 [110/3] via 10.3.4.1, 04:04:52, GigabitEthernet1/0
+O       10.2.2.2/32 [110/2] via 10.2.4.1, 01:03:38, GigabitEthernet2/0
+O       10.1.3.0/30 [110/2] via 10.3.4.1, 01:03:48, GigabitEthernet1/0
+O       10.3.3.3/32 [110/2] via 10.3.4.1, 01:03:48, GigabitEthernet1/0
+O       10.1.2.0/30 [110/2] via 10.2.4.1, 01:03:38, GigabitEthernet2/0
+O       10.1.1.1/32 [110/3] via 10.3.4.1, 01:03:48, GigabitEthernet1/0
+                    [110/3] via 10.2.4.1, 01:03:38, GigabitEthernet2/0
+O       10.6.6.6/32 [110/2] via 10.4.6.2, 01:03:39, GigabitEthernet3/0
+O       10.3.5.0/30 [110/2] via 10.3.4.1, 01:03:49, GigabitEthernet1/0
+O       10.5.5.5/32 [110/3] via 10.3.4.1, 01:03:49, GigabitEthernet1/0
 
 R4#sh ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.6.6.6          1   FULL/BDR        00:00:32    10.4.6.2        GigabitEthernet3/0
-10.2.2.2          1   FULL/BDR        00:00:32    10.2.4.1        GigabitEthernet2/0
+10.6.6.6          1   FULL/DR         00:00:33    10.4.6.2        GigabitEthernet3/0
+10.2.2.2          1   FULL/BDR        00:00:39    10.2.4.1        GigabitEthernet2/0
 10.3.3.3          1   FULL/BDR        00:00:31    10.3.4.1        GigabitEthernet1/0
 
-R4#sh ip ospf neighbor
-
-Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.6.6.6          1   FULL/BDR        00:00:32    10.4.6.2        GigabitEthernet3/0
-10.2.2.2          1   FULL/BDR        00:00:32    10.2.4.1        GigabitEthernet2/0
-10.3.3.3          1   FULL/BDR        00:00:31    10.3.4.1        GigabitEthernet1/0
 R4#sh ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.4.4.4/32        1     LOOP  0/0
-Gi3/0        1     0               10.4.6.1/30        1     DR    1/1
+Lo1          1     0               48.73.239.44/32    1     LOOP  0/0
+Gi3/0        1     0               10.4.6.1/30        1     BDR   1/1
 Gi2/0        1     0               10.2.4.2/30        1     DR    1/1
 Gi1/0        1     0               10.3.4.2/30        1     DR    1/1
+```
 
+```txt
 ! ROUTER 5 --------------------------------------------------------------
 R5#sh ip ospf database
 
@@ -470,46 +596,62 @@ R5#sh ip ospf database
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.1.1.1        10.1.1.1        1100        0x8000000B 0x00B2F1 3
-10.2.2.2        10.2.2.2        1288        0x8000000E 0x001281 3
-10.3.3.3        10.3.3.3        728         0x8000000E 0x00E06F 4
-10.4.4.4        10.4.4.4        539         0x80000012 0x00D465 4
-10.5.5.5        10.5.5.5        669         0x8000000B 0x00960F 2
-10.6.6.6        10.6.6.6        687         0x8000000A 0x00D7C1 2
+10.1.1.1        10.1.1.1        1966        0x80000004 0x00CCE0 5
+10.2.2.2        10.2.2.2        147         0x80000005 0x001D77 5
+10.3.3.3        10.3.3.3        1993        0x80000003 0x0054ED 6
+10.4.4.4        10.4.4.4        2006        0x80000004 0x004A56 5
+10.5.5.5        10.5.5.5        1991        0x80000003 0x0080BB 4
+10.6.6.6        10.6.6.6        1959        0x80000003 0x006ADE 6
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.1.2.2        10.2.2.2        1288        0x8000000A 0x0050A7
-10.1.3.2        10.3.3.3        1481        0x8000000A 0x004BA5
-10.2.4.2        10.4.4.4        1290        0x8000000A 0x006184
-10.3.4.2        10.4.4.4        1794        0x80000008 0x008063
-10.3.5.1        10.3.3.3        728         0x80000008 0x00C71C
-10.4.6.1        10.4.4.4        539         0x80000008 0x00DDFA
+10.1.2.2        10.2.2.2        147         0x80000003 0x005EA0
+10.1.3.2        10.3.3.3        1993        0x80000002 0x005B9D
+10.2.4.2        10.4.4.4        2006        0x80000002 0x00717C
+10.3.4.2        10.4.4.4        2006        0x80000002 0x008C5D
+10.3.5.2        10.5.5.5        1991        0x80000002 0x00875B
+10.4.6.2        10.6.6.6        1959        0x80000002 0x009D3A
 
 R5#sh ip route ospf
+     48.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
+O       48.73.239.22/32 [110/4] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
+O       48.73.240.12/30 [110/4] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
+O       48.73.240.0/30 [110/3] via 10.3.5.1, 01:06:00, GigabitEthernet3/0
+O       48.73.240.4/30 [110/2] via 10.3.5.1, 01:06:00, GigabitEthernet3/0
+O       48.73.239.0/30 [110/4] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
+O       48.73.240.16/30 [110/4] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
+O       48.73.240.20/30 [110/4] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
+O       48.73.239.11/32 [110/3] via 10.3.5.1, 01:06:00, GigabitEthernet3/0
+O       48.73.239.33/32 [110/2] via 10.3.5.1, 01:06:00, GigabitEthernet3/0
+O       48.73.239.44/32 [110/3] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
+O       48.73.239.66/32 [110/4] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
      10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       10.4.6.0/30 [110/3] via 10.3.5.1, 04:07:51, GigabitEthernet3/0
-O       10.2.2.2/32 [110/4] via 10.3.5.1, 04:07:51, GigabitEthernet3/0
-O       10.1.3.0/30 [110/2] via 10.3.5.1, 04:07:51, GigabitEthernet3/0
-O       10.3.3.3/32 [110/2] via 10.3.5.1, 04:07:51, GigabitEthernet3/0
-O       10.1.2.0/30 [110/3] via 10.3.5.1, 04:07:51, GigabitEthernet3/0
-O       10.1.1.1/32 [110/3] via 10.3.5.1, 04:07:51, GigabitEthernet3/0
-O       10.6.6.6/32 [110/4] via 10.3.5.1, 04:03:56, GigabitEthernet3/0
-O       10.2.4.0/30 [110/3] via 10.3.5.1, 04:07:51, GigabitEthernet3/0
-O       10.3.4.0/30 [110/2] via 10.3.5.1, 04:07:51, GigabitEthernet3/0
-O       10.4.4.4/32 [110/3] via 10.3.5.1, 04:07:51, GigabitEthernet3/0
+O       10.4.6.0/30 [110/3] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
+O       10.2.2.2/32 [110/4] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
+O       10.1.3.0/30 [110/2] via 10.3.5.1, 01:06:00, GigabitEthernet3/0
+O       10.3.3.3/32 [110/2] via 10.3.5.1, 01:06:00, GigabitEthernet3/0
+O       10.1.2.0/30 [110/3] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
+O       10.1.1.1/32 [110/3] via 10.3.5.1, 01:06:00, GigabitEthernet3/0
+O       10.6.6.6/32 [110/4] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
+O       10.2.4.0/30 [110/3] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
+O       10.3.4.0/30 [110/2] via 10.3.5.1, 01:06:00, GigabitEthernet3/0
+O       10.4.4.4/32 [110/3] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
 
 R5#sh ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.3.3.3          1   FULL/DR         00:00:31    10.3.5.1        GigabitEthernet3/0
+10.3.3.3          1   FULL/BDR        00:00:33    10.3.5.1        GigabitEthernet3/0
 
 R5#sh ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.5.5.5/32        1     LOOP  0/0
-Gi3/0        1     0               10.3.5.2/30        1     BDR   1/1
+Lo1          1     0               48.73.239.55/32    1     LOOP  0/0
+Gi3/0        1     0               10.3.5.2/30        1     DR    1/1
+Gi1/0        1     0               64.112.0.2/30      1     DR    0/0
+```
 
+```txt
 ! ROUTER 6 --------------------------------------------------------------
 R6#sh ip ospf database
 
@@ -518,45 +660,60 @@ R6#sh ip ospf database
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.1.1.1        10.1.1.1        1326        0x8000000B 0x00B2F1 3
-10.2.2.2        10.2.2.2        1512        0x8000000E 0x001281 3
-10.3.3.3        10.3.3.3        954         0x8000000E 0x00E06F 4
-10.4.4.4        10.4.4.4        763         0x80000012 0x00D465 4
-10.5.5.5        10.5.5.5        898         0x8000000B 0x00960F 2
-10.6.6.6        10.6.6.6        909         0x8000000A 0x00D7C1 2
+10.1.1.1        10.1.1.1        62          0x80000005 0x00CAE1 5
+10.2.2.2        10.2.2.2        259         0x80000005 0x001D77 5
+10.3.3.3        10.3.3.3        104         0x80000004 0x0052EE 6
+10.4.4.4        10.4.4.4        100         0x80000005 0x004857 5
+10.5.5.5        10.5.5.5        89          0x80000004 0x007EBC 4
+10.6.6.6        10.6.6.6        50          0x80000004 0x0068DF 6
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.1.2.2        10.2.2.2        1512        0x8000000A 0x0050A7
-10.1.3.2        10.3.3.3        1707        0x8000000A 0x004BA5
-10.2.4.2        10.4.4.4        1515        0x8000000A 0x006184
-10.3.4.2        10.4.4.4        2018        0x80000008 0x008063
-10.3.5.1        10.3.3.3        954         0x80000008 0x00C71C
-10.4.6.1        10.4.4.4        763         0x80000008 0x00DDFA
+10.1.2.2        10.2.2.2        259         0x80000003 0x005EA0
+10.1.3.2        10.3.3.3        104         0x80000003 0x00599E
+10.2.4.2        10.4.4.4        100         0x80000003 0x006F7D
+10.3.4.2        10.4.4.4        100         0x80000003 0x008A5E
+10.3.5.2        10.5.5.5        89          0x80000003 0x00855C
+10.4.6.2        10.6.6.6        50          0x80000003 0x009B3B
 
 R6#sh ip route ospf
+     48.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
+O       48.73.239.22/32 [110/3] via 10.4.6.1, 01:08:43, GigabitEthernet3/0
+O       48.73.240.0/30 [110/4] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
+O       48.73.240.4/30 [110/3] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
+O       48.73.239.0/30 [110/3] via 10.4.6.1, 01:08:44, GigabitEthernet3/0
+O       48.73.239.11/32 [110/4] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
+O       48.73.239.55/32 [110/4] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
+O       48.73.239.33/32 [110/3] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
+O       48.73.239.44/32 [110/2] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
+     64.0.0.0/30 is subnetted, 1 subnets
+O       64.112.0.0 [110/4] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
      10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       10.2.2.2/32 [110/3] via 10.4.6.1, 04:07:38, GigabitEthernet3/0
-O       10.1.3.0/30 [110/3] via 10.4.6.1, 04:07:38, GigabitEthernet3/0
-O       10.3.3.3/32 [110/3] via 10.4.6.1, 04:07:38, GigabitEthernet3/0
-O       10.1.2.0/30 [110/3] via 10.4.6.1, 04:07:38, GigabitEthernet3/0
-O       10.1.1.1/32 [110/4] via 10.4.6.1, 04:07:38, GigabitEthernet3/0
-O       10.3.5.0/30 [110/3] via 10.4.6.1, 04:07:38, GigabitEthernet3/0
-O       10.2.4.0/30 [110/2] via 10.4.6.1, 04:07:38, GigabitEthernet3/0
-O       10.3.4.0/30 [110/2] via 10.4.6.1, 04:07:38, GigabitEthernet3/0
-O       10.4.4.4/32 [110/2] via 10.4.6.1, 04:07:38, GigabitEthernet3/0
-O       10.5.5.5/32 [110/4] via 10.4.6.1, 04:07:38, GigabitEthernet3/0
+O       10.2.2.2/32 [110/3] via 10.4.6.1, 01:08:44, GigabitEthernet3/0
+O       10.1.3.0/30 [110/3] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
+O       10.3.3.3/32 [110/3] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
+O       10.1.2.0/30 [110/3] via 10.4.6.1, 01:08:44, GigabitEthernet3/0
+O       10.1.1.1/32 [110/4] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
+O       10.3.5.0/30 [110/3] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
+O       10.2.4.0/30 [110/2] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
+O       10.3.4.0/30 [110/2] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
+O       10.4.4.4/32 [110/2] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
+O       10.5.5.5/32 [110/4] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
 
 R6#sh ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.4.4.4          1   FULL/DR         00:00:36    10.4.6.1        GigabitEthernet3/0
+10.4.4.4          1   FULL/BDR        00:00:37    10.4.6.1        GigabitEthernet3/0
 
 R6#sh ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.6.6.6/32        1     LOOP  0/0
-Gi3/0        1     0               10.4.6.2/30        1     BDR   1/1
+Lo1          1     0               48.73.239.66/32    1     LOOP  0/0
+Gi3/0        1     0               10.4.6.2/30        1     DR    1/1
+Gi2/0        1     0               48.73.240.21/30    1     DR    0/0
+Gi1/0        1     0               48.73.240.13/30    1     DR    0/0
+Fa0/0        1     0               48.73.240.17/30    1     DR    0/0
 ```
 
 __AS 17390__ - IBM
@@ -582,28 +739,38 @@ R7#sh ip ospf database
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.7.7.7        10.7.7.7        431         0x8000000A 0x008304 2
-10.8.8.8        10.8.8.8        530         0x8000000A 0x0082FA 2
+10.7.7.7        10.7.7.7        888         0x80000004 0x0060C4 6
+10.8.8.8        10.8.8.8        841         0x80000004 0x00A9C1 5
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.7.8.1        10.7.7.7        431         0x80000008 0x0004B7
-
-R7#sh ip route ospf
-     10.0.0.0/8 is variably subnetted, 3 subnets, 2 masks
-O       10.8.8.8/32 [110/2] via 10.7.8.2, 04:02:17, GigabitEthernet1/0
+10.7.8.2        10.8.8.8        841         0x80000003 0x00E2D9
 
 R7#sh ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.8.8.8          1   FULL/BDR        00:00:32    10.7.8.2        GigabitEthernet1/0
+10.8.8.8          1   FULL/DR         00:00:31    10.7.8.2        GigabitEthernet1/0
+
+R7#sh ip route ospf
+     130.41.0.0/16 is variably subnetted, 5 subnets, 2 masks
+O       130.41.46.4/30 [110/2] via 10.7.8.2, 01:21:20, GigabitEthernet1/0
+O       130.41.46.0/30 [110/2] via 10.7.8.2, 01:21:20, GigabitEthernet1/0
+O       130.41.46.88/32 [110/2] via 10.7.8.2, 01:21:20, GigabitEthernet1/0
+     10.0.0.0/8 is variably subnetted, 3 subnets, 2 masks
+O       10.8.8.8/32 [110/2] via 10.7.8.2, 01:21:20, GigabitEthernet1/0
 
 R7#sh ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.7.7.7/32        1     LOOP  0/0
-Gi1/0        1     0               10.7.8.1/30        1     DR    1/1
+Lo1          1     0               130.41.46.77/32    1     LOOP  0/0
+Gi5/0        1     0               64.112.0.6/30      1     DR    0/0
+Gi4/0        1     0               48.73.240.6/30     1     DR    0/0
+Gi1/0        1     0               10.7.8.1/30        1     BDR   1/1
+Fa0/0        1     0               130.41.46.9/30     1     DR    0/0
+```
 
+```txt
 ! ROUTER 8 --------------------------------------------------------------
 R8#sh ip ospf database
 
@@ -612,27 +779,37 @@ R8#sh ip ospf database
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.7.7.7        10.7.7.7        599         0x8000000A 0x008304 2
-10.8.8.8        10.8.8.8        696         0x8000000A 0x0082FA 2
+10.7.7.7        10.7.7.7        998         0x80000004 0x0060C4 6
+10.8.8.8        10.8.8.8        949         0x80000004 0x00A9C1 5
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.7.8.1        10.7.7.7        599         0x80000008 0x0004B7
+10.7.8.2        10.8.8.8        949         0x80000003 0x00E2D9
 
 R8#sh ip route ospf
+     48.0.0.0/30 is subnetted, 1 subnets
+O       48.73.240.4 [110/2] via 10.7.8.1, 01:23:02, GigabitEthernet1/0
+     64.0.0.0/30 is subnetted, 1 subnets
+O       64.112.0.4 [110/2] via 10.7.8.1, 01:23:02, GigabitEthernet1/0
+     130.41.0.0/16 is variably subnetted, 5 subnets, 2 masks
+O       130.41.46.8/30 [110/2] via 10.7.8.1, 01:23:02, GigabitEthernet1/0
+O       130.41.46.77/32 [110/2] via 10.7.8.1, 01:23:02, GigabitEthernet1/0
      10.0.0.0/8 is variably subnetted, 3 subnets, 2 masks
-O       10.7.7.7/32 [110/2] via 10.7.8.1, 04:05:14, GigabitEthernet1/0
+O       10.7.7.7/32 [110/2] via 10.7.8.1, 01:23:02, GigabitEthernet1/0
 
 R8#sh ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.7.7.7          1   FULL/DR         00:00:31    10.7.8.1        GigabitEthernet1/0
+10.7.7.7          1   FULL/BDR        00:00:31    10.7.8.1        GigabitEthernet1/0
 
 R8#sh ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.8.8.8/32        1     LOOP  0/0
-Gi1/0        1     0               10.7.8.2/30        1     BDR   1/1
+Lo1          1     0               130.41.46.88/32    1     LOOP  0/0
+Gi5/0        1     0               130.41.46.2/30     1     DR    0/0
+Gi1/0        1     0               10.7.8.2/30        1     DR    1/1
+Fa0/0        1     0               130.41.46.5/30     1     DR    0/0
 ```
 
 __AS 5511__ - FTRSI (Orange - Worldwide IP Backbone)
@@ -664,61 +841,52 @@ R10#sh ip ospf database
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.10.10.10     10.10.10.10     1469        0x8000000A 0x00441B 2
-10.11.11.11     10.11.11.11     1355        0x8000000A 0x004312 2
+10.10.10.10     10.10.10.10     1067        0x80000004 0x00921B 6
+10.11.11.11     10.11.11.11     1080        0x80000004 0x006F41 5
+10.12.12.12     10.12.12.12     1124        0x80000004 0x007088 3
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.10.11.1      10.10.10.10     1469        0x80000007 0x004853
+10.10.11.2      10.11.11.11     1080        0x80000003 0x002576
+10.10.12.2      10.12.12.12     1124        0x80000003 0x002074
+10.11.12.2      10.12.12.12     1124        0x80000003 0x003B55
 
 		Summary Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.10.12.0      10.10.10.10     1717        0x80000007 0x00C828
-10.10.12.0      10.11.11.11     1107        0x80000007 0x00BD2F
-10.11.12.0      10.10.10.10     965         0x80000007 0x00C628
-10.11.12.0      10.11.11.11     1355        0x80000007 0x00A745
-10.12.12.12     10.10.10.10     965         0x80000007 0x00548A
-10.12.12.12     10.11.11.11     1107        0x80000007 0x003F9C
-
-		Router Link States (Area 1)
-
-Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.10.10.10     10.10.10.10     965         0x80000008 0x00ACEC 1
-10.11.11.11     10.11.11.11     1117        0x80000008 0x008A07 1
-10.12.12.12     10.12.12.12     1093        0x8000000B 0x007D77 3
-
-		Net Link States (Area 1)
-
-Link ID         ADV Router      Age         Seq#       Checksum
-10.10.12.2      10.12.12.12     1093        0x80000007 0x00365C
-10.11.12.2      10.12.12.12     1093        0x80000007 0x00513D
-
-		Summary Net Link States (Area 1)
-
-Link ID         ADV Router      Age         Seq#       Checksum
-0.0.0.0         10.10.10.10     1726        0x80000007 0x007897
-0.0.0.0         10.11.11.11     1365        0x80000007 0x0063A9
+46.87.162.0     10.12.12.12     1124        0x80000003 0x00B82E
+46.87.162.112   10.12.12.12     1124        0x80000003 0x00660D
 
 R10#sh ip route ospf
      10.0.0.0/8 is variably subnetted, 6 subnets, 2 masks
-O       10.11.11.11/32 [110/2] via 10.10.11.2, 03:42:19, GigabitEthernet1/0
-O       10.12.12.12/32 [110/2] via 10.10.12.2, 03:37:51, GigabitEthernet3/0
-O       10.11.12.0/30 [110/2] via 10.10.12.2, 03:37:51, GigabitEthernet3/0
+O       10.11.11.11/32 [110/2] via 10.10.11.2, 01:24:51, GigabitEthernet1/0
+O       10.12.12.12/32 [110/2] via 10.10.12.2, 01:24:51, GigabitEthernet3/0
+O       10.11.12.0/30 [110/2] via 10.10.12.2, 01:24:51, GigabitEthernet3/0
+                      [110/2] via 10.10.11.2, 01:24:51, GigabitEthernet1/0
+     46.0.0.0/8 is variably subnetted, 6 subnets, 2 masks
+O       46.88.20.4/30 [110/2] via 10.10.11.2, 01:24:51, GigabitEthernet1/0
+O IA    46.87.162.112/32 [110/2] via 10.10.12.2, 01:24:51, GigabitEthernet3/0
+O       46.87.162.111/32 [110/2] via 10.10.11.2, 01:24:51, GigabitEthernet1/0
+O IA    46.87.162.0/30 [110/2] via 10.10.12.2, 01:24:51, GigabitEthernet3/0
 
 R10#sh ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.11.11.11       1   FULL/BDR        00:00:31    10.10.11.2      GigabitEthernet1/0
-10.12.12.12       1   FULL/DR         00:00:39    10.10.12.2      GigabitEthernet3/0
+10.12.12.12       1   FULL/DR         00:00:32    10.10.12.2      GigabitEthernet3/0
+10.11.11.11       1   FULL/DR         00:00:33    10.10.11.2      GigabitEthernet1/0
 
 R10#sh ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.10.10.10/32     1     LOOP  0/0
-Gi1/0        1     0               10.10.11.1/30      1     DR    1/1
-Gi3/0        1     1               10.10.12.1/30      1     BDR   1/1
+Lo1          1     0               46.87.162.110/32   1     LOOP  0/0
+Gi4/0        1     0               46.88.20.1/30      1     DR    0/0
+Gi3/0        1     0               10.10.12.1/30      1     BDR   1/1
+Gi2/0        1     0               211.176.129.2/30   1     DR    0/0
+Gi1/0        1     0               10.10.11.1/30      1     BDR   1/1
+```
 
+```txt
 ! ROUTER 11 -------------------------------------------------------------
 R11#sh ip ospf database
 
@@ -727,100 +895,126 @@ R11#sh ip ospf database
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.10.10.10     10.10.10.10     1696        0x8000000A 0x00441B 2
-10.11.11.11     10.11.11.11     1581        0x8000000A 0x004312 2
+10.10.10.10     10.10.10.10     1159        0x80000004 0x00921B 6
+10.11.11.11     10.11.11.11     1170        0x80000004 0x006F41 5
+10.12.12.12     10.12.12.12     1215        0x80000004 0x007088 3
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.10.11.1      10.10.10.10     1696        0x80000007 0x004853
+10.10.11.2      10.11.11.11     1170        0x80000003 0x002576
+10.10.12.2      10.12.12.12     1215        0x80000003 0x002074
+10.11.12.2      10.12.12.12     1215        0x80000003 0x003B55
 
 		Summary Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.10.12.0      10.10.10.10     1945        0x80000007 0x00C828
-10.10.12.0      10.11.11.11     1333        0x80000007 0x00BD2F
-10.11.12.0      10.10.10.10     1192        0x80000007 0x00C628
-10.11.12.0      10.11.11.11     1581        0x80000007 0x00A745
-10.12.12.12     10.10.10.10     1193        0x80000007 0x00548A
-10.12.12.12     10.11.11.11     1333        0x80000007 0x003F9C
-
-		Router Link States (Area 1)
-
-Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.10.10.10     10.10.10.10     1194        0x80000008 0x00ACEC 1
-10.11.11.11     10.11.11.11     1334        0x80000008 0x008A07 1
-10.12.12.12     10.12.12.12     1312        0x8000000B 0x007D77 3
-
-		Net Link States (Area 1)
-
-Link ID         ADV Router      Age         Seq#       Checksum
-10.10.12.2      10.12.12.12     1312        0x80000007 0x00365C
-10.11.12.2      10.12.12.12     1312        0x80000007 0x00513D
-
-		Summary Net Link States (Area 1)
-
-Link ID         ADV Router      Age         Seq#       Checksum
-0.0.0.0         10.10.10.10     1947        0x80000007 0x007897
-0.0.0.0         10.11.11.11     1582        0x80000007 0x0063A9
+46.87.162.0     10.12.12.12     1215        0x80000003 0x00B82E
+46.87.162.112   10.12.12.12     1215        0x80000003 0x00660D
 
 R11#sh ip route ospf
+     211.176.129.0/30 is subnetted, 1 subnets
+O       211.176.129.0 [110/2] via 10.10.11.1, 01:26:20, GigabitEthernet1/0
      10.0.0.0/8 is variably subnetted, 6 subnets, 2 masks
-O       10.10.10.10/32 [110/2] via 10.10.11.1, 03:46:09, GigabitEthernet1/0
-O       10.12.12.12/32 [110/2] via 10.11.12.2, 03:41:19, GigabitEthernet2/0
-O       10.10.12.0/30 [110/2] via 10.11.12.2, 03:41:19, GigabitEthernet2/0
+O       10.10.10.10/32 [110/2] via 10.10.11.1, 01:26:20, GigabitEthernet1/0
+O       10.12.12.12/32 [110/2] via 10.11.12.2, 01:26:20, GigabitEthernet2/0
+O       10.10.12.0/30 [110/2] via 10.11.12.2, 01:26:20, GigabitEthernet2/0
+                      [110/2] via 10.10.11.1, 01:26:20, GigabitEthernet1/0
+     46.0.0.0/8 is variably subnetted, 6 subnets, 2 masks
+O       46.88.20.0/30 [110/2] via 10.10.11.1, 01:26:20, GigabitEthernet1/0
+O IA    46.87.162.112/32 [110/2] via 10.11.12.2, 01:26:20, GigabitEthernet2/0
+O       46.87.162.110/32 [110/2] via 10.10.11.1, 01:26:20, GigabitEthernet1/0
+O IA    46.87.162.0/30 [110/2] via 10.11.12.2, 01:26:20, GigabitEthernet2/0
 
 R11#sh ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.10.10.10       1   FULL/DR         00:00:33    10.10.11.1      GigabitEthernet1/0
-10.12.12.12       1   FULL/DR         00:00:38    10.11.12.2      GigabitEthernet2/0
+10.12.12.12       1   FULL/DR         00:00:39    10.11.12.2      GigabitEthernet2/0
+10.10.10.10       1   FULL/BDR        00:00:35    10.10.11.1      GigabitEthernet1/0
 
 R11#sh ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.11.11.11/32     1     LOOP  0/0
-Gi1/0        1     0               10.10.11.2/30      1     BDR   1/1
-Gi2/0        1     1               10.11.12.1/30      1     BDR   1/1
+Lo1          1     0               46.87.162.111/32   1     LOOP  0/0
+Gi2/0        1     0               10.11.12.1/30      1     BDR   1/1
+Gi1/0        1     0               10.10.11.2/30      1     DR    1/1
+Fa0/0        1     0               46.88.20.5/30      1     DR    0/0
+```
 
+```txt
 ! ROUTER 12 -------------------------------------------------------------
 R12#sh ip ospf database
 
             OSPF Router with ID (10.12.12.12) (Process ID 1)
 
-		Router Link States (Area 1)
+		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.10.10.10     10.10.10.10     1337        0x80000008 0x00ACEC 1
-10.11.11.11     10.11.11.11     1479        0x80000008 0x008A07 1
-10.12.12.12     10.12.12.12     1454        0x8000000B 0x007D77 3
+10.10.10.10     10.10.10.10     1300        0x80000004 0x00921B 6
+10.11.11.11     10.11.11.11     1312        0x80000004 0x006F41 5
+10.12.12.12     10.12.12.12     1355        0x80000004 0x007088 3
 
-		Net Link States (Area 1)
+		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.10.12.2      10.12.12.12     1454        0x80000007 0x00365C
-10.11.12.2      10.12.12.12     1454        0x80000007 0x00513D
+10.10.11.2      10.11.11.11     1312        0x80000003 0x002576
+10.10.12.2      10.12.12.12     1355        0x80000003 0x002074
+10.11.12.2      10.12.12.12     1355        0x80000003 0x003B55
+
+		Summary Net Link States (Area 0)
+
+Link ID         ADV Router      Age         Seq#       Checksum
+46.87.162.0     10.12.12.12     1355        0x80000003 0x00B82E
+46.87.162.112   10.12.12.12     1355        0x80000003 0x00660D
+
+                Router Link States (Area 1)
+
+Link ID         ADV Router      Age         Seq#       Checksum Link count
+10.12.12.12     10.12.12.12     1355        0x80000003 0x00A164 2
 
 		Summary Net Link States (Area 1)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-0.0.0.0         10.10.10.10     93          0x80000008 0x007698
-0.0.0.0         10.11.11.11     1727        0x80000007 0x0063A9
+0.0.0.0         10.12.12.12     1357        0x80000003 0x0056B7
+10.10.10.10     10.12.12.12     1357        0x80000003 0x009252
+10.10.11.0      10.12.12.12     1357        0x80000003 0x00D917
+10.10.12.0      10.12.12.12     1357        0x80000003 0x00C42C
+10.11.11.11     10.12.12.12     1357        0x80000003 0x007170
+10.11.12.0      10.12.12.12     1357        0x80000003 0x00B837
+10.12.12.12     10.12.12.12     1357        0x80000003 0x004699
+46.87.162.110   10.12.12.12     1357        0x80000003 0x00A2D3
+46.87.162.111   10.12.12.12     1357        0x80000003 0x0098DC
+46.88.20.0      10.12.12.12     1357        0x80000003 0x00F480
+46.88.20.4      10.12.12.12     1357        0x80000003 0x00CCA4
+211.176.129.0   10.12.12.12     1357        0x80000003 0x00B356
 
 R12#sh ip route ospf
-O*IA 0.0.0.0/0 [110/2] via 10.11.12.1, 03:43:47, GigabitEthernet2/0
-               [110/2] via 10.10.12.1, 03:43:37, GigabitEthernet3/0
-               
+     211.176.129.0/30 is subnetted, 1 subnets
+O       211.176.129.0 [110/2] via 10.10.12.1, 01:28:53, GigabitEthernet3/0
+     10.0.0.0/8 is variably subnetted, 6 subnets, 2 masks
+O       10.10.10.10/32 [110/2] via 10.10.12.1, 01:28:53, GigabitEthernet3/0
+O       10.11.11.11/32 [110/2] via 10.11.12.1, 01:29:03, GigabitEthernet2/0
+O       10.10.11.0/30 [110/2] via 10.11.12.1, 01:29:03, GigabitEthernet2/0
+                      [110/2] via 10.10.12.1, 01:28:53, GigabitEthernet3/0
+     46.0.0.0/8 is variably subnetted, 6 subnets, 2 masks
+O       46.88.20.0/30 [110/2] via 10.10.12.1, 01:28:53, GigabitEthernet3/0
+O       46.88.20.4/30 [110/2] via 10.11.12.1, 01:29:03, GigabitEthernet2/0
+O       46.87.162.111/32 [110/2] via 10.11.12.1, 01:29:03, GigabitEthernet2/0
+O       46.87.162.110/32 [110/2] via 10.10.12.1, 01:28:53, GigabitEthernet3/0
+
 R12#sh ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.10.10.10       1   FULL/BDR        00:00:35    10.10.12.1      GigabitEthernet3/0
-10.11.11.11       1   FULL/BDR        00:00:33    10.11.12.1      GigabitEthernet2/0
+10.10.10.10       1   FULL/BDR        00:00:39    10.10.12.1      GigabitEthernet3/0
+10.11.11.11       1   FULL/BDR        00:00:36    10.11.12.1      GigabitEthernet2/0
 
 R12#sh ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
-Lo0          1     1               10.12.12.12/32     1     LOOP  0/0
-Gi3/0        1     1               10.10.12.2/30      1     DR    1/1
-Gi2/0        1     1               10.11.12.2/30      1     DR    1/1
+Lo0          1     0               10.12.12.12/32     1     LOOP  0/0
+Gi3/0        1     0               10.10.12.2/30      1     DR    1/1
+Gi2/0        1     0               10.11.12.2/30      1     DR    1/1
+Lo1          1     1               46.87.162.112/32   1     LOOP  0/0
+Fa0/0        1     1               46.87.162.2/30     1     DR    0/0
 ```
 
 #### Test the interfaces connectivity between the ASes
@@ -830,14 +1024,13 @@ __Example from AS 1273 to AS 17390__
 | From | To | Interface | IP Address | Connectivity Success |
 | ---- | -- | --------- | ---------- | ------- |
 | R1   | R8 | Lo1 | 130.41.46.88     | No      |
-| R1   | R8 | g4/0 | 48.73.240.2     | Yes     |
-| R1   | R8 | g5/0 | 130.41.46.2     | No      |
+| R1   | R8 | g4/0 | 48.73.240.2     | No     |  | R1   | R8 | g5/0 | 130.41.46.2     | No      |
 | R1   | R7 | Lo1  | 130.41.46.77    | No |
 | R1   | R7 | f0/0 | 130.41.46.9     | No |
 | R1   | R7 | g4/0 | 48.73.240.6     | No |
 | R1   | R7 | g5/0 | 130.41.46.2     | No |
 
-With the exception of the direct links between routers of distinct ASes, we have no connectivity. To have connectivity between ASes we need to configure BGP
+We have no connectivity between ASes, even in direct connected liks. To have connectivity between ASes we need to configure BGP.
 
 __TODO__
 
