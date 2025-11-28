@@ -2,9 +2,6 @@
 
 > REDES DE INTERNET (RI) 2025-2026
 
-g5/0 do R10 sem IP
-area 1 stub não vimos 0.0.0.0 no R12
-
 ---
 
 ## Group 1 - Class 51D
