@@ -1603,3 +1603,213 @@ __Notes__:
 ---
 
 ## BGP Traffic Optimization
+
+### Inbound Traffic Engineering with Provider Communities (AS2 multi-homed)
+
+#### Goal
+
+- AS2 wants traffic from/through __AS3__ to reach AS2 via AS1 (make AS3 a backup)
+
+#### Provider policy at AS3 (example)
+
+- Default LOCAL_PREF: customer=100, peer=90
+- Comunities from AS2:
+	+ 3:90 -> set LOCAL_PREF=90
+	+ 3:80 -> set LOCAL_PREF=80
+	+ 3:70 -> set LOCAL_PREF=70
+	
+![](./img/38.png)
+
+#### Action
+
+- AS2 tags routes to AS3 with `3:70` and sends comunities
+
+#### Effect
+
+- At AS3: direct-to-AS2 path LP becomes 70; peer path via AS1 is 90 ⇒ __AS3 prefers via AS1__
+
+> Notes: provider communities are provider-specific; must `send-community`
+
+#### Example configuration
+
+```txt
+! Tag only the AS3 - facing advertisement with 3:70 and send communities
+ip prefix-list AS2-PFX seq 5 permit 192.0.2.0/24
+
+route-map TO-AS3-TAG permit 10
+match ip address prefix-list AS2-PFX
+set community 3:70 additive ! provider AS3 interprets 3:70 = > LP =70
+route-map TO-AS1- NORMAL permit 10
+match ip address prefix-list AS2-PFX
+! no community change toward AS1
+
+router bgp 65002
+! Primary provider (AS1)
+neighbor 198.51.100.1 remote-as 65001
+neighbor 198.51.100.1 send-community both
+neighbor 198.51.100.1 route-map TO-AS1-NORMAL out
+!
+! Backup provider (AS3) -- tag with provider community 3:70
+neighbor 203.0.113.1 remote-as 65003
+neighbor 203.0.113.1 send-community both
+neighbor 203.0.113.1 route-map TO-AS3-TAG out
+```
+
+### Outbound Traffic Engineering with `LOCAL_PREF` (primary/backup exit)
+
+#### Goal
+
+- AS 65000 is dual-homed to provider AS 1 (2 links)
+- Make the __left link__ the _primary_ exit; use the right link only as _backup_
+
+#### Action
+
+- Import policy on routes _learned_ from the _left neighbor_: set __LOCAL_PREF = 200__
+- Import policy on routes from the _right neighbor_: set __LOCAL_PREF = 100__
+- The best path in the Loc-RIB points to the left eBGP neighbor (higher wins), so all iBGP speakers send traffic out the __primary__ link
+
+![](./img/39.png)
+
+#### Effect
+
+- __Outbound__ traffic from AS 65000 follows left link
+- Left link fails -> right neighbor wins (backup)
+
+> Notes: `LOCAL_PREF`  is iBGP-only and controls engress; it doesn't influence inbound traffic
+
+#### Example configuration
+
+```txt
+! Loopback for stable iBGP
+interface Loopback0
+ip address 10.0.0.1 255.255.255.255
+
+ip prefix-list ANY seq 5 permit 0.0.0.0/0 le 32
+route-map FROM-PL-IN permit 10
+match ip address prefix-list ANY
+set local-preference 200   ! higher = prefer exit via C-L
+
+router bgp 65000
+bgp log-neighbor-changes
+! iBGP to C-R
+neighbor 10.0.0.2 remote-as 65000
+neighbor 10.0.0.2 update-source Loopback0
+neighbor 10.0.0.2 next-hop-self
+!
+! eBGP to provider P-L (primary link)
+neighbor 198.51.100.1 remote-as 65001
+neighbor 198.51.100.1 route-map FROM-PL-IN in
+! (activate/address-family lines if using AF mode)
+```
+
+### Inbound Traffic Engineering with `AS-PATH` Prepending
+
+#### Goal
+
+- AS2 is dual-homed to __AS1__. Make inbound traffic from AS1 enter via the __primary__ link
+
+#### Action
+
+- Advertise the same prefix on both links
+- On the __backup__ link, __prepend__ AS2’s ASN multiple times in `AS-PATH`
+- In AS1, `LOCAL_PREF` is equal for both (customer ⇒ same), so __shorter AS-PATH wins__
+
+![](./img/40.png)
+
+#### Effect
+
+- AS1 prefers the advertisement wit `AS_PATH` __2__ (primary) over `2 2 2` (backup)
+
+> Notes: Prepending is _advisory_ — it works when competing paths have the same `LOCAL_PREF`. Provider policies (e.g., LP tuning, hot-potato) can override it
+
+### Traffic Engineering – beware of choice precedence
+
+#### Conccept
+
+- Attribute order matters: __LOCAL_PREF__ > AS_PATH length
+- AS3 policy: customer routes LP=__100__, peer routes LP=__90__
+- AS2 advertises its prefix both ways:
+	+ To __AS1 (primary)__: normal advertisement
+	+ To __AS3 (backup)__: heavy __AS_PATH prepending__
+- __Result__: AS3 still prefers the _direct costumer_ path (LP100) to AS2, not the _peer_ path via AS1 (LP90), despite the longer __AS_PATH__
+
+![](./img/41.png)
+
+#### Takeaway / Fix
+
+- Prepending only helps when LP is equal
+- To make AS3 use AS1, lower AS3’s LP for your prefix (e.g., __provider communities__ like `3:70`) or ask the provider to adjust LP
+
+#### Example configuration
+
+AS2 (customer) — advertise normally on primary, prepend on backup
+
+```txt
+ip prefix-list AS2-PFX seq 5 permit 192.0.2.0/24
+
+route-map TO-AS1-PRIMARY permit 10
+match ip address prefix-list AS2-PFX
+! no prepend on primary
+
+route-map TO-AS1-BACKUP permit 10
+match ip address prefix-list AS2-PFX
+set as-path prepend 65000 65000 65000
+
+router bgp 65000
+neighbor 203.0.113.1 remote-as 65001              ! AS1 left (primary)
+neighbor 203.0.113.1 route-map TO-AS1-PRIMARY out
+neighbor 203.0.113.2 remote-as 65001              ! AS1 right (backup)
+neighbor 203.0.113.2 route-map TO-AS1-BACKUP out
+```
+
+### Hot-Potato Routing — Lowest IGP Cost to `NEXT_HOP`
+
+#### Concept
+
+- If competing routes have equal BGP attributes (LP, AS_PATH, origin, MED as applicable, eBGP/iBGP, ...), the router picks the egress whose __NEXT_HOP is closest by IGP__
+- Goal: __exit the AS ASAP__ — push traffic to the nearest exit (“hot potato”)
+
+#### Effect
+
+- Traffic leaves via the __nearest egress__ (lower IGP cost)
+- If IGP changes, egress choice may shift even with identical BGP routes
+
+![](./img/42.png)
+
+> Tip: To avoid hot-potato, raise `LOCAL_PREF` or use policy to pin an egress (or do cold-potato with traffic engineering).
+
+### Getting Burned by Hot-Potato (return traffic on your backbone)
+
+#### Problem
+
+- Dual-homed customer to the same provider (SFF, NYC); customer core low-BW, provider core high-BW
+- Content farm near NYC
+- Hot-potato at the customer: tiny request exits the nearest egress (e.g., SFF)
+- Provider returns the huge reply at its preferred egress (NYC) → reply traverses the customer backbone → customer carries the bits
+
+![](./img/43.png)
+
+#### How to mitigate
+
+- Use __provider communities__ (or MED to the same provider) to make the provider __prefer SFF__ toward your prefixes
+- Or pin your egress (e.g., with LP) so both request and reply meet at the __same interconnect__ the provider also prefers
+
+### Inbound Steering with `MED` (Provider Cold-Potato)
+
+#### Action
+
+- Make the __provider__ carry traffic across its backbone and hand off near your destination (e.g., SFF)
+- Advertise your prefixes at both interconnects, but set a __lower MED at SFF__ than at NYC (e.g., `MED=15` vs `MED=56`)
+- Provider prefers the _lower_ MED (paths from the same neighbor AS)
+
+#### Effect
+
+- Provider keeps the flow on its __high-bandwidth core__ and exits to you at SFF (__cold-potato__); your __low-bandwidth core__ avoids the heavy return traffic
+
+![](./img/44.png)
+
+#### Notes
+
+- MED is evaluated before IGP cost to next hop
+- Some providers ignore/normalize MED; works only when both paths are from the same AS
+- MED values need not equal IGP metrics
