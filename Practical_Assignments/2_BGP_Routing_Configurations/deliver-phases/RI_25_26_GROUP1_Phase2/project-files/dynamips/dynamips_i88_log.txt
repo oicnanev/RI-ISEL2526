@@ -1,0 +1,46 @@
+Nov 29 11:54:42.354 HYPERVISOR: Release 0.2.23-amd64/Darwin (tag 2023010200)
+Nov 29 11:54:42.354 HYPERVISOR: Started on IP = 127.0.0.1, TCP port = 58372.
+Nov 29 11:54:42.359 HYPERVISOR: exec_cmd: hypervisor version 
+Nov 29 11:54:42.359 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips 
+Nov 29 11:54:42.359 GENERAL: working_dir=/Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips
+Nov 29 11:54:42.359 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips/e3b141cd-f4c4-46ca-b7fa-e694ba7eab4a 
+Nov 29 11:54:42.359 GENERAL: working_dir=/Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips/e3b141cd-f4c4-46ca-b7fa-e694ba7eab4a
+Nov 29 11:54:42.359 HYPERVISOR: exec_cmd: vm create R15 15 c7200 
+Nov 29 11:54:42.359 VM: VM R15 created.
+Nov 29 11:54:42.360 HYPERVISOR: exec_cmd: vm set_con_tcp_port R15 5039 
+Nov 29 11:54:42.360 HYPERVISOR: exec_cmd: c7200 get_mac_addr R15 
+Nov 29 11:54:42.360 HYPERVISOR: exec_cmd: vm get_status R15 
+Nov 29 11:54:42.360 HYPERVISOR: exec_cmd: vm slot_add_binding R15 0 0 C7200-IO-FE 
+Nov 29 11:54:42.360 HYPERVISOR: exec_cmd: vm set_disk0 R15 0 
+Nov 29 11:54:42.361 HYPERVISOR: exec_cmd: vm get_status R15 
+Nov 29 11:54:42.361 HYPERVISOR: exec_cmd: vm set_idle_pc R15 0x606df0c8 
+Nov 29 11:54:42.361 HYPERVISOR: exec_cmd: vm set_ios R15 /Users/oicnanev/GNS3/images/IOS/c7200-advipservicesk9-mz.124-24.T8.image 
+Nov 29 11:54:42.361 HYPERVISOR: exec_cmd: c7200 set_mac_addr R15 ca0f.3080.0000 
+Nov 29 11:54:42.362 HYPERVISOR: exec_cmd: vm set_nvram R15 512 
+Nov 29 11:54:42.362 HYPERVISOR: exec_cmd: vm set_ram R15 512 
+Nov 29 11:54:42.362 HYPERVISOR: exec_cmd: vm get_status R15 
+Nov 29 11:54:42.362 HYPERVISOR: exec_cmd: vm slot_add_binding R15 1 0 PA-GE 
+Nov 29 11:54:42.362 HYPERVISOR: exec_cmd: vm get_status R15 
+Nov 29 11:54:42.362 HYPERVISOR: exec_cmd: vm slot_add_binding R15 2 0 PA-GE 
+Nov 29 11:54:42.362 HYPERVISOR: exec_cmd: vm get_status R15 
+Nov 29 11:54:42.362 HYPERVISOR: exec_cmd: vm slot_add_binding R15 3 0 PA-GE 
+Nov 29 11:54:42.363 HYPERVISOR: exec_cmd: vm get_status R15 
+Nov 29 11:54:42.363 HYPERVISOR: exec_cmd: vm slot_add_binding R15 4 0 PA-GE 
+Nov 29 11:54:42.363 HYPERVISOR: exec_cmd: vm get_status R15 
+Nov 29 11:54:42.363 HYPERVISOR: exec_cmd: vm slot_add_binding R15 5 0 PA-GE 
+Nov 29 11:54:42.364 HYPERVISOR: exec_cmd: vm set_con_tcp_port R15 5039 
+Nov 29 11:54:45.399 HYPERVISOR: exec_cmd: nio create_udp udp-01ae1229-385a-4dd0-b159-08f0bc670ef4 10080 127.0.0.1 10081 
+Nov 29 11:54:45.628 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R15 1 0 udp-01ae1229-385a-4dd0-b159-08f0bc670ef4 
+Nov 29 11:54:45.628 HYPERVISOR: exec_cmd: vm get_status R15 
+Nov 29 11:54:46.861 HYPERVISOR: exec_cmd: nio create_udp udp-daad66ae-e349-43d4-bdd0-00182d802408 10116 127.0.0.1 10117 
+Nov 29 11:54:46.862 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R15 3 0 udp-daad66ae-e349-43d4-bdd0-00182d802408 
+Nov 29 11:54:46.862 HYPERVISOR: exec_cmd: vm get_status R15 
+Nov 29 11:54:47.059 HYPERVISOR: exec_cmd: nio create_udp udp-ad7c2375-204e-43d3-9b46-aac9512fbbb8 10144 127.0.0.1 10145 
+Nov 29 11:54:47.059 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R15 0 0 udp-ad7c2375-204e-43d3-9b46-aac9512fbbb8 
+Nov 29 11:54:47.060 HYPERVISOR: exec_cmd: vm get_status R15 
+Nov 29 11:54:47.154 HYPERVISOR: exec_cmd: nio create_udp udp-3930fc71-47c0-4761-bf6a-27881a042b3b 10156 127.0.0.1 10157 
+Nov 29 11:54:47.155 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R15 4 0 udp-3930fc71-47c0-4761-bf6a-27881a042b3b 
+Nov 29 11:54:47.156 HYPERVISOR: exec_cmd: vm get_status R15 
+Nov 29 11:54:47.772 HYPERVISOR: exec_cmd: nio create_udp udp-be55b49f-5ad7-49d0-a3c8-9feebf8d1c53 10176 127.0.0.1 10177 
+Nov 29 11:54:47.772 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R15 2 0 udp-be55b49f-5ad7-49d0-a3c8-9feebf8d1c53 
+Nov 29 11:54:47.773 HYPERVISOR: exec_cmd: vm get_status R15 
