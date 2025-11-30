@@ -104,106 +104,14 @@ set pcname Server1
 
 #### OSPF Configuration
 
-__AS 1273__ - Vodafone
+__AS 1273__ - Vodafone and __AS 17390__ - IBM
 
 ```txt
 ! All Routers -------------------------------------------------------------
 router ospf 1
-
-! ROUTER 1 ----------------------------------------------------------------
-router-id 10.1.1.1
-passive-interface default               ! block all interfaces from talk OSPF 
-network 10.1.1.1 0.0.0.0 area 0         ! Lo0
-network 48.73.239.11 0.0.0.0 area 0     ! Lo1
-network 10.1.2.1 0.0.0.0 area 0         ! g1/0 -> R2
-network 10.1.3.1 0.0.0.0 area 0         ! g2/0 -> R3
-network 48.73.240.1 0.0.0.3 area 0      ! g3/0 - route for AS 17390
-no passive-interface GigabitEthernet1/0 ! unlock OSPF g1/0 
-no passive-interface GigabitEthernet2/0 ! unlock OSPF g2/0
-
-! ROUTER 2 ----------------------------------------------------------------
-router-id 10.2.2.2
-passive-interface default               ! block all interfaces from talk OSPF
-network 10.2.2.2 0.0.0.0 area 0         ! Lo0
-network 48.73.239.22 0.0.0.0 area 0     ! Lo1
-network 48.73.239.2 0.0.0.3 area 0      ! fa0/0 - route to AS 20717
-network 10.1.2.2 0.0.0.0 area 0         ! g1/0 -> R1
-network 10.2.4.1 0.0.0.0 area 0         ! g2/0 -> R4 
-no passive-interface GigabitEthernet1/0 ! unlock OSPF on g1/0
-no passive-interface GigabitEthernet2/0 ! unlock OSPF on g2/0
-
-! ROUTER 3 ----------------------------------------------------------------
-router-id 10.3.3.3
-passive-interface default               ! block all interfaces from talk OSPF
-network 10.3.3.3 0.0.0.0 area 0         ! Lo0
-network 48.73.239.33 0.0.0.0 area 0     ! Lo1 
-network 10.3.4.1 0.0.0.0 area 0         ! g1/0 -> R4
-network 10.1.3.2 0.0.0.0 area 0         ! g2/0 -> R1
-network 10.3.5.1 0.0.0.0 area 0         ! g3/0 -> R5
-network 48.73.240.5 0.0.0.3 area 0      ! g4/0 - route to AS 17390
-! activate internal interfaces to establish adjacencies
-no passive-interface GigabitEthernet1/0
-no passive-interface GigabitEthernet2/0
-no passive-interface GigabitEthernet3/0
-
-! ROUTER 4 ----------------------------------------------------------------
-router-id 10.4.4.4
-network 10.4.4.4 0.0.0.0 area 0         ! Lo0
-network 48.73.239.44 0.0.0.0 area 0     ! Lo1
-network 10.3.4.2 0.0.0.0 area 0         ! g1/0 -> R3
-network 10.2.4.2 0.0.0.0 area 0         ! g2/0 -> R2
-network 10.4.6.1 0.0.0.0 area 0         ! g3/0 -> R6
-! Block Loopbacks from talking OSPF
-passive-interface Loopback0
-passive-interface Loopback1
-
-! ROUTER 5 ----------------------------------------------------------------
-router-id 10.5.5.5
-passive-interface default               ! block all interfaces from talk OSPF
-network 10.5.5.5 0.0.0.0 area 0         ! Lo0
-network 48.73.239.55 0.0.0.0 area 0     ! Lo1
-network 64.112.0.2 0.0.0.3 area 0       ! g1/0 - Route to AS 701
-network 10.3.5.2 0.0.0.0 area 0         ! g3/0 -> R3
-no passive-interface GigabitEthernet3/0 ! unlock OSPF on g3/0
-
-! ROUTER 6 ----------------------------------------------------------------
-router-id 10.6.6.6
-passive-interface default               ! block all interfaces from talk OSPF
-network 10.6.6.6 0.0.0.0 area 0         ! Lo0
-network 48.73.239.66 0.0.0.0 area 0     ! Lo1
-network 48.73.240.17 0.0.0.3 area 0     ! fa0/0 - Route to AS 5511
-network 48.73.240.13 0.0.0.3 area 0     ! g1/0  - Route to AS 4637
-network 48.73.240.21 0.0.0.3 area 0     ! g2/0  - Route to AS 20717
-network 10.4.6.2 0.0.0.0 area 0         ! g3/0 -> R4
-no passive-interface GigabitEthernet3/0 ! unlock OSPF on g3/0
-```
-
-__AS 17390__ - IBM
-
-```txt
-! ROUTER 7 ----------------------------------------------------------------
-outer ospf 1
- router-id 10.7.7.7
- passive-interface default               ! block all interfaces from talk OSPF
- network 10.7.7.7 0.0.0.0 area 0         ! Lo0
- network 130.41.46.77 0.0.0.0 area 0     ! Lo1
- network 130.41.46.9 0.0.0.3 area 0      ! fa0/0 - Route to AS 64513 (private)
- network 10.7.8.1 0.0.0.0 area 0         ! g1/0 -> R8
- network 48.73.240.6 0.0.0.3 area 0      ! g4/0 - Route to AS 1273
- network 64.112.0.6 0.0.0.3 area 0       ! g5/0 - Route to AS 701
- no passive-interface GigabitEthernet1/0 ! unlock to talk OSPF
-
-! ROUTER 8 ----------------------------------------------------------------
-router ospf 1
- router-id 10.8.8.8
- passive-interface default               ! block all interfaces from talk OSPF
- network 10.8.8.8 0.0.0.0 area 0         ! Lo0
- network 130.41.46.88 0.0.0.0 area 0     ! Lo1
- network 130.41.46.5 0.0.0.3 area 0      ! fa0/0 - Route to AS 64513 (private)
- network 10.7.8.2 0.0.0.0 area 0         ! g1/0 -> R7
- network 48.73.240.2 0.0.0.3 area 0      ! g4/0 - Route to AS 1273
- network 130.41.46.2 0.0.0.3 area 0      ! g5/0 -> Server1
- no passive-interface GigabitEthernet1/0 ! Unlock interface to run OSPF
+ passive-interface Loopback0               
+ network 10.0.0.0 0.255.255.255 area 0        
+ log-adjacency-changes
 ```
 
 __AS 5511__ - FTRSI (Orange - Worldwide IP Backbone)
@@ -211,45 +119,32 @@ __AS 5511__ - FTRSI (Orange - Worldwide IP Backbone)
 ```txt
 ! ROUTER 10 ---------------------------------------------------------------
 router ospf 1
- router-id 10.10.10.10
- passive-interface default             ! block all interfaces from talk OSPF
- network 10.10.10.10 0.0.0.0 area 0    ! Lo0
- network 46.87.162.110 0.0.0.0 area 0  ! Lo1
- network 10.10.11.1 0.0.0.0 area 0     ! g1/0 -> R11
- network 211.176.129.2 0.0.0.3 area 0  ! g2/0 - Route to AS 4637
- network 10.10.12.1 0.0.0.0 area 0     ! g3/0 -> R12
- network 46.88.20.1 0.0.0.3 area 0     ! g4/0 - Route to AS 20717
- ! FALTA a interface G5/0 -> IXP1 -> AS1273 (falar com o professor)
- ! unlock OSPF interfaces
- no passive-interface GigabitEthernet1/0
- no passive-interface GigabitEthernet3/0
+ router-id 10.10.10.10             
+ network 10.10.11.0 0.0.0.3 area 0   ! R11
+ network 10.10.12.0 0.0.0.3 area 1   ! R12
+ network 10.10.10.10 0.0.0.0 area 0  ! Lo0
+ area 1 stub        
+ log-adjacency-changes
 
 ! ROUTER 11 ---------------------------------------------------------------
 router ospf 1
- router-id 10.11.11.11
- passive-interface default             ! block all interfaces from talk OSPF
- network 10.11.11.11 0.0.0.0 area 0    ! Lo0
- network 46.87.162.111 0.0.0.0 area 0  ! Lo1
- network 46.88.20.5 0.0.0.3 area 0     ! fa0/0 - Route to AS 23344
- network 10.10.11.2 0.0.0.0 area 0     ! g1/0 -> R10
- network 10.11.12.1 0.0.0.0 area 0     ! g2/0 -> R12
- ! unlock OSPF interfaces
- no passive-interface GigabitEthernet1/0
- no passive-interface GigabitEthernet2/0
+ router-id 10.11.11.11              
+ network 10.10.11.0 0.0.0.3 area 0    ! R10
+ network 10.11.12.0 0.0.0.3 area 1    ! R12
+ network 10.11.11.11 0.0.0.0 area 0   ! Lo0
+ area 1 stub       
+ log-adjacency-changes
 
 ! ROUTER 12 ---------------------------------------------------------------
 router ospf 1
  router-id 10.12.12.12
- passive-interface default             ! block all interfaces from talk OSPF
- network 10.12.12.12 0.0.0.0 area 0    ! Lo0
- network 46.87.162.112 0.0.0.0 area 1  ! Lo1
- network 46.87.162.2 0.0.0.3 area 1    ! fa0/0 -> Server5
- network 10.11.12.2 0.0.0.0 area 0     ! g2/0 -> R11
- network 10.10.12.2 0.0.0.0 area 0     ! g3/0 -> R10
- area 1 stub                           ! area 1 as stub
- ! Unlock interfaces to exchange OSPF Hellos
- no passive-interface GigabitEthernet2/0
- no passive-interface GigabitEthernet3/0
+ !passive-interface Loopback0              
+ network 10.11.12.0 0.0.0.3 area 1      ! R11
+ network 10.10.12.0 0.0.0.3 area 1      ! R10
+ network 10.12.12.12 0.0.0.0 area 1     ! Lo0
+ network 46.87.162.0 0.0.0.255 area 1   ! Server5
+ area 1 stub      
+ log-adjacency-changes
 ```
 
 ### 1.3 Test and Validation
@@ -303,74 +198,53 @@ OSPF configuration analysis
 ! ROUTER 1 --------------------------------------------------------------
 R1#sh ip ospf database
 
-            OSPF Router with ID (10.1.1.1) (Process ID 1)
+            OSPF Router with ID (48.73.239.11) (Process ID 1)
 
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.1.1.1        10.1.1.1        1190        0x80000004 0x00CCE0 5
-10.2.2.2        10.2.2.2        1175        0x80000004 0x001F76 5
-10.3.3.3        10.3.3.3        1219        0x80000003 0x0054ED 6
-10.4.4.4        10.4.4.4        1232        0x80000004 0x004A56 5
-10.5.5.5        10.5.5.5        1219        0x80000003 0x0080BB 4
-10.6.6.6        10.6.6.6        1185        0x80000003 0x006ADE 6
+48.73.239.11    48.73.239.11    1998        0x8000000A 0x004493 3
+48.73.239.22    48.73.239.22    459         0x80000008 0x004971 3
+48.73.239.33    48.73.239.33    1969        0x80000009 0x008FD6 4
+48.73.239.44    48.73.239.44    1993        0x80000009 0x003310 4
+48.73.239.55    48.73.239.55    2000        0x80000008 0x006E2A 2
+48.73.239.66    48.73.239.66    1512        0x80000005 0x003945 2
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.1.2.2        10.2.2.2        1175        0x80000002 0x00609F
-10.1.3.2        10.3.3.3        1219        0x80000002 0x005B9D
-10.2.4.2        10.4.4.4        1232        0x80000002 0x00717C
-10.3.4.2        10.4.4.4        1232        0x80000002 0x008C5D
-10.3.5.2        10.5.5.5        1219        0x80000002 0x00875B
-10.4.6.2        10.6.6.6        1185        0x80000002 0x009D3A
-            
-R1#sh ip route ospf
-     48.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       48.73.239.22/32 [110/2] via 10.1.2.2, 00:53:45, GigabitEthernet1/0
-O       48.73.240.12/30 [110/4] via 10.1.3.2, 00:53:45, GigabitEthernet2/0
-                        [110/4] via 10.1.2.2, 00:53:45, GigabitEthernet1/0
-O       48.73.240.4/30 [110/2] via 10.1.3.2, 00:53:55, GigabitEthernet2/0
-O       48.73.239.0/30 [110/2] via 10.1.2.2, 00:53:45, GigabitEthernet1/0
-O       48.73.240.16/30 [110/4] via 10.1.3.2, 00:53:45, GigabitEthernet2/0
-                        [110/4] via 10.1.2.2, 00:53:45, GigabitEthernet1/0
-O       48.73.240.20/30 [110/4] via 10.1.3.2, 00:53:45, GigabitEthernet2/0
-                        [110/4] via 10.1.2.2, 00:53:45, GigabitEthernet1/0
-O       48.73.239.55/32 [110/3] via 10.1.3.2, 00:53:45, GigabitEthernet2/0
-O       48.73.239.33/32 [110/2] via 10.1.3.2, 00:53:55, GigabitEthernet2/0
-O       48.73.239.44/32 [110/3] via 10.1.3.2, 00:53:45, GigabitEthernet2/0
-                        [110/3] via 10.1.2.2, 00:53:45, GigabitEthernet1/0
-O       48.73.239.66/32 [110/4] via 10.1.3.2, 00:53:45, GigabitEthernet2/0
-                        [110/4] via 10.1.2.2, 00:53:45, GigabitEthernet1/0
-     64.0.0.0/30 is subnetted, 1 subnets
-O       64.112.0.0 [110/3] via 10.1.3.2, 00:53:45, GigabitEthernet2/0
-     10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       10.4.6.0/30 [110/3] via 10.1.3.2, 00:53:45, GigabitEthernet2/0
-                    [110/3] via 10.1.2.2, 00:53:45, GigabitEthernet1/0
-O       10.2.2.2/32 [110/2] via 10.1.2.2, 00:53:45, GigabitEthernet1/0
-O       10.3.3.3/32 [110/2] via 10.1.3.2, 00:53:55, GigabitEthernet2/0
-O       10.6.6.6/32 [110/4] via 10.1.3.2, 00:53:51, GigabitEthernet2/0
-                    [110/4] via 10.1.2.2, 00:53:51, GigabitEthernet1/0
-O       10.3.5.0/30 [110/2] via 10.1.3.2, 00:54:01, GigabitEthernet2/0
-O       10.2.4.0/30 [110/2] via 10.1.2.2, 00:53:51, GigabitEthernet1/0
-O       10.3.4.0/30 [110/2] via 10.1.3.2, 00:54:01, GigabitEthernet2/0
-O       10.4.4.4/32 [110/3] via 10.1.3.2, 00:53:51, GigabitEthernet2/0
-                    [110/3] via 10.1.2.2, 00:53:51, GigabitEthernet1/0
-O       10.5.5.5/32 [110/3] via 10.1.3.2, 00:53:51, GigabitEthernet2/0
+10.1.2.2        48.73.239.22    459         0x80000006 0x00EDC7
+10.1.3.1        48.73.239.11    1998        0x80000005 0x00F7BE
+10.2.4.2        48.73.239.44    1729        0x80000004 0x00C2BA
+10.3.4.2        48.73.239.44    1993        0x80000007 0x004B23
+10.3.5.2        48.73.239.55    2000        0x80000007 0x006CEA
+10.4.6.2        48.73.239.66    1511        0x80000004 0x002215
 
-R1#sh ip ospf neighbor
+R1#show ip route ospf
+     10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
+O       10.4.6.0/30 [110/3] via 10.1.3.2, 01:37:27, GigabitEthernet2/0
+                    [110/3] via 10.1.2.2, 01:46:27, GigabitEthernet1/0
+O       10.2.2.2/32 [110/2] via 10.1.2.2, 01:46:27, GigabitEthernet1/0
+O       10.3.3.3/32 [110/2] via 10.1.3.2, 01:37:27, GigabitEthernet2/0
+O       10.6.6.6/32 [110/4] via 10.1.3.2, 01:37:27, GigabitEthernet2/0
+                    [110/4] via 10.1.2.2, 01:46:27, GigabitEthernet1/0
+O       10.3.5.0/30 [110/2] via 10.1.3.2, 01:37:27, GigabitEthernet2/0
+O       10.2.4.0/30 [110/2] via 10.1.2.2, 01:46:27, GigabitEthernet1/0
+O       10.3.4.0/30 [110/2] via 10.1.3.2, 01:37:27, GigabitEthernet2/0
+O       10.4.4.4/32 [110/3] via 10.1.3.2, 01:37:27, GigabitEthernet2/0
+                    [110/3] via 10.1.2.2, 01:46:27, GigabitEthernet1/0
+O       10.5.5.5/32 [110/3] via 10.1.3.2, 01:37:27, GigabitEthernet2/0
+
+R1#show ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.3.3.3          1   FULL/DR         00:00:38    10.1.3.2        GigabitEthernet2/0
-10.2.2.2          1   FULL/DR         00:00:32    10.1.2.2        GigabitEthernet1/0
+48.73.239.33      1   FULL/BDR        00:00:37    10.1.3.2        GigabitEthernet2/0
+48.73.239.22      1   FULL/DR         00:00:35    10.1.2.2        GigabitEthernet1/0
 
 R1#sh ip ospf interface brief
-
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.1.1.1/32        1     LOOP  0/0
-Lo1          1     0               48.73.239.11/32    1     LOOP  0/0
-Gi3/0        1     0               48.73.240.1/30     1     DR    0/0
-Gi2/0        1     0               10.1.3.1/30        1     BDR   1/1
+Gi2/0        1     0               10.1.3.1/30        1     DR    1/1
 Gi1/0        1     0               10.1.2.1/30        1     BDR   1/1
 ```
 
@@ -378,142 +252,106 @@ Gi1/0        1     0               10.1.2.1/30        1     BDR   1/1
 ! ROUTER 2 --------------------------------------------------------------
 R2#sh ip ospf database
 
-            OSPF Router with ID (10.2.2.2) (Process ID 1)
+            OSPF Router with ID (48.73.239.22) (Process ID 1)
 
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.1.1.1        10.1.1.1        1497        0x80000004 0x00CCE0 5
-10.2.2.2        10.2.2.2        1480        0x80000004 0x001F76 5
-10.3.3.3        10.3.3.3        1526        0x80000003 0x0054ED 6
-10.4.4.4        10.4.4.4        1537        0x80000004 0x004A56 5
-10.5.5.5        10.5.5.5        1526        0x80000003 0x0080BB 4
-10.6.6.6        10.6.6.6        1490        0x80000003 0x006ADE 6
+48.73.239.11    48.73.239.11    61          0x8000000B 0x004294 3
+48.73.239.22    48.73.239.22    521         0x80000008 0x004971 3
+48.73.239.33    48.73.239.33    21          0x8000000A 0x008DD7 4
+48.73.239.44    48.73.239.44    18          0x8000000A 0x003111 4
+48.73.239.55    48.73.239.55    12          0x80000009 0x006C2B 2
+48.73.239.66    48.73.239.66    1573        0x80000005 0x003945 2
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.1.2.2        10.2.2.2        1480        0x80000002 0x00609F
-10.1.3.2        10.3.3.3        1526        0x80000002 0x005B9D
-10.2.4.2        10.4.4.4        1537        0x80000002 0x00717C
-10.3.4.2        10.4.4.4        1537        0x80000002 0x008C5D
-10.3.5.2        10.5.5.5        1526        0x80000002 0x00875B
-10.4.6.2        10.6.6.6        1490        0x80000002 0x009D3A
-            
+10.1.2.2        48.73.239.22    521         0x80000006 0x00EDC7
+10.1.3.1        48.73.239.11    62          0x80000006 0x00F5BF
+10.2.4.2        48.73.239.44    1791        0x80000004 0x00C2BA
+10.3.4.2        48.73.239.44    18          0x80000008 0x004924
+10.3.5.2        48.73.239.55    12          0x80000008 0x006AEB
+10.4.6.2        48.73.239.66    1573        0x80000004 0x002215
+
+R2#sh ip route ospf
+     10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
+O       10.4.6.0/30 [110/2] via 10.2.4.2, 02:06:08, GigabitEthernet2/0
+O       10.1.3.0/30 [110/2] via 10.1.2.1, 01:43:58, GigabitEthernet1/0
+O       10.3.3.3/32 [110/3] via 10.2.4.2, 01:40:50, GigabitEthernet2/0
+                    [110/3] via 10.1.2.1, 01:40:50, GigabitEthernet1/0
+O       10.1.1.1/32 [110/2] via 10.1.2.1, 02:06:18, GigabitEthernet1/0
+O       10.6.6.6/32 [110/3] via 10.2.4.2, 02:06:08, GigabitEthernet2/0
+O       10.3.5.0/30 [110/3] via 10.2.4.2, 01:40:50, GigabitEthernet2/0
+                    [110/3] via 10.1.2.1, 01:40:50, GigabitEthernet1/0
+O       10.3.4.0/30 [110/2] via 10.2.4.2, 01:40:50, GigabitEthernet2/0
+O       10.4.4.4/32 [110/2] via 10.2.4.2, 02:06:08, GigabitEthernet2/0
+O       10.5.5.5/32 [110/4] via 10.2.4.2, 01:40:50, GigabitEthernet2/0
+                    [110/4] via 10.1.2.1, 01:40:50, GigabitEthernet1/0
+                    
 R2#sh ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.4.4.4          1   FULL/DR         00:00:32    10.2.4.2        GigabitEthernet2/0
-10.1.1.1          1   FULL/BDR        00:00:32    10.1.2.1        GigabitEthernet1/0
+48.73.239.44      1   FULL/DR         00:00:32    10.2.4.2        GigabitEthernet2/0
+48.73.239.11      1   FULL/BDR        00:00:36    10.1.2.1        GigabitEthernet1/0
 
-R2#sh ip route ospf
-     48.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       48.73.240.12/30 [110/3] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
-O       48.73.240.0/30 [110/2] via 10.1.2.1, 00:58:48, GigabitEthernet1/0
-O       48.73.240.4/30 [110/3] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
-                       [110/3] via 10.1.2.1, 00:58:48, GigabitEthernet1/0
-O       48.73.240.16/30 [110/3] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
-O       48.73.240.20/30 [110/3] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
-O       48.73.239.11/32 [110/2] via 10.1.2.1, 00:58:48, GigabitEthernet1/0
-O       48.73.239.55/32 [110/4] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
-                        [110/4] via 10.1.2.1, 00:58:48, GigabitEthernet1/0
-O       48.73.239.33/32 [110/3] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
-                        [110/3] via 10.1.2.1, 00:58:48, GigabitEthernet1/0
-O       48.73.239.44/32 [110/2] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
-O       48.73.239.66/32 [110/3] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
-     64.0.0.0/30 is subnetted, 1 subnets
-O       64.112.0.0 [110/4] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
-                   [110/4] via 10.1.2.1, 00:58:48, GigabitEthernet1/0
-     10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       10.4.6.0/30 [110/2] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
-O       10.1.3.0/30 [110/2] via 10.1.2.1, 00:58:48, GigabitEthernet1/0
-O       10.3.3.3/32 [110/3] via 10.2.4.2, 00:58:38, GigabitEthernet2/0
-                    [110/3] via 10.1.2.1, 00:58:48, GigabitEthernet1/0
-O       10.1.1.1/32 [110/2] via 10.1.2.1, 00:58:48, GigabitEthernet1/0
-O       10.6.6.6/32 [110/3] via 10.2.4.2, 00:58:43, GigabitEthernet2/0
-O       10.3.5.0/30 [110/3] via 10.2.4.2, 00:58:43, GigabitEthernet2/0
-                    [110/3] via 10.1.2.1, 00:58:53, GigabitEthernet1/0
-O       10.3.4.0/30 [110/2] via 10.2.4.2, 00:58:43, GigabitEthernet2/0
-O       10.4.4.4/32 [110/2] via 10.2.4.2, 00:58:43, GigabitEthernet2/0
-O       10.5.5.5/32 [110/4] via 10.2.4.2, 00:58:43, GigabitEthernet2/0
-                    [110/4] via 10.1.2.1, 00:58:53, GigabitEthernet1/0
-                    
 R2#sh ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.2.2.2/32        1     LOOP  0/0
-Lo1          1     0               48.73.239.22/32    1     LOOP  0/0
 Gi2/0        1     0               10.2.4.1/30        1     BDR   1/1
 Gi1/0        1     0               10.1.2.2/30        1     DR    1/1
-Fa0/0        1     0               48.73.239.2/30     1     DR    0/0
 ```
 
 ```txt
 ! ROUTER 3 --------------------------------------------------------------
 R3#sh ip ospf database
 
-            OSPF Router with ID (10.3.3.3) (Process ID 1)
+            OSPF Router with ID (48.73.239.33) (Process ID 1)
 
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.1.1.1        10.1.1.1        1688        0x80000004 0x00CCE0 5
-10.2.2.2        10.2.2.2        1673        0x80000004 0x001F76 5
-10.3.3.3        10.3.3.3        1716        0x80000003 0x0054ED 6
-10.4.4.4        10.4.4.4        1729        0x80000004 0x004A56 5
-10.5.5.5        10.5.5.5        1716        0x80000003 0x0080BB 4
-10.6.6.6        10.6.6.6        1682        0x80000003 0x006ADE 6
+48.73.239.11    48.73.239.11    163         0x8000000B 0x004294 3
+48.73.239.22    48.73.239.22    625         0x80000008 0x004971 3
+48.73.239.33    48.73.239.33    121         0x8000000A 0x008DD7 4
+48.73.239.44    48.73.239.44    120         0x8000000A 0x003111 4
+48.73.239.55    48.73.239.55    112         0x80000009 0x006C2B 2
+48.73.239.66    48.73.239.66    1675        0x80000005 0x003945 2
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.1.2.2        10.2.2.2        1673        0x80000002 0x00609F
-10.1.3.2        10.3.3.3        1716        0x80000002 0x005B9D
-10.2.4.2        10.4.4.4        1729        0x80000002 0x00717C
-10.3.4.2        10.4.4.4        1729        0x80000002 0x008C5D
-10.3.5.2        10.5.5.5        1715        0x80000002 0x00875B
-10.4.6.2        10.6.6.6        1682        0x80000002 0x009D3A
-            
+10.1.2.2        48.73.239.22    625         0x80000006 0x00EDC7
+10.1.3.1        48.73.239.11    163         0x80000006 0x00F5BF
+10.2.4.2        48.73.239.44    1893        0x80000004 0x00C2BA
+10.3.4.2        48.73.239.44    120         0x80000008 0x004924
+10.3.5.2        48.73.239.55    112         0x80000008 0x006AEB
+10.4.6.2        48.73.239.66    1675        0x80000004 0x002215
+
 R3#sh ip route ospf
-     48.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       48.73.239.22/32 [110/3] via 10.3.4.2, 01:01:23, GigabitEthernet1/0
-                        [110/3] via 10.1.3.1, 01:01:23, GigabitEthernet2/0
-O       48.73.240.12/30 [110/3] via 10.3.4.2, 01:01:23, GigabitEthernet1/0
-O       48.73.240.0/30 [110/2] via 10.1.3.1, 01:01:33, GigabitEthernet2/0
-O       48.73.239.0/30 [110/3] via 10.3.4.2, 01:01:23, GigabitEthernet1/0
-                       [110/3] via 10.1.3.1, 01:01:23, GigabitEthernet2/0
-O       48.73.240.16/30 [110/3] via 10.3.4.2, 01:01:23, GigabitEthernet1/0
-O       48.73.240.20/30 [110/3] via 10.3.4.2, 01:01:23, GigabitEthernet1/0
-O       48.73.239.11/32 [110/2] via 10.1.3.1, 01:01:33, GigabitEthernet2/0
-O       48.73.239.55/32 [110/2] via 10.3.5.2, 01:01:33, GigabitEthernet3/0
-O       48.73.239.44/32 [110/2] via 10.3.4.2, 01:01:33, GigabitEthernet1/0
-O       48.73.239.66/32 [110/3] via 10.3.4.2, 01:01:23, GigabitEthernet1/0
-     64.0.0.0/30 is subnetted, 1 subnets
-O       64.112.0.0 [110/2] via 10.3.5.2, 01:01:33, GigabitEthernet3/0
      10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       10.4.6.0/30 [110/2] via 10.3.4.2, 01:01:23, GigabitEthernet1/0
-O       10.2.2.2/32 [110/3] via 10.3.4.2, 01:01:23, GigabitEthernet1/0
-                    [110/3] via 10.1.3.1, 01:01:23, GigabitEthernet2/0
-O       10.1.2.0/30 [110/2] via 10.1.3.1, 01:01:23, GigabitEthernet2/0
-O       10.1.1.1/32 [110/2] via 10.1.3.1, 01:01:33, GigabitEthernet2/0
-O       10.6.6.6/32 [110/3] via 10.3.4.2, 01:01:23, GigabitEthernet1/0
-O       10.2.4.0/30 [110/2] via 10.3.4.2, 01:01:33, GigabitEthernet1/0
-O       10.4.4.4/32 [110/2] via 10.3.4.2, 01:01:37, GigabitEthernet1/0
-O       10.5.5.5/32 [110/2] via 10.3.5.2, 01:01:37, GigabitEthernet3/0
+O       10.4.6.0/30 [110/2] via 10.3.4.2, 01:42:37, GigabitEthernet1/0
+O       10.2.2.2/32 [110/3] via 10.3.4.2, 01:42:37, GigabitEthernet1/0
+                    [110/3] via 10.1.3.1, 01:42:37, GigabitEthernet2/0
+O       10.1.2.0/30 [110/2] via 10.1.3.1, 01:42:37, GigabitEthernet2/0
+O       10.1.1.1/32 [110/2] via 10.1.3.1, 01:42:37, GigabitEthernet2/0
+O       10.6.6.6/32 [110/3] via 10.3.4.2, 01:42:37, GigabitEthernet1/0
+O       10.2.4.0/30 [110/2] via 10.3.4.2, 01:42:37, GigabitEthernet1/0
+O       10.4.4.4/32 [110/2] via 10.3.4.2, 01:42:37, GigabitEthernet1/0
+O       10.5.5.5/32 [110/2] via 10.3.5.2, 01:42:37, GigabitEthernet3/0
 
 R3#sh ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.5.5.5          1   FULL/DR         00:00:33    10.3.5.2        GigabitEthernet3/0
-10.1.1.1          1   FULL/BDR        00:00:39    10.1.3.1        GigabitEthernet2/0
-10.4.4.4          1   FULL/DR         00:00:33    10.3.4.2        GigabitEthernet1/0
+48.73.239.55      1   FULL/DR         00:00:30    10.3.5.2        GigabitEthernet3/0
+48.73.239.11      1   FULL/DR         00:00:39    10.1.3.1        GigabitEthernet2/0
+48.73.239.44      1   FULL/DR         00:00:38    10.3.4.2        GigabitEthernet1/0
 
 R3#sh ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.3.3.3/32        1     LOOP  0/0
-Lo1          1     0               48.73.239.33/32    1     LOOP  0/0
-Gi4/0        1     0               48.73.240.5/30     1     DR    0/0
 Gi3/0        1     0               10.3.5.1/30        1     BDR   1/1
-Gi2/0        1     0               10.1.3.2/30        1     DR    1/1
+Gi2/0        1     0               10.1.3.2/30        1     BDR   1/1
 Gi1/0        1     0               10.3.4.1/30        1     BDR   1/1
 ```
 
@@ -521,67 +359,50 @@ Gi1/0        1     0               10.3.4.1/30        1     BDR   1/1
 ! ROUTER 4 --------------------------------------------------------------
 R4#sh ip ospf database
 
-            OSPF Router with ID (10.4.4.4) (Process ID 1)
+            OSPF Router with ID (48.73.239.44) (Process ID 1)
 
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.1.1.1        10.1.1.1        1834        0x80000004 0x00CCE0 5
-10.2.2.2        10.2.2.2        14          0x80000005 0x001D77 5
-10.3.3.3        10.3.3.3        1862        0x80000003 0x0054ED 6
-10.4.4.4        10.4.4.4        1873        0x80000004 0x004A56 5
-10.5.5.5        10.5.5.5        1861        0x80000003 0x0080BB 4
-10.6.6.6        10.6.6.6        1826        0x80000003 0x006ADE 6
+48.73.239.11    48.73.239.11    254         0x8000000B 0x004294 3
+48.73.239.22    48.73.239.22    713         0x80000008 0x004971 3
+48.73.239.33    48.73.239.33    212         0x8000000A 0x008DD7 4
+48.73.239.44    48.73.239.44    208         0x8000000A 0x003111 4
+48.73.239.55    48.73.239.55    203         0x80000009 0x006C2B 2
+48.73.239.66    48.73.239.66    1764        0x80000005 0x003945 2
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.1.2.2        10.2.2.2        14          0x80000003 0x005EA0
-10.1.3.2        10.3.3.3        1862        0x80000002 0x005B9D
-10.2.4.2        10.4.4.4        1873        0x80000002 0x00717C
-10.3.4.2        10.4.4.4        1873        0x80000002 0x008C5D
-10.3.5.2        10.5.5.5        1861        0x80000002 0x00875B
-10.4.6.2        10.6.6.6        1826        0x80000002 0x009D3A
+10.1.2.2        48.73.239.22    713         0x80000006 0x00EDC7
+10.1.3.1        48.73.239.11    254         0x80000006 0x00F5BF
+10.2.4.2        48.73.239.44    1982        0x80000004 0x00C2BA
+10.3.4.2        48.73.239.44    208         0x80000008 0x004924
+10.3.5.2        48.73.239.55    203         0x80000008 0x006AEB
+10.4.6.2        48.73.239.66    1764        0x80000004 0x002215
 
 R4#sh ip route ospf
-     48.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       48.73.239.22/32 [110/2] via 10.2.4.1, 01:03:38, GigabitEthernet2/0
-O       48.73.240.12/30 [110/2] via 10.4.6.2, 01:03:38, GigabitEthernet3/0
-O       48.73.240.0/30 [110/3] via 10.3.4.1, 01:03:48, GigabitEthernet1/0
-                       [110/3] via 10.2.4.1, 01:03:38, GigabitEthernet2/0
-O       48.73.240.4/30 [110/2] via 10.3.4.1, 01:03:48, GigabitEthernet1/0
-O       48.73.239.0/30 [110/2] via 10.2.4.1, 01:03:38, GigabitEthernet2/0
-O       48.73.240.16/30 [110/2] via 10.4.6.2, 01:03:38, GigabitEthernet3/0
-O       48.73.240.20/30 [110/2] via 10.4.6.2, 01:03:38, GigabitEthernet3/0
-O       48.73.239.11/32 [110/3] via 10.3.4.1, 01:03:48, GigabitEthernet1/0
-                        [110/3] via 10.2.4.1, 01:03:38, GigabitEthernet2/0
-O       48.73.239.55/32 [110/3] via 10.3.4.1, 01:03:48, GigabitEthernet1/0
-O       48.73.239.33/32 [110/2] via 10.3.4.1, 01:03:48, GigabitEthernet1/0
-O       48.73.239.66/32 [110/2] via 10.4.6.2, 01:03:38, GigabitEthernet3/0
-     64.0.0.0/30 is subnetted, 1 subnets
-O       64.112.0.0 [110/3] via 10.3.4.1, 01:03:48, GigabitEthernet1/0
      10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       10.2.2.2/32 [110/2] via 10.2.4.1, 01:03:38, GigabitEthernet2/0
-O       10.1.3.0/30 [110/2] via 10.3.4.1, 01:03:48, GigabitEthernet1/0
-O       10.3.3.3/32 [110/2] via 10.3.4.1, 01:03:48, GigabitEthernet1/0
-O       10.1.2.0/30 [110/2] via 10.2.4.1, 01:03:38, GigabitEthernet2/0
-O       10.1.1.1/32 [110/3] via 10.3.4.1, 01:03:48, GigabitEthernet1/0
-                    [110/3] via 10.2.4.1, 01:03:38, GigabitEthernet2/0
-O       10.6.6.6/32 [110/2] via 10.4.6.2, 01:03:39, GigabitEthernet3/0
-O       10.3.5.0/30 [110/2] via 10.3.4.1, 01:03:49, GigabitEthernet1/0
-O       10.5.5.5/32 [110/3] via 10.3.4.1, 01:03:49, GigabitEthernet1/0
+O       10.2.2.2/32 [110/2] via 10.2.4.1, 02:09:24, GigabitEthernet2/0
+O       10.1.3.0/30 [110/2] via 10.3.4.1, 01:44:06, GigabitEthernet1/0
+O       10.3.3.3/32 [110/2] via 10.3.4.1, 01:44:06, GigabitEthernet1/0
+O       10.1.2.0/30 [110/2] via 10.2.4.1, 02:09:24, GigabitEthernet2/0
+O       10.1.1.1/32 [110/3] via 10.3.4.1, 01:44:06, GigabitEthernet1/0
+                    [110/3] via 10.2.4.1, 01:53:06, GigabitEthernet2/0
+O       10.6.6.6/32 [110/2] via 10.4.6.2, 02:09:34, GigabitEthernet3/0
+O       10.3.5.0/30 [110/2] via 10.3.4.1, 01:44:06, GigabitEthernet1/0
+O       10.5.5.5/32 [110/3] via 10.3.4.1, 01:44:06, GigabitEthernet1/0
 
 R4#sh ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.6.6.6          1   FULL/DR         00:00:33    10.4.6.2        GigabitEthernet3/0
-10.2.2.2          1   FULL/BDR        00:00:39    10.2.4.1        GigabitEthernet2/0
-10.3.3.3          1   FULL/BDR        00:00:31    10.3.4.1        GigabitEthernet1/0
+48.73.239.66      1   FULL/DR         00:00:37    10.4.6.2        GigabitEthernet3/0
+48.73.239.22      1   FULL/BDR        00:00:33    10.2.4.1        GigabitEthernet2/0
+48.73.239.33      1   FULL/BDR        00:00:32    10.3.4.1        GigabitEthernet1/0
 
 R4#sh ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.4.4.4/32        1     LOOP  0/0
-Lo1          1     0               48.73.239.44/32    1     LOOP  0/0
 Gi3/0        1     0               10.4.6.1/30        1     BDR   1/1
 Gi2/0        1     0               10.2.4.2/30        1     DR    1/1
 Gi1/0        1     0               10.3.4.2/30        1     DR    1/1
@@ -589,131 +410,102 @@ Gi1/0        1     0               10.3.4.2/30        1     DR    1/1
 
 ```txt
 ! ROUTER 5 --------------------------------------------------------------
-R5#sh ip ospf database
+R5#show ip ospf database
 
-            OSPF Router with ID (10.5.5.5) (Process ID 1)
+            OSPF Router with ID (48.73.239.55) (Process ID 1)
 
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.1.1.1        10.1.1.1        1966        0x80000004 0x00CCE0 5
-10.2.2.2        10.2.2.2        147         0x80000005 0x001D77 5
-10.3.3.3        10.3.3.3        1993        0x80000003 0x0054ED 6
-10.4.4.4        10.4.4.4        2006        0x80000004 0x004A56 5
-10.5.5.5        10.5.5.5        1991        0x80000003 0x0080BB 4
-10.6.6.6        10.6.6.6        1959        0x80000003 0x006ADE 6
+48.73.239.11    48.73.239.11    342         0x8000000B 0x004294 3
+48.73.239.22    48.73.239.22    803         0x80000008 0x004971 3
+48.73.239.33    48.73.239.33    300         0x8000000A 0x008DD7 4
+48.73.239.44    48.73.239.44    298         0x8000000A 0x003111 4
+48.73.239.55    48.73.239.55    289         0x80000009 0x006C2B 2
+48.73.239.66    48.73.239.66    1853        0x80000005 0x003945 2
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.1.2.2        10.2.2.2        147         0x80000003 0x005EA0
-10.1.3.2        10.3.3.3        1993        0x80000002 0x005B9D
-10.2.4.2        10.4.4.4        2006        0x80000002 0x00717C
-10.3.4.2        10.4.4.4        2006        0x80000002 0x008C5D
-10.3.5.2        10.5.5.5        1991        0x80000002 0x00875B
-10.4.6.2        10.6.6.6        1959        0x80000002 0x009D3A
+10.1.2.2        48.73.239.22    803         0x80000006 0x00EDC7
+10.1.3.1        48.73.239.11    342         0x80000006 0x00F5BF
+10.2.4.2        48.73.239.44    41          0x80000005 0x00C0BB
+10.3.4.2        48.73.239.44    298         0x80000008 0x004924
+10.3.5.2        48.73.239.55    289         0x80000008 0x006AEB
+10.4.6.2        48.73.239.66    1853        0x80000004 0x002215
 
-R5#sh ip route ospf
-     48.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       48.73.239.22/32 [110/4] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
-O       48.73.240.12/30 [110/4] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
-O       48.73.240.0/30 [110/3] via 10.3.5.1, 01:06:00, GigabitEthernet3/0
-O       48.73.240.4/30 [110/2] via 10.3.5.1, 01:06:00, GigabitEthernet3/0
-O       48.73.239.0/30 [110/4] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
-O       48.73.240.16/30 [110/4] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
-O       48.73.240.20/30 [110/4] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
-O       48.73.239.11/32 [110/3] via 10.3.5.1, 01:06:00, GigabitEthernet3/0
-O       48.73.239.33/32 [110/2] via 10.3.5.1, 01:06:00, GigabitEthernet3/0
-O       48.73.239.44/32 [110/3] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
-O       48.73.239.66/32 [110/4] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
+R5#show ip route ospf
      10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       10.4.6.0/30 [110/3] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
-O       10.2.2.2/32 [110/4] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
-O       10.1.3.0/30 [110/2] via 10.3.5.1, 01:06:00, GigabitEthernet3/0
-O       10.3.3.3/32 [110/2] via 10.3.5.1, 01:06:00, GigabitEthernet3/0
-O       10.1.2.0/30 [110/3] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
-O       10.1.1.1/32 [110/3] via 10.3.5.1, 01:06:00, GigabitEthernet3/0
-O       10.6.6.6/32 [110/4] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
-O       10.2.4.0/30 [110/3] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
-O       10.3.4.0/30 [110/2] via 10.3.5.1, 01:06:00, GigabitEthernet3/0
-O       10.4.4.4/32 [110/3] via 10.3.5.1, 01:05:50, GigabitEthernet3/0
+O       10.4.6.0/30 [110/3] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
+O       10.2.2.2/32 [110/4] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
+O       10.1.3.0/30 [110/2] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
+O       10.3.3.3/32 [110/2] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
+O       10.1.2.0/30 [110/3] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
+O       10.1.1.1/32 [110/3] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
+O       10.6.6.6/32 [110/4] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
+O       10.2.4.0/30 [110/3] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
+O       10.3.4.0/30 [110/2] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
+O       10.4.4.4/32 [110/3] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
 
-R5#sh ip ospf neighbor
+R5#show ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.3.3.3          1   FULL/BDR        00:00:33    10.3.5.1        GigabitEthernet3/0
+48.73.239.33      1   FULL/BDR        00:00:34    10.3.5.1        GigabitEthernet3/0
 
-R5#sh ip ospf interface brief
+R5#show ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.5.5.5/32        1     LOOP  0/0
-Lo1          1     0               48.73.239.55/32    1     LOOP  0/0
 Gi3/0        1     0               10.3.5.2/30        1     DR    1/1
-Gi1/0        1     0               64.112.0.2/30      1     DR    0/0
 ```
 
 ```txt
 ! ROUTER 6 --------------------------------------------------------------
-R6#sh ip ospf database
+R6#show ip ospf database
 
-            OSPF Router with ID (10.6.6.6) (Process ID 1)
+            OSPF Router with ID (48.73.239.66) (Process ID 1)
 
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.1.1.1        10.1.1.1        62          0x80000005 0x00CAE1 5
-10.2.2.2        10.2.2.2        259         0x80000005 0x001D77 5
-10.3.3.3        10.3.3.3        104         0x80000004 0x0052EE 6
-10.4.4.4        10.4.4.4        100         0x80000005 0x004857 5
-10.5.5.5        10.5.5.5        89          0x80000004 0x007EBC 4
-10.6.6.6        10.6.6.6        50          0x80000004 0x0068DF 6
+48.73.239.11    48.73.239.11    419         0x8000000B 0x004294 3
+48.73.239.22    48.73.239.22    879         0x80000008 0x004971 3
+48.73.239.33    48.73.239.33    377         0x8000000A 0x008DD7 4
+48.73.239.44    48.73.239.44    374         0x8000000A 0x003111 4
+48.73.239.55    48.73.239.55    368         0x80000009 0x006C2B 2
+48.73.239.66    48.73.239.66    1927        0x80000005 0x003945 2
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.1.2.2        10.2.2.2        259         0x80000003 0x005EA0
-10.1.3.2        10.3.3.3        104         0x80000003 0x00599E
-10.2.4.2        10.4.4.4        100         0x80000003 0x006F7D
-10.3.4.2        10.4.4.4        100         0x80000003 0x008A5E
-10.3.5.2        10.5.5.5        89          0x80000003 0x00855C
-10.4.6.2        10.6.6.6        50          0x80000003 0x009B3B
+10.1.2.2        48.73.239.22    879         0x80000006 0x00EDC7
+10.1.3.1        48.73.239.11    419         0x80000006 0x00F5BF
+10.2.4.2        48.73.239.44    117         0x80000005 0x00C0BB
+10.3.4.2        48.73.239.44    374         0x80000008 0x004924
+10.3.5.2        48.73.239.55    368         0x80000008 0x006AEB
+10.4.6.2        48.73.239.66    1927        0x80000004 0x002215
 
-R6#sh ip route ospf
-     48.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       48.73.239.22/32 [110/3] via 10.4.6.1, 01:08:43, GigabitEthernet3/0
-O       48.73.240.0/30 [110/4] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
-O       48.73.240.4/30 [110/3] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
-O       48.73.239.0/30 [110/3] via 10.4.6.1, 01:08:44, GigabitEthernet3/0
-O       48.73.239.11/32 [110/4] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
-O       48.73.239.55/32 [110/4] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
-O       48.73.239.33/32 [110/3] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
-O       48.73.239.44/32 [110/2] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
-     64.0.0.0/30 is subnetted, 1 subnets
-O       64.112.0.0 [110/4] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
+R6#show ip route ospf
      10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       10.2.2.2/32 [110/3] via 10.4.6.1, 01:08:44, GigabitEthernet3/0
-O       10.1.3.0/30 [110/3] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
-O       10.3.3.3/32 [110/3] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
-O       10.1.2.0/30 [110/3] via 10.4.6.1, 01:08:44, GigabitEthernet3/0
-O       10.1.1.1/32 [110/4] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
-O       10.3.5.0/30 [110/3] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
-O       10.2.4.0/30 [110/2] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
-O       10.3.4.0/30 [110/2] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
-O       10.4.4.4/32 [110/2] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
-O       10.5.5.5/32 [110/4] via 10.4.6.1, 01:08:54, GigabitEthernet3/0
+O       10.2.2.2/32 [110/3] via 10.4.6.1, 02:11:58, GigabitEthernet3/0
+O       10.1.3.0/30 [110/3] via 10.4.6.1, 01:46:40, GigabitEthernet3/0
+O       10.3.3.3/32 [110/3] via 10.4.6.1, 01:46:40, GigabitEthernet3/0
+O       10.1.2.0/30 [110/3] via 10.4.6.1, 02:11:58, GigabitEthernet3/0
+O       10.1.1.1/32 [110/4] via 10.4.6.1, 01:55:40, GigabitEthernet3/0
+O       10.3.5.0/30 [110/3] via 10.4.6.1, 01:46:40, GigabitEthernet3/0
+O       10.2.4.0/30 [110/2] via 10.4.6.1, 02:12:08, GigabitEthernet3/0
+O       10.3.4.0/30 [110/2] via 10.4.6.1, 01:46:40, GigabitEthernet3/0
+O       10.4.4.4/32 [110/2] via 10.4.6.1, 02:12:08, GigabitEthernet3/0
+O       10.5.5.5/32 [110/4] via 10.4.6.1, 01:46:40, GigabitEthernet3/0
 
-R6#sh ip ospf neighbor
+R6#show ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.4.4.4          1   FULL/BDR        00:00:37    10.4.6.1        GigabitEthernet3/0
+48.73.239.44      1   FULL/BDR        00:00:31    10.4.6.1        GigabitEthernet3/0
 
-R6#sh ip ospf interface brief
+R6#show ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.6.6.6/32        1     LOOP  0/0
-Lo1          1     0               48.73.239.66/32    1     LOOP  0/0
 Gi3/0        1     0               10.4.6.2/30        1     DR    1/1
-Gi2/0        1     0               48.73.240.21/30    1     DR    0/0
-Gi1/0        1     0               48.73.240.13/30    1     DR    0/0
-Fa0/0        1     0               48.73.240.17/30    1     DR    0/0
 ```
 
 __AS 17390__ - IBM
@@ -732,84 +524,66 @@ OSPF configuration analysis
 
 ```txt
 ! ROUTER 7 --------------------------------------------------------------
-R7#sh ip ospf database
+R7#show ip ospf database
 
-            OSPF Router with ID (10.7.7.7) (Process ID 1)
+            OSPF Router with ID (130.41.46.77) (Process ID 1)
 
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.7.7.7        10.7.7.7        888         0x80000004 0x0060C4 6
-10.8.8.8        10.8.8.8        841         0x80000004 0x00A9C1 5
+130.41.46.77    130.41.46.77    1385        0x80000005 0x007902 2
+130.41.46.88    130.41.46.88    1347        0x80000005 0x00FD63 2
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.7.8.2        10.8.8.8        841         0x80000003 0x00E2D9
+10.7.8.2        130.41.46.88    1347        0x80000004 0x00197A
 
-R7#sh ip ospf neighbor
+R7#show ip route ospf
+     10.0.0.0/8 is variably subnetted, 3 subnets, 2 masks
+O       10.8.8.8/32 [110/2] via 10.7.8.2, 02:03:15, GigabitEthernet1/0
+
+R7#show ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.8.8.8          1   FULL/DR         00:00:31    10.7.8.2        GigabitEthernet1/0
+130.41.46.88      1   FULL/DR         00:00:36    10.7.8.2        GigabitEthernet1/0
 
-R7#sh ip route ospf
-     130.41.0.0/16 is variably subnetted, 5 subnets, 2 masks
-O       130.41.46.4/30 [110/2] via 10.7.8.2, 01:21:20, GigabitEthernet1/0
-O       130.41.46.0/30 [110/2] via 10.7.8.2, 01:21:20, GigabitEthernet1/0
-O       130.41.46.88/32 [110/2] via 10.7.8.2, 01:21:20, GigabitEthernet1/0
-     10.0.0.0/8 is variably subnetted, 3 subnets, 2 masks
-O       10.8.8.8/32 [110/2] via 10.7.8.2, 01:21:20, GigabitEthernet1/0
-
-R7#sh ip ospf interface brief
+R7#show ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.7.7.7/32        1     LOOP  0/0
-Lo1          1     0               130.41.46.77/32    1     LOOP  0/0
-Gi5/0        1     0               64.112.0.6/30      1     DR    0/0
-Gi4/0        1     0               48.73.240.6/30     1     DR    0/0
 Gi1/0        1     0               10.7.8.1/30        1     BDR   1/1
-Fa0/0        1     0               130.41.46.9/30     1     DR    0/0
 ```
 
 ```txt
 ! ROUTER 8 --------------------------------------------------------------
-R8#sh ip ospf database
+R8#show ip ospf database
 
-            OSPF Router with ID (10.8.8.8) (Process ID 1)
+            OSPF Router with ID (130.41.46.88) (Process ID 1)
 
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.7.7.7        10.7.7.7        998         0x80000004 0x0060C4 6
-10.8.8.8        10.8.8.8        949         0x80000004 0x00A9C1 5
+130.41.46.77    130.41.46.77    400         0x80000006 0x007703 2
+130.41.46.88    130.41.46.88    358         0x80000006 0x00FB64 2
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.7.8.2        10.8.8.8        949         0x80000003 0x00E2D9
+10.7.8.2        130.41.46.88    358         0x80000005 0x00177B
 
-R8#sh ip route ospf
-     48.0.0.0/30 is subnetted, 1 subnets
-O       48.73.240.4 [110/2] via 10.7.8.1, 01:23:02, GigabitEthernet1/0
-     64.0.0.0/30 is subnetted, 1 subnets
-O       64.112.0.4 [110/2] via 10.7.8.1, 01:23:02, GigabitEthernet1/0
-     130.41.0.0/16 is variably subnetted, 5 subnets, 2 masks
-O       130.41.46.8/30 [110/2] via 10.7.8.1, 01:23:02, GigabitEthernet1/0
-O       130.41.46.77/32 [110/2] via 10.7.8.1, 01:23:02, GigabitEthernet1/0
+R8#show ip route ospf
      10.0.0.0/8 is variably subnetted, 3 subnets, 2 masks
-O       10.7.7.7/32 [110/2] via 10.7.8.1, 01:23:02, GigabitEthernet1/0
+O       10.7.7.7/32 [110/2] via 10.7.8.1, 02:19:58, GigabitEthernet1/0
 
-R8#sh ip ospf neighbor
+R8#show ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.7.7.7          1   FULL/BDR        00:00:31    10.7.8.1        GigabitEthernet1/0
+130.41.46.77      1   FULL/BDR        00:00:37    10.7.8.1        GigabitEthernet1/0
 
-R8#sh ip ospf interface brief
+R8#show ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.8.8.8/32        1     LOOP  0/0
-Lo1          1     0               130.41.46.88/32    1     LOOP  0/0
-Gi5/0        1     0               130.41.46.2/30     1     DR    0/0
 Gi1/0        1     0               10.7.8.2/30        1     DR    1/1
-Fa0/0        1     0               130.41.46.5/30     1     DR    0/0
 ```
 
 __AS 5511__ - FTRSI (Orange - Worldwide IP Backbone)
@@ -834,187 +608,213 @@ OSPF configuration analysis
 
 ```txt
 ! ROUTER 10 -------------------------------------------------------------
-R10#sh ip ospf database
+R10#show ip ospf database
 
             OSPF Router with ID (10.10.10.10) (Process ID 1)
 
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.10.10.10     10.10.10.10     1067        0x80000004 0x00921B 6
-10.11.11.11     10.11.11.11     1080        0x80000004 0x006F41 5
-10.12.12.12     10.12.12.12     1124        0x80000004 0x007088 3
+10.10.10.10     10.10.10.10     321         0x8000000B 0x00421C 2
+10.11.11.11     10.11.11.11     401         0x8000000B 0x004113 2
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.10.11.2      10.11.11.11     1080        0x80000003 0x002576
-10.10.12.2      10.12.12.12     1124        0x80000003 0x002074
-10.11.12.2      10.12.12.12     1124        0x80000003 0x003B55
+10.10.11.1      10.10.10.10     321         0x80000005 0x004C51
 
 		Summary Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-46.87.162.0     10.12.12.12     1124        0x80000003 0x00B82E
-46.87.162.112   10.12.12.12     1124        0x80000003 0x00660D
+10.10.12.0      10.10.10.10     1090        0x80000006 0x00CA27
+10.10.12.0      10.11.11.11     401         0x80000003 0x00C52B
+10.11.12.0      10.10.10.10     582         0x80000003 0x00CE24
+10.11.12.0      10.11.11.11     401         0x80000007 0x00A745
+10.12.12.12     10.10.10.10     582         0x80000003 0x005C86
+10.12.12.12     10.11.11.11     401         0x80000003 0x004798
+46.87.162.0     10.10.10.10     582         0x80000003 0x00ECFE
+46.87.162.0     10.11.11.11     403         0x80000003 0x00D711
+46.87.162.112   10.10.10.10     584         0x80000003 0x009ADD
+46.87.162.112   10.11.11.11     403         0x80000003 0x0085EF
+
+		Router Link States (Area 1)
+
+Link ID         ADV Router      Age         Seq#       Checksum Link count
+10.10.10.10     10.10.10.10     584         0x80000009 0x00A0F8 1
+10.11.11.11     10.11.11.11     404         0x80000009 0x008808 1
+10.12.12.12     10.12.12.12     528         0x8000000D 0x006CA7 5
+
+		Net Link States (Area 1)
+
+Link ID         ADV Router      Age         Seq#       Checksum
+10.10.12.1      10.10.10.10     584         0x80000003 0x008A13
+10.11.12.2      10.12.12.12     528         0x80000005 0x00553B
+
+		Summary Net Link States (Area 1)
+
+Link ID         ADV Router      Age         Seq#       Checksum
+0.0.0.0         10.10.10.10     1091        0x80000006 0x007A96
+0.0.0.0         10.11.11.11     404         0x80000007 0x0063A9
+10.10.10.10     10.10.10.10     1092        0x80000006 0x00AC3C
+10.10.10.10     10.11.11.11     406         0x80000003 0x00A740
+10.10.11.0      10.10.10.10     1094        0x80000006 0x00F301
+10.10.11.0      10.11.11.11     406         0x80000008 0x00DA15
+10.11.11.11     10.10.10.10     325         0x8000000C 0x008955
+10.11.11.11     10.11.11.11     406         0x80000008 0x00726E
 
 R10#sh ip route ospf
      10.0.0.0/8 is variably subnetted, 6 subnets, 2 masks
-O       10.11.11.11/32 [110/2] via 10.10.11.2, 01:24:51, GigabitEthernet1/0
-O       10.12.12.12/32 [110/2] via 10.10.12.2, 01:24:51, GigabitEthernet3/0
-O       10.11.12.0/30 [110/2] via 10.10.12.2, 01:24:51, GigabitEthernet3/0
-                      [110/2] via 10.10.11.2, 01:24:51, GigabitEthernet1/0
-     46.0.0.0/8 is variably subnetted, 6 subnets, 2 masks
-O       46.88.20.4/30 [110/2] via 10.10.11.2, 01:24:51, GigabitEthernet1/0
-O IA    46.87.162.112/32 [110/2] via 10.10.12.2, 01:24:51, GigabitEthernet3/0
-O       46.87.162.111/32 [110/2] via 10.10.11.2, 01:24:51, GigabitEthernet1/0
-O IA    46.87.162.0/30 [110/2] via 10.10.12.2, 01:24:51, GigabitEthernet3/0
+O       10.11.11.11/32 [110/2] via 10.10.11.2, 01:13:38, GigabitEthernet1/0
+O       10.12.12.12/32 [110/2] via 10.10.12.2, 01:16:04, GigabitEthernet3/0
+O       10.11.12.0/30 [110/2] via 10.10.12.2, 01:16:04, GigabitEthernet3/0
+     46.0.0.0/8 is variably subnetted, 11 subnets, 3 masks
+O       46.87.162.112/32 [110/2] via 10.10.12.2, 01:16:04, GigabitEthernet3/0
+O       46.87.162.0/30 [110/2] via 10.10.12.2, 01:16:04, GigabitEthernet3/0
 
-R10#sh ip ospf neighbor
+R10#show ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.12.12.12       1   FULL/DR         00:00:32    10.10.12.2      GigabitEthernet3/0
-10.11.11.11       1   FULL/DR         00:00:33    10.10.11.2      GigabitEthernet1/0
+10.11.11.11       1   FULL/BDR        00:00:33    10.10.11.2      GigabitEthernet1/0
+10.12.12.12       1   FULL/BDR        00:00:36    10.10.12.2      GigabitEthernet3/0
 
-R10#sh ip ospf interface brief
+R10#show ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
 Lo0          1     0               10.10.10.10/32     1     LOOP  0/0
-Lo1          1     0               46.87.162.110/32   1     LOOP  0/0
-Gi4/0        1     0               46.88.20.1/30      1     DR    0/0
-Gi3/0        1     0               10.10.12.1/30      1     BDR   1/1
-Gi2/0        1     0               211.176.129.2/30   1     DR    0/0
-Gi1/0        1     0               10.10.11.1/30      1     BDR   1/1
+Gi1/0        1     0               10.10.11.1/30      1     DR    1/1
+Gi3/0        1     1               10.10.12.1/30      1     DR    1/1
 ```
 
 ```txt
 ! ROUTER 11 -------------------------------------------------------------
-R11#sh ip ospf database
+R11#show ip ospf database
 
             OSPF Router with ID (10.11.11.11) (Process ID 1)
 
 		Router Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.10.10.10     10.10.10.10     1159        0x80000004 0x00921B 6
-10.11.11.11     10.11.11.11     1170        0x80000004 0x006F41 5
-10.12.12.12     10.12.12.12     1215        0x80000004 0x007088 3
+10.10.10.10     10.10.10.10     461         0x8000000B 0x00421C 2
+10.11.11.11     10.11.11.11     539         0x8000000B 0x004113 2
 
 		Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-10.10.11.2      10.11.11.11     1170        0x80000003 0x002576
-10.10.12.2      10.12.12.12     1215        0x80000003 0x002074
-10.11.12.2      10.12.12.12     1215        0x80000003 0x003B55
+10.10.11.1      10.10.10.10     461         0x80000005 0x004C51
 
 		Summary Net Link States (Area 0)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-46.87.162.0     10.12.12.12     1215        0x80000003 0x00B82E
-46.87.162.112   10.12.12.12     1215        0x80000003 0x00660D
+10.10.12.0      10.10.10.10     1230        0x80000006 0x00CA27
+10.10.12.0      10.11.11.11     539         0x80000003 0x00C52B
+10.11.12.0      10.10.10.10     722         0x80000003 0x00CE24
+10.11.12.0      10.11.11.11     539         0x80000007 0x00A745
+10.12.12.12     10.10.10.10     722         0x80000003 0x005C86
+10.12.12.12     10.11.11.11     539         0x80000003 0x004798
+46.87.162.0     10.10.10.10     722         0x80000003 0x00ECFE
+46.87.162.0     10.11.11.11     541         0x80000003 0x00D711
+46.87.162.112   10.10.10.10     723         0x80000003 0x009ADD
+46.87.162.112   10.11.11.11     541         0x80000003 0x0085EF
 
-R11#sh ip route ospf
-     211.176.129.0/30 is subnetted, 1 subnets
-O       211.176.129.0 [110/2] via 10.10.11.1, 01:26:20, GigabitEthernet1/0
-     10.0.0.0/8 is variably subnetted, 6 subnets, 2 masks
-O       10.10.10.10/32 [110/2] via 10.10.11.1, 01:26:20, GigabitEthernet1/0
-O       10.12.12.12/32 [110/2] via 10.11.12.2, 01:26:20, GigabitEthernet2/0
-O       10.10.12.0/30 [110/2] via 10.11.12.2, 01:26:20, GigabitEthernet2/0
-                      [110/2] via 10.10.11.1, 01:26:20, GigabitEthernet1/0
-     46.0.0.0/8 is variably subnetted, 6 subnets, 2 masks
-O       46.88.20.0/30 [110/2] via 10.10.11.1, 01:26:20, GigabitEthernet1/0
-O IA    46.87.162.112/32 [110/2] via 10.11.12.2, 01:26:20, GigabitEthernet2/0
-O       46.87.162.110/32 [110/2] via 10.10.11.1, 01:26:20, GigabitEthernet1/0
-O IA    46.87.162.0/30 [110/2] via 10.11.12.2, 01:26:20, GigabitEthernet2/0
-
-R11#sh ip ospf neighbor
-
-Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.12.12.12       1   FULL/DR         00:00:39    10.11.12.2      GigabitEthernet2/0
-10.10.10.10       1   FULL/BDR        00:00:35    10.10.11.1      GigabitEthernet1/0
-
-R11#sh ip ospf interface brief
-Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
-Lo0          1     0               10.11.11.11/32     1     LOOP  0/0
-Lo1          1     0               46.87.162.111/32   1     LOOP  0/0
-Gi2/0        1     0               10.11.12.1/30      1     BDR   1/1
-Gi1/0        1     0               10.10.11.2/30      1     DR    1/1
-Fa0/0        1     0               46.88.20.5/30      1     DR    0/0
-```
-
-```txt
-! ROUTER 12 -------------------------------------------------------------
-R12#sh ip ospf database
-
-            OSPF Router with ID (10.12.12.12) (Process ID 1)
-
-		Router Link States (Area 0)
+		Router Link States (Area 1)
 
 Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.10.10.10     10.10.10.10     1300        0x80000004 0x00921B 6
-10.11.11.11     10.11.11.11     1312        0x80000004 0x006F41 5
-10.12.12.12     10.12.12.12     1355        0x80000004 0x007088 3
+10.10.10.10     10.10.10.10     724         0x80000009 0x00A0F8 1
+10.11.11.11     10.11.11.11     541         0x80000009 0x008808 1
+10.12.12.12     10.12.12.12     667         0x8000000D 0x006CA7 5
 
-		Net Link States (Area 0)
-
-Link ID         ADV Router      Age         Seq#       Checksum
-10.10.11.2      10.11.11.11     1312        0x80000003 0x002576
-10.10.12.2      10.12.12.12     1355        0x80000003 0x002074
-10.11.12.2      10.12.12.12     1355        0x80000003 0x003B55
-
-		Summary Net Link States (Area 0)
+		Net Link States (Area 1)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-46.87.162.0     10.12.12.12     1355        0x80000003 0x00B82E
-46.87.162.112   10.12.12.12     1355        0x80000003 0x00660D
-
-                Router Link States (Area 1)
-
-Link ID         ADV Router      Age         Seq#       Checksum Link count
-10.12.12.12     10.12.12.12     1355        0x80000003 0x00A164 2
+10.10.12.1      10.10.10.10     724         0x80000003 0x008A13
+10.11.12.2      10.12.12.12     667         0x80000005 0x00553B
 
 		Summary Net Link States (Area 1)
 
 Link ID         ADV Router      Age         Seq#       Checksum
-0.0.0.0         10.12.12.12     1357        0x80000003 0x0056B7
-10.10.10.10     10.12.12.12     1357        0x80000003 0x009252
-10.10.11.0      10.12.12.12     1357        0x80000003 0x00D917
-10.10.12.0      10.12.12.12     1357        0x80000003 0x00C42C
-10.11.11.11     10.12.12.12     1357        0x80000003 0x007170
-10.11.12.0      10.12.12.12     1357        0x80000003 0x00B837
-10.12.12.12     10.12.12.12     1357        0x80000003 0x004699
-46.87.162.110   10.12.12.12     1357        0x80000003 0x00A2D3
-46.87.162.111   10.12.12.12     1357        0x80000003 0x0098DC
-46.88.20.0      10.12.12.12     1357        0x80000003 0x00F480
-46.88.20.4      10.12.12.12     1357        0x80000003 0x00CCA4
-211.176.129.0   10.12.12.12     1357        0x80000003 0x00B356
+0.0.0.0         10.10.10.10     1232        0x80000006 0x007A96
+0.0.0.0         10.11.11.11     541         0x80000007 0x0063A9
+10.10.10.10     10.10.10.10     1232        0x80000006 0x00AC3C
+10.10.10.10     10.11.11.11     541         0x80000003 0x00A740
+10.10.11.0      10.10.10.10     1233        0x80000006 0x00F301
+10.10.11.0      10.11.11.11     541         0x80000008 0x00DA15
+10.11.11.11     10.10.10.10     464         0x8000000C 0x008955
+10.11.11.11     10.11.11.11     541         0x80000008 0x00726E
 
-R12#sh ip route ospf
-     211.176.129.0/30 is subnetted, 1 subnets
-O       211.176.129.0 [110/2] via 10.10.12.1, 01:28:53, GigabitEthernet3/0
+R11#show ip route ospf
      10.0.0.0/8 is variably subnetted, 6 subnets, 2 masks
-O       10.10.10.10/32 [110/2] via 10.10.12.1, 01:28:53, GigabitEthernet3/0
-O       10.11.11.11/32 [110/2] via 10.11.12.1, 01:29:03, GigabitEthernet2/0
-O       10.10.11.0/30 [110/2] via 10.11.12.1, 01:29:03, GigabitEthernet2/0
-                      [110/2] via 10.10.12.1, 01:28:53, GigabitEthernet3/0
-     46.0.0.0/8 is variably subnetted, 6 subnets, 2 masks
-O       46.88.20.0/30 [110/2] via 10.10.12.1, 01:28:53, GigabitEthernet3/0
-O       46.88.20.4/30 [110/2] via 10.11.12.1, 01:29:03, GigabitEthernet2/0
-O       46.87.162.111/32 [110/2] via 10.11.12.1, 01:29:03, GigabitEthernet2/0
-O       46.87.162.110/32 [110/2] via 10.10.12.1, 01:28:53, GigabitEthernet3/0
+O       10.10.10.10/32 [110/2] via 10.10.11.1, 01:16:03, GigabitEthernet1/0
+O       10.12.12.12/32 [110/2] via 10.11.12.2, 01:16:03, GigabitEthernet2/0
+O       10.10.12.0/30 [110/2] via 10.11.12.2, 01:16:03, GigabitEthernet2/0
+     46.0.0.0/8 is variably subnetted, 11 subnets, 3 masks
+O       46.87.162.112/32 [110/2] via 10.11.12.2, 01:16:03, GigabitEthernet2/0
+O       46.87.162.0/30 [110/2] via 10.11.12.2, 01:16:03, GigabitEthernet2/0
 
-R12#sh ip ospf neighbor
+R11#show ip ospf neighbor
 
 Neighbor ID     Pri   State           Dead Time   Address         Interface
-10.10.10.10       1   FULL/BDR        00:00:39    10.10.12.1      GigabitEthernet3/0
-10.11.11.11       1   FULL/BDR        00:00:36    10.11.12.1      GigabitEthernet2/0
+10.10.10.10       1   FULL/DR         00:00:36    10.10.11.1      GigabitEthernet1/0
+10.12.12.12       1   FULL/DR         00:00:38    10.11.12.2      GigabitEthernet2/0
 
-R12#sh ip ospf interface brief
+R11#show ip ospf interface brief
 Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
-Lo0          1     0               10.12.12.12/32     1     LOOP  0/0
-Gi3/0        1     0               10.10.12.2/30      1     DR    1/1
-Gi2/0        1     0               10.11.12.2/30      1     DR    1/1
+Lo0          1     0               10.11.11.11/32     1     LOOP  0/0
+Gi1/0        1     0               10.10.11.2/30      1     BDR   1/1
+Gi2/0        1     1               10.11.12.1/30      1     BDR   1/1
+```
+
+```txt
+! ROUTER 12 -------------------------------------------------------------
+R12#show ip ospf database
+
+            OSPF Router with ID (10.12.12.12) (Process ID 1)
+
+		Router Link States (Area 1)
+
+Link ID         ADV Router      Age         Seq#       Checksum Link count
+10.10.10.10     10.10.10.10     943         0x80000009 0x00A0F8 1
+10.11.11.11     10.11.11.11     761         0x80000009 0x008808 1
+10.12.12.12     10.12.12.12     886         0x8000000D 0x006CA7 5
+
+		Net Link States (Area 1)
+
+Link ID         ADV Router      Age         Seq#       Checksum
+10.10.12.1      10.10.10.10     943         0x80000003 0x008A13
+10.11.12.2      10.12.12.12     886         0x80000005 0x00553B
+
+		Summary Net Link States (Area 1)
+
+Link ID         ADV Router      Age         Seq#       Checksum
+0.0.0.0         10.10.10.10     1451        0x80000006 0x007A96
+0.0.0.0         10.11.11.11     761         0x80000007 0x0063A9
+10.10.10.10     10.10.10.10     1451        0x80000006 0x00AC3C
+10.10.10.10     10.11.11.11     761         0x80000003 0x00A740
+10.10.11.0      10.10.10.10     1451        0x80000006 0x00F301
+10.10.11.0      10.11.11.11     763         0x80000008 0x00DA15
+10.11.11.11     10.10.10.10     683         0x8000000C 0x008955
+10.11.11.11     10.11.11.11     763         0x80000008 0x00726E
+
+R12#sh ip route ospf
+     10.0.0.0/8 is variably subnetted, 6 subnets, 2 masks
+O IA    10.10.10.10/32 [110/2] via 10.10.12.1, 01:21:57, GigabitEthernet3/0
+O IA    10.11.11.11/32 [110/2] via 10.11.12.1, 01:19:31, GigabitEthernet2/0
+O IA    10.10.11.0/30 [110/2] via 10.11.12.1, 01:19:31, GigabitEthernet2/0
+                      [110/2] via 10.10.12.1, 01:21:57, GigabitEthernet3/0
+O*IA 0.0.0.0/0 [110/2] via 10.11.12.1, 01:19:31, GigabitEthernet2/0
+               [110/2] via 10.10.12.1, 01:21:57, GigabitEthernet3/0
+
+R12#show ip ospf neighbor
+
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+10.10.10.10       1   FULL/DR         00:00:33    10.10.12.1      GigabitEthernet3/0
+10.11.11.11       1   FULL/BDR        00:00:37    10.11.12.1      GigabitEthernet2/0
+
+R12#show ip ospf interface brief
+Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
+Lo0          1     1               10.12.12.12/32     1     LOOP  0/0
 Lo1          1     1               46.87.162.112/32   1     LOOP  0/0
 Fa0/0        1     1               46.87.162.2/30     1     DR    0/0
+Gi3/0        1     1               10.10.12.2/30      1     BDR   1/1
+Gi2/0        1     1               10.11.12.2/30      1     DR    1/1
 ```
 
 #### Test the interfaces connectivity between the ASes
@@ -1031,7 +831,7 @@ __Example from AS 1273 to AS 17390__
 | R1   | R7 | g4/0 | 48.73.240.6     | No |
 | R1   | R7 | g5/0 | 130.41.46.2     | No |
 
-We have no connectivity between ASes, even in direct connected liks. To have connectivity between ASes we need to configure BGP.
+We have no connectivity between ASes, even in direct connected links. To have connectivity between ASes we need to configure BGP.
 
 ### 1.4 Practical Questions
 
@@ -1065,6 +865,8 @@ Portugal's Internet infrastructure consists of numerous independent networks. Th
 [List of Portuguese ASes](https://ipfind.io/autonomous-system/countries/Portugal)
 
 #### 1.4.4 - Classification of each AS in the lab project as Tier-1 or Tier-2. For each classification, describe the evidence you find in the lab topology that justifies it
+
+__TODO__: check and discuss
 
 
 ### Classification of Autonomous Systems
@@ -1102,13 +904,13 @@ The classification is based on the core differentiator between tiers: **transit 
 
 | AS | Peers |
 | --- | --- |
-| 1273 | 20717, 4637, 701, 17390, 5511 (falta a g5/0) |
+| 1273 | 20717, 4637, 701, 17390, 5511 |
 | 17390 | 701, 1273 |
 | 701 | 17390, 1273, 4637 |
 | 4637 | 701, 1273, 1, 5511 |
 | 1 | 4637 |
 | 20717 | 1273, 5511 |
-| 5511 | 20717, 23344, 1273 (g5/0), 4537 |
+| 5511 | 20717, 23344, 1273, 4537 |
 | 23344 | 5511 |
 
 #### 1.4.6 - Explain how a Tier-2 benefits from peering instead of buying everything from a Tier-1
@@ -1211,11 +1013,1447 @@ In this phase we have as objectives:
 
 ### 2.2 - Implementation
 
-__TODO__
+#### BGP Configuration
+
+__AS 1273__ - Vodafone
+
+```txt
+! Router 1 ==================================================================
+!
+! ===========================================================================
+!                               STATIC ROUTES
+=============================================================================
+!
+ip route 48.73.239.0 255.255.255.0 Null0
+ip route 48.73.240.0 255.255.252.0 Null0
+ip route 63.25.64.0 255.255.192.0 Null0
+!
+! =============================================================================
+!                                   BGP
+! =============================================================================
+!
+router bgp 1273
+ bgp router-id 10.1.1.1
+ no synchronization
+ bgp log-neighbor-changes
+ !
+ ! iBGP - adjacencies in Loopback interfaces -------------------------------
+ neighbor iBGP peer-group
+ neighbor iBGP remote-as 1273
+ neighbor iBGP update-source Loopback0
+ neighbor iBGP next-hop-self
+ neighbor iBGP soft-reconfiguration inbound
+ !
+ neighbor 10.3.3.3 peer-group iBGP
+ neighbor 10.4.4.4 peer-group iBGP
+ !
+ ! eBGP - adjacencies in phisical interfaces --------------------------------
+ neighbor 48.73.240.2 remote-as 17390
+ neighbor 48.73.240.2 soft-reconfiguration inbound
+ !
+ ! Advertise Routes ---------------------------------------------------------
+ network 48.73.239.11 mask 255.255.255.255     ! Loopback 1
+ network 48.73.239.0 mask 255.255.255.0
+ network 48.73.240.0 mask 255.255.252.0
+ network 63.25.64.0 mask 255.255.192.0
+ no auto-summary                               ! Do not summarize routes 
+```
+
+```txt
+! Router 2 ==================================================================
+!
+! ===========================================================================
+!                               STATIC ROUTES
+! ===========================================================================
+!
+ip route 48.73.239.0 255.255.255.0 Null0
+ip route 48.73.240.0 255.255.252.0 Null0
+ip route 63.25.64.0 255.255.192.0 Null0
+!
+! ===========================================================================
+!                                   BGP
+! ===========================================================================
+!
+router bgp 1273
+ bgp router-id 10.2.2.2
+ no synchronization
+ bgp log-neighbor-changes
+ !
+ ! iBGP -------------------------------
+ neighbor iBGP peer-group
+ neighbor iBGP remote-as 1273
+ neighbor iBGP update-source Loopback0
+ neighbor iBGP next-hop-self
+ neighbor iBGP soft-reconfiguration inbound
+ !
+ neighbor 10.3.3.3 peer-group iBGP
+ neighbor 10.4.4.4 peer-group iBGP
+ !
+ ! Advertise Routes -------------------
+ network 48.73.239.22 mask 255.255.255.255       ! Lo1
+ network 48.73.239.0 mask 255.255.255.0
+ network 48.73.239.0 mask 255.255.255.252        ! avoid black-hole in access to server2
+ network 48.73.240.0 mask 255.255.252.0
+ network 63.25.64.0 mask 255.255.192.0
+ no auto-summary
+```
+
+```txt
+! Router 3 ==================================================================
+!
+! ===========================================================================
+!                               STATIC ROUTES
+! ===========================================================================
+!
+ip route 48.73.239.0 255.255.255.0 Null0
+ip route 48.73.240.0 255.255.252.0 Null0
+ip route 63.25.64.0 255.255.192.0 Null0
+! 
+! ===========================================================================
+!                                   BGP
+! ===========================================================================
+!
+router bgp 1273
+ bgp router-id 10.3.3.3
+ bgp cluster-id 1273
+ no synchronization
+ bgp log-neighbor-changes
+ !
+ ! iBGP -------------------------------
+ neighbor iBGP peer-group
+ neighbor iBGP remote-as 1273
+ neighbor iBGP update-source Loopback0
+ neighbor iBGP route-reflector-client
+ neighbor iBGP next-hop-self
+ neighbor iBGP soft-reconfiguration inbound
+ !
+ neighbor iBGP_RR peer-group
+ neighbor iBGP_RR remote-as 1273
+ neighbor iBGP_RR update-source Loopback0
+ neighbor iBGP_RR soft-reconfiguration inbound
+ !
+ neighbor 10.1.1.1 peer-group iBGP
+ neighbor 10.2.2.2 peer-group iBGP
+ neighbor 10.4.4.4 peer-group iBGP_RR
+ neighbor 10.5.5.5 peer-group iBGP
+ neighbor 10.6.6.6 peer-group iBGP
+ !
+ ! eBGP -------------------------------
+ neighbor 48.73.240.6 remote-as 17390
+ neighbor 48.73.240.6 soft-reconfiguration inbound
+ !
+ ! Advertise Routes -------------------
+ network 48.73.239.33 mask 255.255.255.255   ! Lo1
+ network 48.73.239.0 mask 255.255.255.0
+ network 48.73.240.0 mask 255.255.252.0
+ network 48.73.240.4 mask 255.255.255.252    ! to AS 17390 avoiding black-hole
+ network 63.25.64.0 mask 255.255.192.0
+ no auto-summary
+```
+
+```txt
+! Router 4 ==================================================================
+!
+! ===========================================================================
+!                               STATIC ROUTES
+! ===========================================================================
+!
+ip route 48.73.239.0 255.255.255.0 Null0
+ip route 48.73.240.0 255.255.252.0 Null0
+ip route 63.25.64.0 255.255.192.0 Null0
+! 
+! ===========================================================================
+!                                   BGP
+! ===========================================================================
+!
+router bgp 1273
+ bgp router-id 10.4.4.4
+ bgp cluster-id 1273
+ no synchronization
+ bgp log-neighbor-changes
+ ! iBGP -------------------------------
+ neighbor iBGP peer-group
+ neighbor iBGP remote-as 1273
+ neighbor iBGP update-source Loopback0
+ neighbor iBGP route-reflector-client
+ neighbor iBGP next-hop-self
+ neighbor iBGP soft-reconfiguration inbound
+ !
+ neighbor iBGP_RR peer-group
+ neighbor iBGP_RR remote-as 1273
+ neighbor iBGP_RR update-source Loopback0
+ neighbor iBGP_RR soft-reconfiguration inbound
+ !
+ neighbor 10.1.1.1 peer-group iBGP
+ neighbor 10.2.2.2 peer-group iBGP
+ neighbor 10.3.3.3 peer-group iBGP_RR
+ neighbor 10.5.5.5 peer-group iBGP
+ neighbor 10.6.6.6 peer-group iBGP
+ !
+ ! Advertise Routes -------------------
+ network 48.73.239.44 mask 255.255.255.255    ! Lo1
+ network 48.73.239.0 mask 255.255.255.0
+ network 48.73.240.0 mask 255.255.252.0
+ network 63.25.64.0 mask 255.255.192.0
+ no auto-summary
+```
+
+```txt
+! Router 5 ==================================================================
+!
+! ===========================================================================
+!                               STATIC ROUTES
+! ===========================================================================
+!
+ip route 48.73.239.0 255.255.255.0 Null0
+ip route 48.73.240.0 255.255.252.0 Null0
+ip route 63.25.64.0 255.255.192.0 Null0
+! 
+! ===========================================================================
+!                                   BGP
+! ===========================================================================
+!
+router bgp 1273
+ bgp router-id 10.5.5.5
+ no synchronization
+ bgp log-neighbor-changes
+ ! iBGP -------------------------------
+ neighbor iBGP peer-group
+ neighbor iBGP remote-as 1273
+ neighbor iBGP update-source Loopback0
+ neighbor iBGP next-hop-self
+ neighbor iBGP soft-reconfiguration inbound
+ !
+ neighbor 10.3.3.3 peer-group iBGP
+ neighbor 10.4.4.4 peer-group iBGP
+ !
+ ! eBGP -------------------------------
+ neighbor 64.112.0.1 remote-as 701
+ neighbor 64.112.0.1 soft-reconfiguration-inbound
+ !
+ ! Advertise Routes -------------------
+ network 48.73.239.55 mask 255.255.255.255   ! Lo1
+ network 48.73.239.0 mask 255.255.255.0
+ network 48.73.240.0 mask 255.255.252.0
+ network 63.25.64.0 mask 255.255.192.0
+ no auto-summary
+```
+
+```txt
+! Router 6 ==================================================================
+!
+! ===========================================================================
+!                               STATIC ROUTES
+! ===========================================================================
+!
+ip route 48.73.239.0 255.255.255.0 Null0
+ip route 48.73.240.0 255.255.252.0 Null0
+ip route 63.25.64.0 255.255.192.0 Null0
+! 
+! ===========================================================================
+!                                   BGP
+! ===========================================================================
+!
+router bgp 1273
+ bgp router-id 10.6.6.6
+ no synchronization
+ bgp log-neighbor-changes
+ ! iBGP -------------------------------
+ neighbor iBGP peer-group
+ neighbor iBGP remote-as 1273
+ neighbor iBGP update-source Loopback0
+ neighbor iBGP next-hop-self
+ neighbor iBGP soft-reconfiguration inbound
+ !
+ neighbor 10.3.3.3 peer-group iBGP
+ neighbor 10.4.4.4 peer-group iBGP
+ !
+ ! eBGP -------------------------------
+ neighbor 48.73.240.14 remote-as 4637
+ neighbor 48.73.240.14 soft-reconfiguration inbound
+ neighbor 48.73.240.22 remote-as 20717
+ neighbor 48.73.240.22 soft-reconfiguration inbound
+ neighbor 48.73.240.18 remote-as 5511
+ neighbor 48.73.240.18 soft-reconfiguration inbound
+ !
+ ! Advertise Routes -------------------
+ network 48.73.239.66 mask 255.255.255.255   ! Lo1
+ network 48.73.239.0 mask 255.255.255.0
+ network 48.73.240.0 mask 255.255.252.0
+ network 63.25.64.0 mask 255.255.192.0
+ no auto-summary
+```
+
+__AS 17390__ - IBM
+
+```txt
+! Router 7 ==================================================================
+!
+! ===========================================================================
+!                               STATIC ROUTES
+! ===========================================================================
+!
+ip route 130.41.46.0 255.255.255.0 Null0
+!
+! ===========================================================================
+!                                   BGP
+! ===========================================================================
+!
+router bgp 17390
+ bgp router-id 10.7.7.7
+ no synchronization
+ bgp log-neighbor-changes
+ !
+ ! iBGP -------------------------------
+ neighbor 10.8.8.8 remote-as 17390
+ neighbor 10.8.8.8 update-source Loopback0
+ neighbor 10.8.8.8 next-hop-self
+ neighbor 10.8.8.8 soft-reconfiguration inbound
+ !
+ ! eBGP -------------------------------
+ neighbor 64.112.0.5 remote-as 701
+ neighbor 64.112.0.5 soft-reconfiguration inbound
+ neighbor 130.41.46.10 remote-as 64513
+ neighbor 130.41.46.10 soft-reconfiguration inbound
+ neighbor 48.73.240.5 remote-as 1273
+ neighbor 48.73.240.5 soft-reconfiguration inbound
+ !
+ ! Advertise Routes -------------------
+ network 130.41.46.77 mask 255.255.255.255     ! Lo1
+ network 130.41.46.0 mask 255.255.255.0
+ no auto-summary
+```
+
+```txt
+! Router 8 ==================================================================
+!
+! ===========================================================================
+!                               STATIC ROUTES
+! ===========================================================================
+!
+ip route 130.41.46.0 255.255.255.0 Null0
+!
+! ===========================================================================
+!                                   BGP
+! ===========================================================================
+!
+router bgp 17390
+ bgp router-id 10.8.8.8
+ no synchronization
+ bgp log-neighbor-changes
+ !
+ ! iBGP -------------------------------
+ neighbor 10.7.7.7 remote-as 17390
+ neighbor 10.7.7.7 update-source Loopback0
+ neighbor 10.7.7.7 next-hop-self
+ neighbor 10.7.7.7 soft-reconfiguration inbound
+ !
+ ! eBGP -------------------------------
+ neighbor 130.41.46.6 remote-as 64513
+ neighbor 130.41.46.6 soft-reconfiguration inbound
+ neighbor 48.73.240.1 remote-as 1273
+ neighbor 48.73.240.1 soft-reconfiguration inbound
+ !
+ ! Advertise Routes -------------------
+ network 130.41.46.0 mask 255.255.255.0
+ network 130.41.46.0 mask 255.255.255.252   ! avoid black hole / access server1
+ network 130.41.46.88 mask 255.255.255.255  ! Loopback1
+ no auto-summary
+```
+
+__AS 64513__ - Private (inside IBM)
+
+```txt
+! Router 9 ==================================================================
+!
+! ===========================================================================
+!                               STATIC ROUTES
+! ===========================================================================
+!
+ip route 130.41.47.0 255.255.255.0 Null0
+!
+! ===========================================================================
+!                                   BGP
+! ===========================================================================
+!
+router bgp 64513
+ bgp router-id 10.9.9.9
+ no synchronization
+ bgp log-neighbor-changes
+ !
+ ! eBGP -------------------------------
+ neighbor 130.41.46.9 remote-as 17390
+ neighbor 130.41.46.9 soft-reconfiguration inbound
+ neighbor 130.41.46.5 remote-as 17390
+ neighbor 130.41.46.5 soft-reconfiguration inbound
+ !
+ ! Advertise Routes -------------------
+ network 130.41.47.99 mask 255.255.255.255    ! Lo1
+ network 130.41.47.0 mask 255.255.255.0
+ no auto-summary
+```
+
+__AS 5511__ - Orange
+
+```txt
+! Router 10 =================================================================
+!
+! ===========================================================================
+!                               STATIC ROUTES
+! ===========================================================================
+!
+ip route 46.87.162.0 255.255.255.0 Null0
+ip route 46.88.20.0 255.255.255.0 Null0
+ip route 46.88.22.0 255.255.255.0 Null0
+ip route 46.89.36.0 255.255.255.0 Null0
+ip route 46.89.38.0 255.255.255.0 Null0
+ip route 46.92.2.0 255.255.255.0 Null0
+!
+! ===========================================================================
+!                                   BGP
+! ===========================================================================
+!
+!
+router bgp 5511
+ bgp router-id 10.10.10.10
+ no synchronization
+ bgp log-neighbor-changes
+ !
+ ! iBGP -------------------------------
+ neighbor 10.11.11.11 remote-as 5511
+ neighbor 10.11.11.11 update-source Loopback0
+ neighbor 10.11.11.11 next-hop-self
+ neighbor 10.11.11.11 soft-reconfiguration inbound
+ neighbor 10.12.12.12 remote-as 5511
+ neighbor 10.12.12.12 update-source Loopback0
+ neighbor 10.12.12.12 next-hop-self
+ neighbor 10.12.12.12 soft-reconfiguration inbound
+ !
+ ! eBGP -------------------------------
+ neighbor 46.88.20.2 remote-as 20717
+ neighbor 46.88.20.2 soft-reconfiguration inbound
+ neighbor 48.73.240.17 remote-as 1273
+ neighbor 48.73.240.17 soft-reconfiguration inbound
+ neighbor 211.176.129.1 remote-as 4637
+ neighbor 211.176.129.1 soft-reconfiguration inbound
+ !
+ ! Advertise Routes -------------------
+ network 46.87.162.110 mask 255.255.255.255     ! Lo1
+ network 46.87.162.0 mask 255.255.255.0
+ network 46.88.20.0 mask 255.255.255.0
+ network 46.88.22.0 mask 255.255.255.0
+ network 46.89.36.0 mask 255.255.255.0
+ network 46.89.38.0 mask 255.255.255.0
+ network 46.92.2.0 mask 255.255.255.0
+ no auto-summary
+```
+
+```txt
+! Router 11 =================================================================
+!
+! ===========================================================================
+!                               STATIC ROUTES
+! ===========================================================================
+!
+ip route 46.87.162.0 255.255.255.0 Null0
+ip route 46.88.20.0 255.255.255.0 Null0
+ip route 46.88.22.0 255.255.255.0 Null0
+ip route 46.89.36.0 255.255.255.0 Null0
+ip route 46.89.38.0 255.255.255.0 Null0
+ip route 46.92.2.0 255.255.255.0 Null0
+!
+! ===========================================================================
+!                                   BGP
+! ===========================================================================
+!
+router bgp 5511
+ bgp router-id 10.11.11.11
+ no synchronization
+ bgp log-neighbor-changes
+ !
+ ! iBGP -------------------------------
+ neighbor 10.10.10.10 remote-as 5511
+ neighbor 10.10.10.10 update-source Loopback0
+ neighbor 10.10.10.10 next-hop-self
+ neighbor 10.10.10.10 soft-reconfiguration inbound
+ neighbor 10.12.12.12 remote-as 5511
+ neighbor 10.12.12.12 update-source Loopback0
+ neighbor 10.12.12.12 next-hop-self
+ neighbor 10.12.12.12 soft-reconfiguration inbound
+ !
+ ! eBGP -------------------------------
+ neighbor 46.88.20.6 remote-as 23344                 
+ neighbor 46.88.20.6 soft-reconfiguration inbound
+ !
+ ! Advertise Routes -------------------
+ network 46.87.162.111 mask 255.255.255.255     ! Lo1
+ network 46.87.162.0 mask 255.255.255.0
+ network 46.88.20.0 mask 255.255.255.0
+ network 46.88.22.0 mask 255.255.255.0
+ network 46.89.36.0 mask 255.255.255.0
+ network 46.89.38.0 mask 255.255.255.0
+ network 46.92.2.0 mask 255.255.255.0
+ no auto-summary
+```
+
+```txt
+! Router 12 =================================================================
+!
+! ===========================================================================
+!                                   BGP
+! ===========================================================================
+!
+router bgp 5511
+ bgp router-id 10.12.12.12
+ no synchronization
+ bgp log-neighbor-changes
+ !
+ ! iBGP -------------------------------
+ neighbor 10.10.10.10 remote-as 5511
+ neighbor 10.10.10.10 update-source Loopback0
+ neighbor 10.10.10.10 next-hop-self
+ neighbor 10.10.10.10 soft-reconfiguration inbound
+ neighbor 10.11.11.11 remote-as 5511
+ neighbor 10.11.11.11 update-source Loopback0
+ neighbor 10.11.11.11 next-hop-self
+ neighbor 10.11.11.11 soft-reconfiguration inbound
+ !
+ ! Advertise Routes -------------------
+ network 46.87.162.112 mask 255.255.255.255    ! Lo1
+ network 46.87.162.1 mask 255.255.255.255      ! Server5
+```
+
+__AS 23344__ - Disney
+
+```txt
+! Router 13 =================================================================
+!
+! ===========================================================================
+!                               STATIC ROUTES
+! ===========================================================================
+!
+ip route 158.23.228.0 255.255.255.0 Null0
+! 
+! ===========================================================================
+!                                   BGP
+! ===========================================================================
+!
+router bgp 23344
+ bgp router-id 10.13.13.13
+ no synchronization
+ bgp log-neighbor-changes
+ !
+ ! eBGP -------------------------------
+ neighbor 46.88.20.5 remote-as 5511                 
+ neighbor 46.88.20.5 soft-reconfiguration inbound
+ !
+ ! Advertise Routes -------------------
+ network 158.23.228.113 mask 255.255.255.255    ! Lo1
+ network 158.23.228.0 mask 255.255.255.0
+ network 158.23.228.0 mask 255.255.255.252      ! avoid black-hole / access server6
+ no auto-summary
+```
+
+__AS 701__ - Verizon
+
+```txt
+! Router 14 =================================================================
+!
+! ===========================================================================
+!                               STATIC ROUTES
+! ===========================================================================
+!
+ip route 64.96.0.0 255.240.0.0 Null0
+ip route 64.112.0.0 255.240.0.0 Null0
+ip route 65.0.204.0 255.255.255.0 Null0
+ip route 64.96.0.0 255.255.255.252 fastEthernet0/0
+!
+! ===========================================================================
+!                                   BGP
+! ===========================================================================
+!
+router bgp 701
+ bgp router-id 10.14.14.14
+ no synchronization
+ bgp log-neighbor-changes
+ !
+ ! eBGP -------------------------------
+ neighbor 64.112.0.10 remote-as 4637                 
+ neighbor 64.112.0.10 soft-reconfiguration inbound
+ neighbor 64.112.0.2 remote-as 1273                 
+ neighbor 64.112.0.2 soft-reconfiguration inbound
+ neighbor 64.112.0.6 remote-as 17390                 
+ neighbor 64.112.0.6 soft-reconfiguration inbound
+ !
+ ! Advertise Routes -------------------
+ network 64.96.0.114 mask 255.255.255.255    ! Lo1
+ network 64.96.0.0 mask 255.240.0.0
+ network 64.96.0.0 mask 255.255.255.252      ! avoid black-hole / access server3
+ network 64.112.0.0 mask 255.240.0.0
+ network 65.0.204.0 mask 255.255.255.0
+ no auto-summary
+```
+
+__AS 4637__ - Telstra
+
+```txt
+! Router 15 =================================================================
+!
+! ===========================================================================
+!                               STATIC ROUTES
+! ===========================================================================
+!
+ip route 211.176.128.0 255.255.255.0 Null0
+ip route 211.176.129.0 255.255.255.0 Null0
+ip route 211.176.130.0 255.255.254.0 Null0
+ip route 211.176.132.0 255.255.255.0 Null0
+ip route 211.176.135.0 255.255.255.0 Null0
+ip route 211.176.136.0 255.255.252.0 Null0
+ip route 211.176.137.0 255.255.255.0 Null0
+ip route 211.176.138.0 255.255.255.0 Null0
+ip route 211.176.139.0 255.255.255.0 Null0
+ip route 211.176.140.0 255.255.255.0 Null0
+ip route 211.176.141.0 255.255.255.0 Null0
+ip route 211.176.142.0 255.255.255.0 Null0
+!
+! ===========================================================================
+!                                   BGP
+! ===========================================================================
+!
+router bgp 4637
+ bgp router-id 10.15.15.15
+ no synchronization
+ bgp log-neighbor-changes
+ !
+ ! eBGP -------------------------------
+ neighbor 64.112.0.9 remote-as 701                 
+ neighbor 64.112.0.9 soft-reconfiguration inbound
+ neighbor 48.73.240.13 remote-as 1273                 
+ neighbor 48.73.240.13 soft-reconfiguration inbound
+ neighbor 211.176.129.2 remote-as 5511                 
+ neighbor 211.176.129.2 soft-reconfiguration inbound
+ neighbor 211.176.129.6 remote-as 1                           
+ neighbor 211.176.129.6 soft-reconfiguration inbound
+ !
+ ! Advertise Routes -------------------
+ network 211.176.128.115 mask 255.255.255.255    ! Lo1
+ network 211.176.128.0 mask 255.255.255.0
+ network 211.176.128.0 mask 255.255.255.252      ! avoid black-hole / access server4
+ network 211.176.129.0 mask 255.255.255.0
+ network 211.176.130.0 mask 255.255.254.0
+ network 211.176.132.0 mask 255.255.255.0
+ network 211.176.135.0 mask 255.255.255.0
+ network 211.176.136.0 mask 255.255.252.0
+ network 211.176.137.0 mask 255.255.255.0
+ network 211.176.138.0 mask 255.255.255.0
+ network 211.176.139.0 mask 255.255.255.0
+ network 211.176.140.0 mask 255.255.255.0
+ network 211.176.141.0 mask 255.255.255.0
+ network 211.176.142.0 mask 255.255.255.0
+ no auto-summary
+ ```
+ 
+ __AS 20717__ - DE-CIX
+
+```txt
+! Router 16 =================================================================
+!
+! ===========================================================================
+!                                   BGP
+! ===========================================================================
+!
+router bgp 20717
+ bgp router-id 10.16.16.16
+ no synchronization
+ bgp log-neighbor-changes
+ !
+ ! eBGP -------------------------------
+ neighbor 48.73.240.21 remote-as 1273                 
+ neighbor 48.73.240.21 soft-reconfiguration inbound
+ neighbor 46.88.20.1 remote-as 5511                 
+ neighbor 46.88.20.1 soft-reconfiguration inbound
+ ! Without Loopback 1 to advertise
+ no auto-summary
+```
+
+__AS 1__ - Level 3 Parent
+
+```txt
+! BadGuy ====================================================================
+!
+! ===========================================================================
+!                                   BGP
+! ===========================================================================
+!
+router bgp 1
+ bgp router-id 10.66.66.66
+ no synchronization
+ bgp log-neighbor-changes
+ !
+ ! eBGP -------------------------------
+ neighbor 211.176.129.5 remote-as 4637                 
+ neighbor 211.176.129.5 soft-reconfiguration inbound
+ no auto-summary
+```
 
 ### 2.3 - Test and Validation
 
-__TODO__
+#### BGP Status
+
+__AS 1273__ - Vodafone
+
+```txt
+! Router 1 ==================================================================
+!
+R1#show ip bgp summary
+BGP router identifier 10.1.1.1, local AS number 1273
+BGP table version is 698, main routing table version 698
+48 network entries using 6336 bytes of memory
+109 path entries using 5668 bytes of memory
+13/9 BGP path/bestpath attribute entries using 2184 bytes of memory
+5 BGP rrinfo entries using 120 bytes of memory
+7 BGP AS-PATH entries using 168 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+Bitfield cache entries: current 3 (at peak 4) using 96 bytes of memory
+BGP using 14572 total bytes of memory
+BGP activity 72/24 prefixes, 454/345 paths, scan interval 60 secs
+
+Neighbor        V          AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.3.3.3        4       1273     318     261      698    0    0 03:47:15       47
+10.4.4.4        4       1273     306     243      698    0    0 03:56:16       47
+48.73.240.2     4      17390     282     268      698    0    0 03:56:32       11
+```
+
+```txt
+! Router 2 ==================================================================
+!
+R2#show ip bgp summary
+BGP router identifier 10.2.2.2, local AS number 1273
+BGP table version is 802, main routing table version 802
+48 network entries using 6336 bytes of memory
+97 path entries using 5044 bytes of memory
+9/8 BGP path/bestpath attribute entries using 1512 bytes of memory
+5 BGP rrinfo entries using 120 bytes of memory
+6 BGP AS-PATH entries using 144 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+Bitfield cache entries: current 1 (at peak 1) using 32 bytes of memory
+BGP using 13188 total bytes of memory
+BGP activity 97/49 prefixes, 429/332 paths, scan interval 60 secs
+
+Neighbor        V          AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.3.3.3        4       1273     344     265      802    0    0 03:49:31       46
+10.4.4.4        4       1273     330     256      802    0    0 04:15:19       46
+```
+
+```txt
+! Router 3 ==================================================================
+!
+R3#show ip bgp summary
+BGP router identifier 10.3.3.3, local AS number 1273
+BGP table version is 356, main routing table version 356
+48 network entries using 6336 bytes of memory
+88 path entries using 4576 bytes of memory
+14/9 BGP path/bestpath attribute entries using 2352 bytes of memory
+8 BGP AS-PATH entries using 192 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+Bitfield cache entries: current 3 (at peak 5) using 96 bytes of memory
+BGP using 13552 total bytes of memory
+BGP activity 86/38 prefixes, 314/226 paths, scan interval 60 secs
+
+Neighbor        V          AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.1.1.1        4       1273     238     281      356    0    0 03:50:48       10
+10.2.2.2        4       1273     233     281      356    0    0 03:50:33        5
+10.4.4.4        4       1273     276     280      356    0    0 03:51:03        4
+10.5.5.5        4       1273     249     281      356    0    0 03:50:43        9
+10.6.6.6        4       1273     265     281      356    0    0 03:51:02       30
+48.73.240.6     4      17390     282     260      356    0    0 03:51:03       25
+```
+
+```txt
+! Router 4 ==================================================================
+!
+R4#show ip bgp summary
+BGP router identifier 10.4.4.4, local AS number 1273
+BGP table version is 495, main routing table version 495
+48 network entries using 6336 bytes of memory
+69 path entries using 3588 bytes of memory
+9/8 BGP path/bestpath attribute entries using 1512 bytes of memory
+6 BGP AS-PATH entries using 144 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+Bitfield cache entries: current 2 (at peak 3) using 64 bytes of memory
+BGP using 11644 total bytes of memory
+BGP activity 96/48 prefixes, 376/307 paths, scan interval 60 secs
+
+Neighbor        V          AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.1.1.1        4       1273     272     348      495    0    0 04:01:11       10
+10.2.2.2        4       1273     258     332      495    0    0 04:17:45        5
+10.3.3.3        4       1273     343     339      495    0    0 03:52:26       11
+10.5.5.5        4       1273     280     330      495    0    0 04:17:39        9
+10.6.6.6        4       1273     291     332      495    0    0 04:17:54       30
+```
+
+```txt
+! Router 5 ==================================================================
+!
+R5#sh ip bgp summary
+BGP router identifier 10.5.5.5, local AS number 1273
+BGP table version is 702, main routing table version 702
+48 network entries using 6336 bytes of memory
+113 path entries using 5876 bytes of memory
+12/8 BGP path/bestpath attribute entries using 2016 bytes of memory
+5 BGP rrinfo entries using 120 bytes of memory
+9 BGP AS-PATH entries using 216 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+Bitfield cache entries: current 3 (at peak 4) using 96 bytes of memory
+BGP using 14660 total bytes of memory
+BGP activity 77/29 prefixes, 526/413 paths, scan interval 60 secs
+
+Neighbor        V          AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.3.3.3        4       1273     347     302      702    0    0 03:52:56       42
+10.4.4.4        4       1273     332     282      702    0    0 04:18:30       42
+64.112.0.1      4        701     214     319      702    0    0 02:45:54       25
+```
+
+```txt
+! Router 6 ==================================================================
+!
+R6#show ip bgp summary
+BGP router identifier 10.6.6.6, local AS number 1273
+BGP table version is 571, main routing table version 571
+48 network entries using 6336 bytes of memory
+129 path entries using 6708 bytes of memory
+17/9 BGP path/bestpath attribute entries using 2856 bytes of memory
+5 BGP rrinfo entries using 120 bytes of memory
+13 BGP AS-PATH entries using 312 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+Bitfield cache entries: current 2 (at peak 4) using 64 bytes of memory
+BGP using 16396 total bytes of memory
+BGP activity 77/29 prefixes, 617/488 paths, scan interval 60 secs
+
+Neighbor        V          AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.3.3.3        4       1273     348     311      571    0    0 03:54:04       21
+10.4.4.4        4       1273     334     292      571    0    0 04:19:34       21
+48.73.240.14    4       4637     216     335      571    0    0 02:36:39       31
+48.73.240.18    4       5511     314     329      571    0    0 03:10:40       26
+48.73.240.22    4      20717     185     313      571    0    0 04:20:15       26
+```
+
+__AS 17390__ - IBM
+
+```txt
+! Router 7 ==================================================================
+!
+R7#show ip bgp summary
+BGP router identifier 10.7.7.7, local AS number 17390
+BGP table version is 521, main routing table version 521
+48 network entries using 6336 bytes of memory
+130 path entries using 6760 bytes of memory
+20/9 BGP path/bestpath attribute entries using 3360 bytes of memory
+11 BGP AS-PATH entries using 280 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+Bitfield cache entries: current 2 (at peak 4) using 64 bytes of memory
+BGP using 16800 total bytes of memory
+BGP activity 68/20 prefixes, 552/422 paths, scan interval 60 secs
+
+Neighbor        V          AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.8.8.8        4      17390     291     314      521    0    0 04:16:39       42
+48.73.240.5     4       1273     308     337      521    0    0 04:02:32       42
+64.112.0.5      4        701     215     342      521    0    0 02:55:02       42
+130.41.46.10    4      64513     216     322      521    0    0 04:17:23        2
+```
+
+```txt
+! Router 8 ==================================================================
+!
+R8#show ip bgp summary
+BGP router identifier 10.8.8.8, local AS number 17390
+BGP table version is 489, main routing table version 489
+48 network entries using 6336 bytes of memory
+93 path entries using 4836 bytes of memory
+16/9 BGP path/bestpath attribute entries using 2688 bytes of memory
+8 BGP AS-PATH entries using 192 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+Bitfield cache entries: current 2 (at peak 4) using 64 bytes of memory
+BGP using 14116 total bytes of memory
+BGP activity 74/26 prefixes, 378/285 paths, scan interval 60 secs
+
+Neighbor        V          AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.7.7.7        4      17390     314     292      489    0    0 04:16:59       46
+48.73.240.1     4       1273     301     315      489    0    0 04:11:54       42
+130.41.46.6     4      64513     217     308      489    0    0 04:17:43        2
+```
+
+__AS 64513__ - Private (inside IBM)
+
+```txt
+! Router 9 ==================================================================
+!
+R9#show ip bgp summary
+BGP router identifier 10.9.9.9, local AS number 64513
+BGP table version is 358, main routing table version 358
+48 network entries using 6336 bytes of memory
+94 path entries using 4888 bytes of memory
+10/7 BGP path/bestpath attribute entries using 1680 bytes of memory
+7 BGP AS-PATH entries using 184 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+Bitfield cache entries: current 1 (at peak 2) using 32 bytes of memory
+BGP using 13120 total bytes of memory
+BGP activity 62/14 prefixes, 204/110 paths, scan interval 60 secs
+
+Neighbor        V          AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+130.41.46.5     4      17390     308     217      358    0    0 02:50:50       46
+130.41.46.9     4      17390     323     217      358    0    0 02:50:50       46
+```
+
+__AS 5511__ - Orange
+
+```txt
+! Router 10 =================================================================
+!
+R10#show ip bgp summary
+BGP router identifier 10.10.10.10, local AS number 5511
+BGP table version is 224, main routing table version 224
+48 network entries using 6336 bytes of memory
+112 path entries using 5824 bytes of memory
+19/9 BGP path/bestpath attribute entries using 3192 bytes of memory
+15 BGP AS-PATH entries using 392 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+Bitfield cache entries: current 2 (at peak 4) using 64 bytes of memory
+BGP using 15808 total bytes of memory
+BGP activity 57/9 prefixes, 251/139 paths, scan interval 60 secs
+
+Neighbor        V          AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.11.11.11     4       5511     211     239      224    0    0 03:07:51       10
+10.12.12.12     4       5511     204     228      224    0    0 03:10:40        1
+46.88.20.2      4      20717     133     222      224    0    0 03:20:09       22
+48.73.240.17    4       1273     226     222      224    0    0 03:20:28       36
+211.176.129.1   4       4637     151     231      224    0    0 02:46:48       36
+```
+
+```txt
+! Router 11 =================================================================
+!
+R11#sh ip bgp summary
+BGP router identifier 10.11.11.11, local AS number 5511
+BGP table version is 176, main routing table version 176
+48 network entries using 6336 bytes of memory
+54 path entries using 2808 bytes of memory
+9/8 BGP path/bestpath attribute entries using 1512 bytes of memory
+6 BGP AS-PATH entries using 144 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+Bitfield cache entries: current 3 (at peak 4) using 96 bytes of memory
+BGP using 10896 total bytes of memory
+BGP activity 51/3 prefixes, 77/23 paths, scan interval 60 secs
+
+Neighbor        V          AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.10.10.10     4       5511     207     191      176    0    0 03:08:19       43
+10.12.12.12     4       5511     192     191      176    0    0 03:08:44        1
+46.88.20.6      4      23344     114     203      176    0    0 03:08:32        3
+```
+
+```txt
+! Router 12 =================================================================
+!
+R12#sh ip bgp summary
+BGP router identifier 10.12.12.12, local AS number 5511
+BGP table version is 175, main routing table version 175
+48 network entries using 6336 bytes of memory
+54 path entries using 2808 bytes of memory
+9/8 BGP path/bestpath attribute entries using 1512 bytes of memory
+6 BGP AS-PATH entries using 144 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+Bitfield cache entries: current 1 (at peak 1) using 32 bytes of memory
+BGP using 10832 total bytes of memory
+BGP activity 51/3 prefixes, 77/23 paths, scan interval 60 secs
+
+Neighbor        V          AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+10.10.10.10     4       5511     209     193      175    0    0 03:11:33       43
+10.11.11.11     4       5511     192     192      175    0    0 03:09:09       10
+```
+
+__AS 23344__ - Disney
+
+```txt
+! Router 13 =================================================================
+!
+R13#show ip bgp summary
+BGP router identifier 10.13.13.13, local AS number 23344
+BGP table version is 542, main routing table version 542
+48 network entries using 6336 bytes of memory
+48 path entries using 2496 bytes of memory
+9/8 BGP path/bestpath attribute entries using 1512 bytes of memory
+6 BGP AS-PATH entries using 160 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+Bitfield cache entries: current 1 (at peak 2) using 32 bytes of memory
+BGP using 10536 total bytes of memory
+BGP activity 180/132 prefixes, 241/193 paths, scan interval 60 secs
+
+Neighbor        V          AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+46.88.20.5      4       5511     325     166      542    0    0 01:52:12       45
+```
+
+__AS 701__ - Verizon
+
+```txt
+! Router 14 =================================================================
+!
+R14#show ip bgp summary
+BGP router identifier 10.14.14.14, local AS number 701
+BGP table version is 94, main routing table version 94
+48 network entries using 6336 bytes of memory
+120 path entries using 6240 bytes of memory
+21/9 BGP path/bestpath attribute entries using 3528 bytes of memory
+17 BGP AS-PATH entries using 440 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+Bitfield cache entries: current 1 (at peak 2) using 32 bytes of memory
+BGP using 16576 total bytes of memory
+BGP activity 65/17 prefixes, 196/76 paths, scan interval 60 secs
+
+Neighbor        V          AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+64.112.0.2      4       1273     190     121       94    0    0 01:49:16       43
+64.112.0.6      4      17390     192     121       94    0    0 01:49:17       29
+64.112.0.10     4       4637     127     130       94    0    0 01:39:21       43
+```
+
+__AS 4637__ - Telstra
+
+```txt
+! Router 15 =================================================================
+!
+R15#show ip bgp summary
+BGP router identifier 10.15.15.15, local AS number 4637
+BGP table version is 49, main routing table version 49
+48 network entries using 6336 bytes of memory
+116 path entries using 6032 bytes of memory
+22/9 BGP path/bestpath attribute entries using 3696 bytes of memory
+18 BGP AS-PATH entries using 464 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+Bitfield cache entries: current 1 (at peak 1) using 32 bytes of memory
+BGP using 16560 total bytes of memory
+BGP activity 50/2 prefixes, 118/2 paths, scan interval 60 secs
+
+Neighbor        V          AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+48.73.240.13    4       1273     180     110       49    0    0 01:40:16       34
+64.112.0.9      4        701     110     110       49    0    0 01:40:27       34
+211.176.129.2   4       5511     181     110       49    0    0 01:40:38       34
+211.176.129.6   4          1      93     110       49    0    0 01:39:23        0
+```
+
+__AS 20717__ - DE-CIX
+
+```txt
+! Router 16 =================================================================
+!
+R16#show ip bgp summary
+BGP router identifier 10.16.16.16, local AS number 20717
+BGP table version is 368, main routing table version 368
+48 network entries using 6336 bytes of memory
+96 path entries using 4992 bytes of memory
+17/9 BGP path/bestpath attribute entries using 2856 bytes of memory
+14 BGP AS-PATH entries using 352 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+Bitfield cache entries: current 1 (at peak 2) using 32 bytes of memory
+BGP using 14568 total bytes of memory
+BGP activity 58/10 prefixes, 325/229 paths, scan interval 60 secs
+
+Neighbor        V          AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+46.88.20.1      4       5511     327     208      368    0    0 01:51:13       48
+48.73.240.21    4       1273     326     192      368    0    0 02:28:40       48
+```
+
+__AS 1__ - Level 3 Parent, LLC
+
+```txt
+! BadGuy =================================================================
+!
+BadGuy#show ip bgp summary
+BGP router identifier 10.66.66.66, local AS number 1
+BGP table version is 318, main routing table version 318
+48 network entries using 6336 bytes of memory
+48 path entries using 2496 bytes of memory
+8/7 BGP path/bestpath attribute entries using 1344 bytes of memory
+7 BGP AS-PATH entries using 184 bytes of memory
+0 BGP route-map cache entries using 0 bytes of memory
+0 BGP filter-list cache entries using 0 bytes of memory
+BGP using 10360 total bytes of memory
+BGP activity 67/19 prefixes, 138/90 paths, scan interval 60 secs
+
+Neighbor        V          AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd
+211.176.129.5   4       4637     217     152      318    0    0 01:32:06       48
+```
+
+### Prefixes received and sent from or to a determined neighbour
+
+Example from Router 3 received and sent routes from / to Router 6
+
+```txt
+R3#show ip bgp neighbors 10.6.6.6 received-routes
+BGP table version is 356, local router ID is 10.3.3.3
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal,
+              r RIB-failure, S Stale
+Origin codes: i - IGP, e - EGP, ? - incomplete
+
+   Network          Next Hop            Metric LocPrf Weight Path
+*>i46.87.162.0/24   10.6.6.6                 0    100      0 5511 i
+*>i46.87.162.110/32 10.6.6.6                 0    100      0 5511 i
+*>i46.87.162.111/32 10.6.6.6                 0    100      0 5511 i
+*>i46.87.162.112/32 10.6.6.6                 0    100      0 5511 i
+*>i46.88.20.0/24    10.6.6.6                 0    100      0 5511 i
+*>i46.88.22.0/24    10.6.6.6                 0    100      0 5511 i
+*>i46.89.36.0/24    10.6.6.6                 0    100      0 5511 i
+*>i46.89.38.0/24    10.6.6.6                 0    100      0 5511 i
+*>i46.92.2.0/24     10.6.6.6                 0    100      0 5511 i
+* i48.73.239.0/24   10.6.6.6                 0    100      0 i
+*>i48.73.239.66/32  10.6.6.6                 0    100      0 i
+* i48.73.240.0/22   10.6.6.6                 0    100      0 i
+* i63.25.64.0/18    10.6.6.6                 0    100      0 i
+*>i158.23.228.0/30  10.6.6.6                 0    100      0 5511 23344 i
+*>i158.23.228.0/24  10.6.6.6                 0    100      0 5511 23344 i
+*>i158.23.228.113/32
+                    10.6.6.6                 0    100      0 5511 23344 i
+*>i211.176.128.0/30 10.6.6.6                 0    100      0 4637 i
+*>i211.176.128.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.128.115/32
+                    10.6.6.6                 0    100      0 4637 i
+*>i211.176.129.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.130.0/23 10.6.6.6                 0    100      0 4637 i
+*>i211.176.132.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.135.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.136.0/22 10.6.6.6                 0    100      0 4637 i
+*>i211.176.137.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.138.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.139.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.140.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.141.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.142.0    10.6.6.6                 0    100      0 4637 i
+
+Total number of prefixes 30
+
+! ----------------------------------------------------------------------
+
+R3#show ip bgp neighbors 10.6.6.6 advertised-routes
+BGP table version is 356, local router ID is 10.3.3.3
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal,
+              r RIB-failure, S Stale
+Origin codes: i - IGP, e - EGP, ? - incomplete
+
+   Network          Next Hop            Metric LocPrf Weight Path
+*>i46.87.162.0/24   10.6.6.6                 0    100      0 5511 i
+*>i46.87.162.110/32 10.6.6.6                 0    100      0 5511 i
+*>i46.87.162.111/32 10.6.6.6                 0    100      0 5511 i
+*>i46.87.162.112/32 10.6.6.6                 0    100      0 5511 i
+*>i46.88.20.0/24    10.6.6.6                 0    100      0 5511 i
+*>i46.88.22.0/24    10.6.6.6                 0    100      0 5511 i
+*>i46.89.36.0/24    10.6.6.6                 0    100      0 5511 i
+*>i46.89.38.0/24    10.6.6.6                 0    100      0 5511 i
+*>i46.92.2.0/24     10.6.6.6                 0    100      0 5511 i
+*>i48.73.239.0/30   10.2.2.2                 0    100      0 i
+*> 48.73.239.0/24   0.0.0.0                  0         32768 i
+*>i48.73.239.11/32  10.1.1.1                 0    100      0 i
+*>i48.73.239.22/32  10.2.2.2                 0    100      0 i
+*> 48.73.239.33/32  0.0.0.0                  0         32768 i
+*>i48.73.239.44/32  10.4.4.4                 0    100      0 i
+*>i48.73.239.55/32  10.5.5.5                 0    100      0 i
+*>i48.73.239.66/32  10.6.6.6                 0    100      0 i
+*> 48.73.240.0/22   0.0.0.0                  0         32768 i
+*> 48.73.240.4/30   0.0.0.0                  0         32768 i
+*> 63.25.64.0/18    0.0.0.0                  0         32768 i
+*>i64.96.0.0/30     10.5.5.5                 0    100      0 701 i
+*>i64.96.0.0/12     10.5.5.5                 0    100      0 701 i
+*>i64.96.0.114/32   10.5.5.5                 0    100      0 701 i
+*>i64.112.0.0/12    10.5.5.5                 0    100      0 701 i
+*>i65.0.204.0/24    10.5.5.5                 0    100      0 701 i
+*> 130.41.46.0/30   48.73.240.6                            0 17390 i
+*> 130.41.46.0/24   48.73.240.6              0             0 17390 i
+*> 130.41.46.77/32  48.73.240.6              0             0 17390 i
+*> 130.41.46.88/32  48.73.240.6                            0 17390 i
+*> 130.41.47.0/24   48.73.240.6                            0 17390 64513 i
+*> 130.41.47.99/32  48.73.240.6                            0 17390 64513 i
+*>i158.23.228.0/30  10.6.6.6                 0    100      0 5511 23344 i
+*>i158.23.228.0/24  10.6.6.6                 0    100      0 5511 23344 i
+*>i158.23.228.113/32
+                    10.6.6.6                 0    100      0 5511 23344 i
+*>i211.176.128.0/30 10.6.6.6                 0    100      0 4637 i
+*>i211.176.128.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.128.115/32
+                    10.6.6.6                 0    100      0 4637 i
+*>i211.176.129.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.130.0/23 10.6.6.6                 0    100      0 4637 i
+*>i211.176.132.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.135.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.136.0/22 10.6.6.6                 0    100      0 4637 i
+*>i211.176.137.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.138.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.139.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.140.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.141.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.142.0    10.6.6.6                 0    100      0 4637 i
+
+Total number of prefixes 48
+```
+
+#### Prefixes received and sent from or to a determined neighbour, notably the prefixes installed on the Loc-RIB BGP table
+
+Example from Router 9
+
+```txt
+R9#show ip bgp
+BGP table version is 358, local router ID is 10.9.9.9
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal,
+              r RIB-failure, S Stale
+Origin codes: i - IGP, e - EGP, ? - incomplete
+
+   Network          Next Hop            Metric LocPrf Weight Path
+*  46.87.162.0/24   130.41.46.9                            0 17390 1273 5511 i
+*>                  130.41.46.5                            0 17390 1273 5511 i
+*  46.87.162.110/32 130.41.46.9                            0 17390 1273 5511 i
+*>                  130.41.46.5                            0 17390 1273 5511 i
+*> 46.87.162.111/32 130.41.46.5                            0 17390 1273 5511 i
+*                   130.41.46.9                            0 17390 1273 5511 i
+*  46.87.162.112/32 130.41.46.5                            0 17390 1273 5511 i
+*>                  130.41.46.9                            0 17390 1273 5511 i
+*  46.88.20.0/24    130.41.46.9                            0 17390 1273 5511 i
+*>                  130.41.46.5                            0 17390 1273 5511 i
+*  46.88.22.0/24    130.41.46.9                            0 17390 1273 5511 i
+*>                  130.41.46.5                            0 17390 1273 5511 i
+*  46.89.36.0/24    130.41.46.9                            0 17390 1273 5511 i
+*>                  130.41.46.5                            0 17390 1273 5511 i
+*  46.89.38.0/24    130.41.46.9                            0 17390 1273 5511 i
+*>                  130.41.46.5                            0 17390 1273 5511 i
+*  46.92.2.0/24     130.41.46.9                            0 17390 1273 5511 i
+*>                  130.41.46.5                            0 17390 1273 5511 i
+*  48.73.239.0/30   130.41.46.9                            0 17390 1273 i
+*>                  130.41.46.5                            0 17390 1273 i
+*  48.73.239.0/24   130.41.46.9                            0 17390 1273 i
+*>                  130.41.46.5                            0 17390 1273 i
+*  48.73.239.11/32  130.41.46.5                            0 17390 1273 i
+*>                  130.41.46.9                            0 17390 1273 i
+*  48.73.239.22/32  130.41.46.9                            0 17390 1273 i
+*>                  130.41.46.5                            0 17390 1273 i
+*  48.73.239.33/32  130.41.46.5                            0 17390 1273 i
+*>                  130.41.46.9                            0 17390 1273 i
+*  48.73.239.44/32  130.41.46.9                            0 17390 1273 i
+*>                  130.41.46.5                            0 17390 1273 i
+*  48.73.239.55/32  130.41.46.5                            0 17390 1273 i
+*>                  130.41.46.9                            0 17390 1273 i
+*  48.73.239.66/32  130.41.46.9                            0 17390 1273 i
+*>                  130.41.46.5                            0 17390 1273 i
+*  48.73.240.0/22   130.41.46.9                            0 17390 1273 i
+*>                  130.41.46.5                            0 17390 1273 i
+*  48.73.240.4/30   130.41.46.5                            0 17390 1273 i
+*>                  130.41.46.9                            0 17390 1273 i
+*  63.25.64.0/18    130.41.46.9                            0 17390 1273 i
+*>                  130.41.46.5                            0 17390 1273 i
+*  64.96.0.0/30     130.41.46.5                            0 17390 701 i
+*>                  130.41.46.9                            0 17390 701 i
+*  64.96.0.0/12     130.41.46.5                            0 17390 701 i
+*>                  130.41.46.9                            0 17390 701 i
+*  64.96.0.114/32   130.41.46.5                            0 17390 701 i
+*>                  130.41.46.9                            0 17390 701 i
+*  64.112.0.0/12    130.41.46.5                            0 17390 701 i
+*>                  130.41.46.9                            0 17390 701 i
+*  65.0.204.0/24    130.41.46.5                            0 17390 701 i
+*>                  130.41.46.9                            0 17390 701 i
+*  130.41.46.0/30   130.41.46.9                            0 17390 i
+*>                  130.41.46.5              0             0 17390 i
+*  130.41.46.0/24   130.41.46.9              0             0 17390 i
+*>                  130.41.46.5              0             0 17390 i
+*  130.41.46.77/32  130.41.46.5                            0 17390 i
+*>                  130.41.46.9              0             0 17390 i
+*  130.41.46.88/32  130.41.46.9                            0 17390 i
+*>                  130.41.46.5              0             0 17390 i
+*> 130.41.47.0/24   0.0.0.0                  0         32768 i
+*> 130.41.47.99/32  0.0.0.0                  0         32768 i
+*> 158.23.228.0/30  130.41.46.5                            0 17390 1273 5511 23344 i
+*                   130.41.46.9                            0 17390 1273 5511 23344 i
+*> 158.23.228.0/24  130.41.46.5                            0 17390 1273 5511 23344 i
+*                   130.41.46.9                            0 17390 1273 5511 23344 i
+*> 158.23.228.113/32
+                    130.41.46.5                            0 17390 1273 5511 23344 i
+*                   130.41.46.9                            0 17390 1273 5511 23344 i
+*  211.176.128.0/30 130.41.46.5                            0 17390 1273 4637 i
+*>                  130.41.46.9                            0 17390 701 4637 i
+*  211.176.128.0    130.41.46.5                            0 17390 1273 4637 i
+*>                  130.41.46.9                            0 17390 701 4637 i
+*  211.176.128.115/32
+                    130.41.46.5                            0 17390 1273 4637 i
+*>                  130.41.46.9                            0 17390 701 4637 i
+*  211.176.129.0    130.41.46.5                            0 17390 1273 4637 i
+*>                  130.41.46.9                            0 17390 701 4637 i
+*  211.176.130.0/23 130.41.46.5                            0 17390 1273 4637 i
+*>                  130.41.46.9                            0 17390 701 4637 i
+*  211.176.132.0    130.41.46.5                            0 17390 1273 4637 i
+*>                  130.41.46.9                            0 17390 701 4637 i
+*  211.176.135.0    130.41.46.5                            0 17390 1273 4637 i
+*>                  130.41.46.9                            0 17390 701 4637 i
+*  211.176.136.0/22 130.41.46.5                            0 17390 1273 4637 i
+*>                  130.41.46.9                            0 17390 701 4637 i
+*  211.176.137.0    130.41.46.5                            0 17390 1273 4637 i
+*>                  130.41.46.9                            0 17390 701 4637 i
+*  211.176.138.0    130.41.46.5                            0 17390 1273 4637 i
+*>                  130.41.46.9                            0 17390 701 4637 i
+*  211.176.139.0    130.41.46.5                            0 17390 1273 4637 i
+*>                  130.41.46.9                            0 17390 701 4637 i
+*  211.176.140.0    130.41.46.5                            0 17390 1273 4637 i
+*>                  130.41.46.9                            0 17390 701 4637 i
+*  211.176.141.0    130.41.46.5                            0 17390 1273 4637 i
+*>                  130.41.46.9                            0 17390 701 4637 i
+*  211.176.142.0    130.41.46.5                            0 17390 1273 4637 i
+*>                  130.41.46.9                            0 17390 701 4637 i
+```
+
+####  TCLSH script on the appendix TCLSH (Tool Control Language) Shell for testing
+
+All routers passed the TCLSH ping tests with success, example from Router 12
+
+```txt
+R12#tclsh
+R12(tcl)#foreach address {
++>48.73.239.11
++>48.73.239.22
++>48.73.239.33
++>48.73.239.44
++>48.73.239.55
++>48.73.239.66
++>130.41.46.77
++>130.41.46.88
++>130.41.47.99
++>46.87.162.110
++>46.87.162.111
++>46.87.162.112
++>158.23.228.113
++>64.96.0.114
++>211.176.128.115
++>130.41.46.1
++>48.73.239.1
++>64.96.0.1
++>211.176.128.1
++>46.87.162.1
++>158.23.228.1
++>} {ping $address source lo1}
+
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 48.73.239.11, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 60/81/132 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 48.73.239.22, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 40/49/60 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 48.73.239.33, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 40/53/64 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 48.73.239.44, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 8/32/48 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 48.73.239.55, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 48/67/92 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 48.73.239.66, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 8/24/36 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 130.41.46.77, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 52/63/76 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 130.41.46.88, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 60/73/88 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 130.41.47.99, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 52/80/104 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 46.87.162.110, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 8/13/20 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 46.87.162.111, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 8/12/16 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 46.87.162.112, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 1/2/4 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 158.23.228.113, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 16/42/84 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 64.96.0.114, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 52/94/152 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 211.176.128.115, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 4/26/52 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 130.41.46.1, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 72/93/116 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 48.73.239.1, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 56/72/96 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 64.96.0.1, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 80/93/100 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 211.176.128.1, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 32/44/64 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 46.87.162.1, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 8/18/44 ms
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 158.23.228.1, timeout is 2 seconds:
+Packet sent with a source address of 46.87.162.112
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 12/39/84 ms
+```
 
 ### 2.4 - Practical Questions
 
