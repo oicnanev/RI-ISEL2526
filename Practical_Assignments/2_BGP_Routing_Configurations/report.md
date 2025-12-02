@@ -2459,15 +2459,223 @@ Success rate is 100 percent (5/5), round-trip min/avg/max = 12/39/84 ms
 
 #### 2.4.1 - How is the BGP next hop reachability solved inside an AS?
 
-__TODO__  next-hop self????
+Inside an Autonomous System (AS), BGP next-hop reachability is resolved using the Interior Gateway Protocol (IGP), such as OSPF.
+When an eBGP-learned route is advertised via iBGP, the next-hop IP address remains unchanged by default (it is the IP of the external peer).
+To ensure that all routers within the AS can reach this next-hop IP, we use the next-hop-self command on iBGP sessions.
+This command changes the next-hop attribute to the router’s own IP (usually the loopback address), which is already reachable via the IGP.
 
 #### 2.4.2 - Why is it a good practice to use the loopback IP address in the iBGP sessions? 
 
-__TODO__  Resiliency in case of phisical ports went down?
+Using a loopback interface for iBGP sessions offers:
+
+- __Stability__: Loopback interfaces are always up unless administratively shut down, unlike physical interfaces.
+-  __Resilience__: If a physical link fails, the router can still reach the loopback via alternate paths.
+-  __Scalability__: Simplifies configuration in route reflector and peer-group setups.
+-  __Consistency__: Ensures the BGP session is not tied to a specific physical interface.
 
 #### 2.4.3 - Create and present a detailed table with all the connectivity tests performed using the TCLSH procedure, as previously outlined
 
 __TODO__
+
+| AS                 | Source Router(s) | Destination IP | Result |
+| ------------------ | ---------------- | -------------- | ------ |
+| AS 1273 - Vodafone | R1, R2, R3, R4, R5, R6 | 48.73.239.11 (R1 Lo1)| Success |
+|  |  | 48.73.239.22 (R2 Lo1) | Success |
+|  |  | 48.73.239.33 (R3 Lo1)| Success |
+|  |  | 48.73.239.44 (R4 Lo1)	 | Success | 
+|  |  | 48.73.239.55 (R5 Lo1)	 | Success | 
+|  |  | 48.73.239.66 (R6 Lo1)	 | Success |
+|  |  | 130.41.46.77 (R7 Lo1)	 | Success |
+|  |  | 130.41.46.88 (R8 Lo1)	 | Success | 
+|  |  | 130.41.47.99 (R9 Lo1)	 | Success |
+|  |  | 46.87.162.110 (R10 Lo1) | Success |
+|  |  | 46.87.162.111 (R11 Lo1) | Success | 
+|  |  | 46.87.162.112 (R12 Lo1) | Success | 
+|  |  | 158.23.228.113 (R13 Lo1)| Success |
+|  |  | 64.96.0.114 (R14 Lo1) | Success | 
+|  |  | 211.176.128.115 (R15 Lo1) | Success |
+|  |  | 130.41.46.1 (Server1) | Success | 
+|  |  | 48.73.239.1 (Server2) | Success |
+|  |  | 64.96.0.1 (Server3)	| Success | 
+|  |  | 211.176.128.1 (Server4) | Success | 
+|  |  | 46.87.162.1 (Server5) | Success |
+|  |  | 158.23.228.1 (Server6) | Success | 
+|  |  |  |   |
+| AS 17390 - IBM | R7, R8 | 48.73.239.11 (R1 Lo1)| Success |
+|  |  | 48.73.239.22 (R2 Lo1) | Success |
+|  |  | 48.73.239.33 (R3 Lo1)| Success |
+|  |  | 48.73.239.44 (R4 Lo1)	 | Success | 
+|  |  | 48.73.239.55 (R5 Lo1)	 | Success | 
+|  |  | 48.73.239.66 (R6 Lo1)	 | Success |
+|  |  | 130.41.46.77 (R7 Lo1)	 | Success |
+|  |  | 130.41.46.88 (R8 Lo1)	 | Success | 
+|  |  | 130.41.47.99 (R9 Lo1)	 | Success |
+|  |  | 46.87.162.110 (R10 Lo1) | Success |
+|  |  | 46.87.162.111 (R11 Lo1) | Success | 
+|  |  | 46.87.162.112 (R12 Lo1) | Success | 
+|  |  | 158.23.228.113 (R13 Lo1)| Success |
+|  |  | 64.96.0.114 (R14 Lo1) | Success | 
+|  |  | 211.176.128.115 (R15 Lo1) | Success |
+|  |  | 130.41.46.1 (Server1) | Success | 
+|  |  | 48.73.239.1 (Server2) | Success |
+|  |  | 64.96.0.1 (Server3)	| Success | 
+|  |  | 211.176.128.1 (Server4) | Success | 
+|  |  | 46.87.162.1 (Server5) | Success |
+|  |  | 158.23.228.1 (Server6) | Success | 
+|  |  |  |   |
+| AS 64513 - Private (inside IBM) | R9 | 48.73.239.11 (R1 Lo1)| Success |
+|  |  | 48.73.239.22 (R2 Lo1) | Success |
+|  |  | 48.73.239.33 (R3 Lo1)| Success |
+|  |  | 48.73.239.44 (R4 Lo1)	 | Success | 
+|  |  | 48.73.239.55 (R5 Lo1)	 | Success | 
+|  |  | 48.73.239.66 (R6 Lo1)	 | Success |
+|  |  | 130.41.46.77 (R7 Lo1)	 | Success |
+|  |  | 130.41.46.88 (R8 Lo1)	 | Success | 
+|  |  | 130.41.47.99 (R9 Lo1)	 | Success |
+|  |  | 46.87.162.110 (R10 Lo1) | Success |
+|  |  | 46.87.162.111 (R11 Lo1) | Success | 
+|  |  | 46.87.162.112 (R12 Lo1) | Success | 
+|  |  | 158.23.228.113 (R13 Lo1)| Success |
+|  |  | 64.96.0.114 (R14 Lo1) | Success | 
+|  |  | 211.176.128.115 (R15 Lo1) | Success |
+|  |  | 130.41.46.1 (Server1) | Success | 
+|  |  | 48.73.239.1 (Server2) | Success |
+|  |  | 64.96.0.1 (Server3)	| Success | 
+|  |  | 211.176.128.1 (Server4) | Success | 
+|  |  | 46.87.162.1 (Server5) | Success |
+|  |  | 158.23.228.1 (Server6) | Success | 
+|  |  |  |   |
+| AS 5511 - Orange | R10, R11, R12 | 48.73.239.11 (R1 Lo1)| Success |
+|  |  | 48.73.239.22 (R2 Lo1) | Success |
+|  |  | 48.73.239.33 (R3 Lo1)| Success |
+|  |  | 48.73.239.44 (R4 Lo1)	 | Success | 
+|  |  | 48.73.239.55 (R5 Lo1)	 | Success | 
+|  |  | 48.73.239.66 (R6 Lo1)	 | Success |
+|  |  | 130.41.46.77 (R7 Lo1)	 | Success |
+|  |  | 130.41.46.88 (R8 Lo1)	 | Success | 
+|  |  | 130.41.47.99 (R9 Lo1)	 | Success |
+|  |  | 46.87.162.110 (R10 Lo1) | Success |
+|  |  | 46.87.162.111 (R11 Lo1) | Success | 
+|  |  | 46.87.162.112 (R12 Lo1) | Success | 
+|  |  | 158.23.228.113 (R13 Lo1)| Success |
+|  |  | 64.96.0.114 (R14 Lo1) | Success | 
+|  |  | 211.176.128.115 (R15 Lo1) | Success |
+|  |  | 130.41.46.1 (Server1) | Success | 
+|  |  | 48.73.239.1 (Server2) | Success |
+|  |  | 64.96.0.1 (Server3)	| Success | 
+|  |  | 211.176.128.1 (Server4) | Success | 
+|  |  | 46.87.162.1 (Server5) | Success |
+|  |  | 158.23.228.1 (Server6) | Success | 
+|  |  |  |   |
+| AS 23344 - Disney | R13 | 48.73.239.11 (R1 Lo1)| Success |
+|  |  | 48.73.239.22 (R2 Lo1) | Success |
+|  |  | 48.73.239.33 (R3 Lo1)| Success |
+|  |  | 48.73.239.44 (R4 Lo1)	 | Success | 
+|  |  | 48.73.239.55 (R5 Lo1)	 | Success | 
+|  |  | 48.73.239.66 (R6 Lo1)	 | Success |
+|  |  | 130.41.46.77 (R7 Lo1)	 | Success |
+|  |  | 130.41.46.88 (R8 Lo1)	 | Success | 
+|  |  | 130.41.47.99 (R9 Lo1)	 | Success |
+|  |  | 46.87.162.110 (R10 Lo1) | Success |
+|  |  | 46.87.162.111 (R11 Lo1) | Success | 
+|  |  | 46.87.162.112 (R12 Lo1) | Success | 
+|  |  | 158.23.228.113 (R13 Lo1)| Success |
+|  |  | 64.96.0.114 (R14 Lo1) | Success | 
+|  |  | 211.176.128.115 (R15 Lo1) | Success |
+|  |  | 130.41.46.1 (Server1) | Success | 
+|  |  | 48.73.239.1 (Server2) | Success |
+|  |  | 64.96.0.1 (Server3)	| Success | 
+|  |  | 211.176.128.1 (Server4) | Success | 
+|  |  | 46.87.162.1 (Server5) | Success |
+|  |  | 158.23.228.1 (Server6) | Success | 
+|  |  |  |   |
+| AS 701 - Verizon | R14 | 48.73.239.11 (R1 Lo1)| Success |
+|  |  | 48.73.239.22 (R2 Lo1) | Success |
+|  |  | 48.73.239.33 (R3 Lo1)| Success |
+|  |  | 48.73.239.44 (R4 Lo1)	 | Success | 
+|  |  | 48.73.239.55 (R5 Lo1)	 | Success | 
+|  |  | 48.73.239.66 (R6 Lo1)	 | Success |
+|  |  | 130.41.46.77 (R7 Lo1)	 | Success |
+|  |  | 130.41.46.88 (R8 Lo1)	 | Success | 
+|  |  | 130.41.47.99 (R9 Lo1)	 | Success |
+|  |  | 46.87.162.110 (R10 Lo1) | Success |
+|  |  | 46.87.162.111 (R11 Lo1) | Success | 
+|  |  | 46.87.162.112 (R12 Lo1) | Success | 
+|  |  | 158.23.228.113 (R13 Lo1)| Success |
+|  |  | 64.96.0.114 (R14 Lo1) | Success | 
+|  |  | 211.176.128.115 (R15 Lo1) | Success |
+|  |  | 130.41.46.1 (Server1) | Success | 
+|  |  | 48.73.239.1 (Server2) | Success |
+|  |  | 64.96.0.1 (Server3)	| Success | 
+|  |  | 211.176.128.1 (Server4) | Success | 
+|  |  | 46.87.162.1 (Server5) | Success |
+|  |  | 158.23.228.1 (Server6) | Success |
+|  |  |  |   |
+| AS 4637 - Telstra | R15 | 48.73.239.11 (R1 Lo1)| Success |
+|  |  | 48.73.239.22 (R2 Lo1) | Success |
+|  |  | 48.73.239.33 (R3 Lo1)| Success |
+|  |  | 48.73.239.44 (R4 Lo1)	 | Success | 
+|  |  | 48.73.239.55 (R5 Lo1)	 | Success | 
+|  |  | 48.73.239.66 (R6 Lo1)	 | Success |
+|  |  | 130.41.46.77 (R7 Lo1)	 | Success |
+|  |  | 130.41.46.88 (R8 Lo1)	 | Success | 
+|  |  | 130.41.47.99 (R9 Lo1)	 | Success |
+|  |  | 46.87.162.110 (R10 Lo1) | Success |
+|  |  | 46.87.162.111 (R11 Lo1) | Success | 
+|  |  | 46.87.162.112 (R12 Lo1) | Success | 
+|  |  | 158.23.228.113 (R13 Lo1)| Success |
+|  |  | 64.96.0.114 (R14 Lo1) | Success | 
+|  |  | 211.176.128.115 (R15 Lo1) | Success |
+|  |  | 130.41.46.1 (Server1) | Success | 
+|  |  | 48.73.239.1 (Server2) | Success |
+|  |  | 64.96.0.1 (Server3)	| Success | 
+|  |  | 211.176.128.1 (Server4) | Success | 
+|  |  | 46.87.162.1 (Server5) | Success |
+|  |  | 158.23.228.1 (Server6) | Success |
+|  |  |  |   |
+| AS 20717 - DE-CIX | R16 | 48.73.239.11 (R1 Lo1)| Success |
+|  |  | 48.73.239.22 (R2 Lo1) | Success |
+|  |  | 48.73.239.33 (R3 Lo1)| Success |
+|  |  | 48.73.239.44 (R4 Lo1)	 | Success | 
+|  |  | 48.73.239.55 (R5 Lo1)	 | Success | 
+|  |  | 48.73.239.66 (R6 Lo1)	 | Success |
+|  |  | 130.41.46.77 (R7 Lo1)	 | Success |
+|  |  | 130.41.46.88 (R8 Lo1)	 | Success | 
+|  |  | 130.41.47.99 (R9 Lo1)	 | Success |
+|  |  | 46.87.162.110 (R10 Lo1) | Success |
+|  |  | 46.87.162.111 (R11 Lo1) | Success | 
+|  |  | 46.87.162.112 (R12 Lo1) | Success | 
+|  |  | 158.23.228.113 (R13 Lo1)| Success |
+|  |  | 64.96.0.114 (R14 Lo1) | Success | 
+|  |  | 211.176.128.115 (R15 Lo1) | Success |
+|  |  | 130.41.46.1 (Server1) | Success | 
+|  |  | 48.73.239.1 (Server2) | Success |
+|  |  | 64.96.0.1 (Server3)	| Success | 
+|  |  | 211.176.128.1 (Server4) | Success | 
+|  |  | 46.87.162.1 (Server5) | Success |
+|  |  | 158.23.228.1 (Server6) | Success |
+|  |  |  |   |
+| AS 1 - Level 3 Parent, LCC | BadGuy | 48.73.239.11 (R1 Lo1)| Success |
+|  |  | 48.73.239.22 (R2 Lo1) | Success |
+|  |  | 48.73.239.33 (R3 Lo1)| Success |
+|  |  | 48.73.239.44 (R4 Lo1)	 | Success | 
+|  |  | 48.73.239.55 (R5 Lo1)	 | Success | 
+|  |  | 48.73.239.66 (R6 Lo1)	 | Success |
+|  |  | 130.41.46.77 (R7 Lo1)	 | Success |
+|  |  | 130.41.46.88 (R8 Lo1)	 | Success | 
+|  |  | 130.41.47.99 (R9 Lo1)	 | Success |
+|  |  | 46.87.162.110 (R10 Lo1) | Success |
+|  |  | 46.87.162.111 (R11 Lo1) | Success | 
+|  |  | 46.87.162.112 (R12 Lo1) | Success | 
+|  |  | 158.23.228.113 (R13 Lo1)| Success |
+|  |  | 64.96.0.114 (R14 Lo1) | Success | 
+|  |  | 211.176.128.115 (R15 Lo1) | Success |
+|  |  | 130.41.46.1 (Server1) | Success | 
+|  |  | 48.73.239.1 (Server2) | Success |
+|  |  | 64.96.0.1 (Server3)	| Success | 
+|  |  | 211.176.128.1 (Server4) | Success | 
+|  |  | 46.87.162.1 (Server5) | Success |
+|  |  | 158.23.228.1 (Server6) | Success |
 
 #### 2.4.4 - In the following Local-RIB table output example, how many routes were installed for the destination 46.87.162.0/24? Justify your response explaining the decision process in BGP
 
@@ -2477,19 +2685,60 @@ __TODO__
 *>                   130.41.46.9                       0 17390 1273 20717 5511 i
 ```
 
-__TODO__
+Only one route is installed in the routing table — the one marked with *>.
+The * indicates a valid route, and > indicates the best path.
+BGP selects only one best path per prefix based on its decision process (Weight → Local Preference → AS Path → etc.).
+Here, both paths have the same attributes, so the tie-breaker is likely the lowest router ID or lowest neighbor IP.
+Only the best path is installed in the routing table and advertised to other BGP peers.
 
 #### 2.4.5 - What would have happened in case you didn’t configure the next-hop-self on the iBGP peering definitions? What reasons explain why BGP doesn’t set the next-hop-self as a default setting?
 
-__TODO__
+If `next-hop-self` is not configured:
+
+- The next-hop IP of eBGP-learned routes remains the external peer’s IP.
+-  Internal routers (iBGP peers) may not have a route to that external IP in their routing table.
+-  This leads to unreachable next-hop and the BGP route is not used.
+
+__Why it’s not default__:
+
+BGP assumes that the next-hop IP is reachable via the IGP. In some designs (e.g., MPLS VPNs, or when using static routes), the next-hop may be intentionally preserved.
+Making ``next-hop-self` the default could break such designs, so it is left as an explicit configuration choice.
 
 #### 2.4.6 - How are the route prefixes propagated inside the AS when you have route reflectors configured?
 
-__TODO__
+In a route reflector (RR) setup:
+
+- The RR reflects iBGP-learned routes to its clients and other RRs.
+- Clients only peer with the RR, not with each other (reduces full-mesh requirement).
+- The RR preserves BGP attributes like NEXT_HOP, AS_PATH, and LOCAL_PREF.
+- Routes learned from an eBGP peer are reflected to all iBGP clients and other RRs.
+- Routes learned from a client are reflected to all other clients and non-client peers (including eBGP).
+
+This allows scalable propagation of prefixes across the AS without a full iBGP mesh.
 
 #### 2.4.7 - Simulate and explain using Wireshark the BGP messages associated to each BGP state (see: [article](https://www.ciscopress.com/articles/article.asp?p=2756480&seqNum=4) )
 
-__TODO__
+__TODO__ error in mac OSX
+
+BGP uses a state machine with the following states and associated messages:
+
+| BGP State	| Message Type	 | Description |
+| -------- | ------------- | ------------ |
+| Idle	| – | Initial state; no resources allocated. | 
+| Connect | TCP SYN	| Attempts to establish TCP connection (port 179). | 
+| Active	| TCP SYN | Actively tries to connect if passive fails. | 
+| OpenSent	| OPEN | TCP established; sends BGP OPEN message. | 
+| OpenConfirm	| KEEPALIVE	| Waits for KEEPALIVE; if received, moves to Established. | 
+| Established	UPDATE	Session is up; routes are exchanged via UPDATE messages. | 
+
+Wireshark Capture Notes:
+
+- OPEN: Contains AS number, BGP version, hold time, and BGP identifier.
+- KEEPALIVE: Maintains session alive.
+- UPDATE: Advertises or withdraws routes.
+- NOTIFICATION: Used for error reporting or session termination.
+
+In Wireshark, filter with tcp.port == 179 to observe BGP messages and correlate them with BGP state transitions.
 
 <div style="page-break-after: always"></div>
 
