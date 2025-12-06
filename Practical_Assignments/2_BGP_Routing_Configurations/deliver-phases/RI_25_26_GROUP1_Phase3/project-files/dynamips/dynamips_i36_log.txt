@@ -1,0 +1,35 @@
+Dec 06 10:38:17.297 HYPERVISOR: Release 0.2.23-amd64/Darwin (tag 2023010200)
+Dec 06 10:38:17.297 HYPERVISOR: Started on IP = 127.0.0.1, TCP port = 64087.
+Dec 06 10:38:17.301 HYPERVISOR: exec_cmd: hypervisor version 
+Dec 06 10:38:17.301 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips 
+Dec 06 10:38:17.301 GENERAL: working_dir=/Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips
+Dec 06 10:38:17.301 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/b23c6277-4666-4e0e-b4ed-0a4e7d013f8b 
+Dec 06 10:38:17.301 GENERAL: working_dir=/Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/b23c6277-4666-4e0e-b4ed-0a4e7d013f8b
+Dec 06 10:38:17.301 HYPERVISOR: exec_cmd: vm create R16 17 c7200 
+Dec 06 10:38:17.302 VM: VM R16 created.
+Dec 06 10:38:17.302 HYPERVISOR: exec_cmd: vm set_con_tcp_port R16 5060 
+Dec 06 10:38:17.302 HYPERVISOR: exec_cmd: c7200 get_mac_addr R16 
+Dec 06 10:38:17.302 HYPERVISOR: exec_cmd: vm get_status R16 
+Dec 06 10:38:17.303 HYPERVISOR: exec_cmd: vm slot_add_binding R16 0 0 C7200-IO-FE 
+Dec 06 10:38:17.303 HYPERVISOR: exec_cmd: vm set_disk0 R16 0 
+Dec 06 10:38:17.303 HYPERVISOR: exec_cmd: vm get_status R16 
+Dec 06 10:38:17.303 HYPERVISOR: exec_cmd: vm set_idle_pc R16 0x606df0c8 
+Dec 06 10:38:17.303 HYPERVISOR: exec_cmd: vm set_ios R16 /Users/oicnanev/GNS3/images/IOS/c7200-advipservicesk9-mz.124-24.T8.image 
+Dec 06 10:38:17.304 HYPERVISOR: exec_cmd: c7200 set_mac_addr R16 ca11.3089.0000 
+Dec 06 10:38:17.304 HYPERVISOR: exec_cmd: vm set_nvram R16 512 
+Dec 06 10:38:17.304 HYPERVISOR: exec_cmd: vm set_ram R16 512 
+Dec 06 10:38:17.304 HYPERVISOR: exec_cmd: vm get_status R16 
+Dec 06 10:38:17.304 HYPERVISOR: exec_cmd: vm slot_remove_binding R16 0 0 
+Dec 06 10:38:17.304 HYPERVISOR: exec_cmd: vm get_status R16 
+Dec 06 10:38:17.305 HYPERVISOR: exec_cmd: vm slot_add_binding R16 0 0 C7200-IO-GE-E 
+Dec 06 10:38:17.305 HYPERVISOR: exec_cmd: vm get_status R16 
+Dec 06 10:38:17.305 HYPERVISOR: exec_cmd: vm slot_add_binding R16 2 0 PA-GE 
+Dec 06 10:38:17.305 HYPERVISOR: exec_cmd: vm get_status R16 
+Dec 06 10:38:17.305 HYPERVISOR: exec_cmd: vm slot_add_binding R16 4 0 PA-GE 
+Dec 06 10:38:17.306 HYPERVISOR: exec_cmd: vm set_con_tcp_port R16 5060 
+Dec 06 10:38:22.278 HYPERVISOR: exec_cmd: nio create_udp udp-2b5ce6ed-a725-4261-a3a9-ea708db7eac2 10332 127.0.0.1 10333 
+Dec 06 10:38:22.508 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R16 2 0 udp-2b5ce6ed-a725-4261-a3a9-ea708db7eac2 
+Dec 06 10:38:22.508 HYPERVISOR: exec_cmd: vm get_status R16 
+Dec 06 10:38:22.567 HYPERVISOR: exec_cmd: nio create_udp udp-05abd754-f7be-4fdf-82b3-dbffa1e64a64 10338 127.0.0.1 10339 
+Dec 06 10:38:22.567 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R16 4 0 udp-05abd754-f7be-4fdf-82b3-dbffa1e64a64 
+Dec 06 10:38:22.568 HYPERVISOR: exec_cmd: vm get_status R16 

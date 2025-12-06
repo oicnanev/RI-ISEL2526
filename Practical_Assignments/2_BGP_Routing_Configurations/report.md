@@ -2756,21 +2756,320 @@ In this phase, we have as objectives:
 
 ### 3.2 - Implementation
 
-__TODO__
+In the ASes with one peer router only and that advertise routes, we used the `aggregate-address` command.
+
+```txt
+! AS 64513 (private to IBM) - Router 9 =====================================
+router bgp 64513
+ bgp router-id 10.9.9.9
+ ! ...
+ network 130.41.47.0 mask 255.255.255.0
+ aggregate-address 130.41.47.0 255.255.255.0 summary-only
+
+! AS 23344 Disney - Router 13 ==============================================
+router bgp 23344
+ bgp router-id 10.13.13.13
+ ! ...
+ network 158.23.228.0 mask 255.255.255.0
+ aggregate-address 158.23.228.0 255.255.255.0 summary-only
+ 
+! AS 701 Verizon - Router 14 ===============================================
+router bgp 701
+ bgp router-id 10.14.14.14
+ ! ...
+ network 64.96.0.0 mask 255.240.0.0
+ network 64.112.0.0 mask 255.240.0.0
+ network 65.0.204.0 mask 255.255.255.0
+ aggregate-address 64.96.0.0 255.255.255.0 summary-only
+ aggregate-address 64.112.0.0 255.255.255.0 summary-only
+ aggregate-address 65.0.204.0 255.255.255.0 summary-only
+ 
+! AS 4637 Telstra - Router 15 ===============================================
+router bgp 4637
+ bgp router-id 10.15.15.15
+ ! ...
+ network 211.176.128.0 mask 255.255.252.0
+ network 211.176.132.0 mask 255.255.255.0 
+ network 211.176.135.0 mask 255.255.255.0 
+ network 211.176.136.0 mask 255.255.252.0 
+ network 211.176.140.0 mask 255.255.254.0 
+ network 211.176.141.0 mask 255.255.255.0
+ aggregate-address 211.176.128.0 255.255.252.0 summary-only
+ aggregate-address 211.176.132.0 255.255.255.0 summary-only
+ aggregate-address 211.176.135.0 255.255.255.0 summary-only
+ aggregate-address 211.176.136.0 255.255.252.0 summary-only
+ aggregate-address 211.176.140.0 255.255.254.0 summary-only
+ aggregate-address 211.176.141.0 255.255.255.0 summary-only
+```
+
+On the ASes with more than one router, we created an access list restricting the prefixes to advertise to the eBGP peers
+
+```txt
+! AS 1273 Vodafone =========================================================
+!
+! All routers  -------------------------------------------------------------
+ip prefix-list PREFIX_LIST_ADV_SUMM seq 5 permit 0.0.0.0/0 le 24
+!
+! Router 1 -----------------------------------------------------------------
+router bgp 1273
+ bgp router-id 10.1.1.1
+ ! ...
+ neighbor 48.73.240.2 remote-as 17390
+ neighbor 48.73.240.2 soft-reconfiguration inbound
+ neighbor 48.73.240.2 prefix-list PREFIX_LIST_ADV_SUMM out
+!
+! Router 3 -----------------------------------------------------------------
+router bgp 1273
+ bgp router-id 10.3.3.3
+ ! ...
+ neighbor 48.73.240.6 remote-as 17390
+ neighbor 48.73.240.6 soft-reconfiguration inbound
+ neighbor 48.73.240.6 prefix-list PREFIX_LIST_ADV_SUMM out
+!
+! Router 5 -----------------------------------------------------------------
+router bgp 1273
+ bgp router-id 10.5.5.5
+ ! ...
+ neighbor 64.112.0.1 remote-as 701
+ neighbor 64.112.0.1 soft-reconfiguration-inbound
+ neighbor 64.112.0.1 prefix-list PREFIX_LIST_ADV_SUMM out
+!
+! Router 6 -----------------------------------------------------------------
+router bgp 1273
+ bgp router-id 10.6.6.6
+ ! ...
+ neighbor 48.73.240.14 remote-as 4637
+ neighbor 48.73.240.14 soft-reconfiguration inbound
+ neighbor 48.73.240.14 prefix-list PREFIX_LIST_ADV_SUMM out
+ neighbor 48.73.240.22 remote-as 20717
+ neighbor 48.73.240.22 soft-reconfiguration inbound
+ neighbor 48.73.240.22 prefix-list PREFIX_LIST_ADV_SUMM out
+ neighbor 48.73.240.18 remote-as 5511
+ neighbor 48.73.240.18 soft-reconfiguration inbound
+ neighbor 48.73.240.18 prefix-list PREFIX_LIST_ADV_SUMM out
+```
+
+```txt
+! AS 17390 IBM =============================================================
+!
+! Router 7 -----------------------------------------------------------------
+router bgp 17390
+ bgp router-id 10.7.7.7
+ ! ...
+ neighbor 64.112.0.5 remote-as 701
+ neighbor 64.112.0.5 soft-reconfiguration inbound
+ neighbor 64.112.0.5 prefix-list PREFIX_LIST_ADV_SUMM out
+ neighbor 64.112.0.5 remove-private-as
+ neighbor 130.41.46.10 remote-as 64513
+ neighbor 130.41.46.10 soft-reconfiguration inbound
+ neighbor 130.41.46.10 prefix-list PREFIX_LIST_ADV_SUMM out
+ neighbor 48.73.240.5 remote-as 1273
+ neighbor 48.73.240.5 soft-reconfiguration inbound
+ neighbor 48.73.240.5 prefix-list PREFIX_LIST_ADV_SUMM out
+!
+! Router 8 -----------------------------------------------------------------
+router bgp 17390
+ bgp router-id 10.8.8.8
+ ! ...
+ neighbor 130.41.46.6 remote-as 64513
+ neighbor 130.41.46.6 soft-reconfiguration inbound
+ neighbor 130.41.46.6 prefix-list PREFIX_LIST_ADV_SUMM out
+ neighbor 48.73.240.1 remote-as 1273
+ neighbor 48.73.240.1 soft-reconfiguration inbound
+ neighbor 48.73.240.1 prefix-list PREFIX_LIST_ADV_SUMM out
+```
+
+```txt
+! AS 5511 Orange ===========================================================
+!
+! Router 10 ----------------------------------------------------------------
+router bgp 5511
+ bgp router-id 10.10.10.10
+ ! ...
+ neighbor 46.88.20.2 remote-as 20717
+ neighbor 46.88.20.2 soft-reconfiguration inbound
+ neighbor 46.88.20.2 prefix-list PREFIX_LIST_ADV_SUMM out
+ neighbor 48.73.240.17 remote-as 1273
+ neighbor 48.73.240.17 soft-reconfiguration inbound
+ neighbor 48.73.240.17 prefix-list PREFIX_LIST_ADV_SUMM out
+ neighbor 211.176.129.1 remote-as 4637
+ neighbor 211.176.129.1 soft-reconfiguration inbound
+ neighbor 211.176.129.1 prefix-list PREFIX_LIST_ADV_SUMM out
+!
+! Router 11 ----------------------------------------------------------------
+router bgp 5511
+ bgp router-id 10.11.11.11
+ ! ...
+ neighbor 46.88.20.6 remote-as 23344              
+ neighbor 46.88.20.6 soft-reconfiguration inbound
+ neighbor 46.88.20.6 prefix-list PREFIX_LIST_ADV_SUMM out
+```
+
+To limit the internet peering’s to a maximum of 50 prefixes, in all the BGP's `neighbour`, we use the command `neighbor [peer IP address] maximum-prefix 50`
+
+To avoid the private AS (AS 64513) to be announced outside to the internet, in the routers R7 and R8, we used the command: `neighbor [peer IP address] remove-private-as`. This prevented the advertising of the network announced by the router R9 (AS 64513) outside the AS 17390.
+
+The AS 23344 has only one peering to the internet and want to receive only the default route from the eBGP peering. To accomplish that, in the router R11 that belongs to the only AS (AS 5511 - Orange) that connects to R13 of AS 23344 - Disney, we used the command `neighbor 46.88.20.6 default-originate`
 
 ### 3.3 - Test and Validation
 
-__TODO__
+Inspection of the __AS_PATH__ attribute in each router
+
+To accomplish this, we use the commands:
+ - `show ip bgp 211.176.129.0`
+ - `show ip bgp`
+
+ The private AS 64515 is not announced to the internet, only to the AS 17390 IBM (routers R7 and R8). As an output example, we annexed the output of the router R3:
+
+```txt
+R3#show ip bgp 211.176.129.0
+BGP routing table entry for 211.176.128.0/22, version 32
+Paths: (1 available, best #1, table Default-IP-Routing-Table)
+Flag: 0x820
+  Advertised to update-groups:
+        1    2    4
+  4637, (aggregated by 4637 10.15.15.15), (Received from a RR-client), (received & used)
+    10.6.6.6 (metric 3) from 10.6.6.6 (10.6.6.6)
+      Origin IGP, metric 0, localpref 100, valid, internal, atomic-aggregate, best
+      
+R3#show ip bgp
+BGP table version is 32, local router ID is 10.3.3.3
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal,
+              r RIB-failure, S Stale
+Origin codes: i - IGP, e - EGP, ? - incomplete
+
+   Network          Next Hop            Metric LocPrf Weight Path
+*>i46.87.162.0/24   10.6.6.6                 0    100      0 5511 i
+*>i46.88.20.0/24    10.6.6.6                 0    100      0 5511 i
+*>i46.88.22.0/24    10.6.6.6                 0    100      0 5511 i
+*>i46.89.36.0/24    10.6.6.6                 0    100      0 5511 i
+*>i46.89.38.0/24    10.6.6.6                 0    100      0 5511 i
+*>i46.92.2.0/24     10.6.6.6                 0    100      0 5511 i
+*>i48.73.239.0/30   10.2.2.2                 0    100      0 i
+* i48.73.239.0/24   10.2.2.2                 0    100      0 i
+* i                 10.4.4.4                 0    100      0 i
+* i                 10.5.5.5                 0    100      0 i
+* i                 10.1.1.1                 0    100      0 i
+* i                 10.6.6.6                 0    100      0 i
+*>                  0.0.0.0                  0         32768 i
+*>i48.73.239.11/32  10.1.1.1                 0    100      0 i
+*>i48.73.239.22/32  10.2.2.2                 0    100      0 i
+*> 48.73.239.33/32  0.0.0.0                  0         32768 i
+*>i48.73.239.44/32  10.4.4.4                 0    100      0 i
+*>i48.73.239.55/32  10.5.5.5                 0    100      0 i
+*>i48.73.239.66/32  10.6.6.6                 0    100      0 i
+* i48.73.240.0/22   10.2.2.2                 0    100      0 i
+* i                 10.4.4.4                 0    100      0 i
+* i                 10.5.5.5                 0    100      0 i
+* i                 10.1.1.1                 0    100      0 i
+* i                 10.6.6.6                 0    100      0 i
+*>                  0.0.0.0                  0         32768 i
+*> 48.73.240.4/30   0.0.0.0                  0         32768 i
+* i63.25.64.0/18    10.2.2.2                 0    100      0 i
+* i                 10.4.4.4                 0    100      0 i
+* i                 10.5.5.5                 0    100      0 i
+* i                 10.1.1.1                 0    100      0 i
+* i                 10.6.6.6                 0    100      0 i
+*>                  0.0.0.0                  0         32768 i
+*  64.96.0.0/24     48.73.240.6                            0 17390 701 i
+*>i                 10.5.5.5                 0    100      0 701 i
+*  64.96.0.0/12     48.73.240.6                            0 17390 701 i
+*>i                 10.5.5.5                 0    100      0 701 i
+*  64.112.0.0/12    48.73.240.6                            0 17390 701 i
+*>i                 10.5.5.5                 0    100      0 701 i
+*  65.0.204.0/24    48.73.240.6                            0 17390 701 i
+*>i                 10.5.5.5                 0    100      0 701 i
+*> 130.41.46.0/24   48.73.240.6              0             0 17390 i
+* i                 10.1.1.1                 0    100      0 17390 i
+*> 130.41.47.0/24   48.73.240.6                            0 17390 i
+*>i158.23.228.0/24  10.6.6.6                 0    100      0 5511 23344 i
+*>i211.176.128.0/22 10.6.6.6                 0    100      0 4637 i
+*>i211.176.132.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.135.0    10.6.6.6                 0    100      0 4637 i
+*>i211.176.136.0/22 10.6.6.6                 0    100      0 4637 i
+*>i211.176.140.0/23 10.6.6.6                 0    100      0 4637 i
+```
+
+The output of router 8, with the private AS advertised:
+
+```txt
+R8# Show ip bgp
+...
+
+* i130.41.47.0/24   10.7.7.7                 0    100      0 64513 i
+*>                  130.41.46.6              0             0 64513 i
+
+...
+```
 
 ### 3.4 - Practical Questions
 
 #### 3.4.1 - After applying your prefix-list or route-map, compare the output of `show ip bgp` and `show ip bgp neighbors <ip> advertised-routes`. Explain the differences you observe referring to the __Adj-RIB-In__, __Adj-RIB-Out__, and __Loc-RIB__ tables
 
-__TODO__
+In our lab, we applied the following outbound prefix filter to eBGP peers to ensure only prefixes with a mask of /24 or less are advertised:
+
+```txt
+ip prefix-list PREFIX_LIST_ADV_SUMM seq 5 permit 0.0.0.0/0 le 24
+```
+
+This prefix list permits any prefix with a subnet mask length ≤ 24 and implicitly denies longer prefixes (e.g., /32 loopback addresses).
+
+Comparison of Command Outputs:
+
+- `show ip bgp` (Loc-RIB Table)
+This command displays all BGP routes that are valid and installed in the local BGP table after inbound policies have been applied. It includes:
+    - All prefixes learned from all peers (both internal and external).
+    - Prefixes with masks longer than /24 (e.g., `/32` Loopback1 addresses).
+    - All candidate routes for best-path selection.
+- `show ip bgp neighbors <ip> advertised-routes` (Adj-RIB-Out Table)
+This command shows only the routes that have passed outbound policy filters and will be advertised to the specified neighbor. After applying PREFIX_LIST_ADV_SUMM, this table will:
+    - Exclude all `/32` prefixes (Loopback1 addresses).
+    - Include only prefixes with masks `/24 or shorter (e.g., server subnets like `46.87.162.0/24`).
+    - Reflect the effect of any summary-only aggregate commands.
+
+Example:
+
+In `show ip bgp`, we see:
+
+```text
+48.73.239.11/32
+46.87.162.0/24
+```
+
+In `show ip bgp neighbors 48.73.240.6 advertised-routes`, we see:
+
+```text
+46.87.162.0/24
+```
+
+But not `48.73.239.11/32`.
+
+__BGP Table Relationship Summary__:
+
+- __Adj-RIB-In__: Routes received from neighbor → __before__ inbound policy.
+- __Loc-RIB__: After inbound policy + best-path selection → __used for local routing__.
+- __Adj-RIB-Out__: After outbound policy → what is __advertised to neighbor__.
+
+So, our prefix list `PREFIX_LIST_ADV_SUMM` acts as an __outbound filter__ that removes longer prefixes (like `/32` loopbacks) from the __Adj-RIB-Out__ table, ensuring only summarized or appropriately sized prefixes are advertised to external peers. This aligns with BGP best practices to reduce routing table size and improve scalability
 
 #### 3.4.2 - Why is the control from the number of prefixes advertised to the internet a good practice?
 
-__TODO__
+Controlling the number of prefixes advertised is important for:
+
+- __Scalability__: Prevents the global BGP table from growing excessively, which would increase memory and CPU usage on routers.
+- __Stability__: Reduces the risk of route flapping and BGP convergence issues.
+- __Security__: Limits the impact of route leaks or hijacks.
+- __Policy compliance__: Many ISPs enforce prefix limits in peering agreements to ensure efficient routing.
+
+In this lab, limiting prefixes to a maximum of 50 per peer helps maintain a manageable and stable routing environment
+
+> __Route flapping__ refers to the rapid and repeated change in the reachability of a network prefix in the routing table. This occurs when a BGP route is alternately advertised and withdrawn in quick succession due to:
+>
+> - Interface instability (physical or logical link going up/down)
+> - Configuration changes
+> - Network congestion or errors
+> - Unstable peering sessions
+> - Router software/hardware issues
 
 #### 3.4.3 - What is the private AS number range in BGP? Describe some scenarios where using private ASNs can be useful.
 
@@ -2781,7 +3080,11 @@ Private ASN Ranges:
 | 2-byte | 64512 to 65534 |
 | 4-byte | 4200000000 to 4294967294 |
 
-__TODO__
+Use cases for private ASNs:
+
+- __Internal network segmentation__: Within a larger AS, private ASNs can be used for testing or staging environments without consuming public AS numbers.
+- __Mergers and migrations__: During network integration, private ASNs can be used temporarily to avoid conflicts.
+- __Customer networks__: In some BGP designs, customers may use a private ASN for their internal routing, which is removed before advertisement to the global Internet (as done in this lab with AS 17390).
 
 #### 3.4.4 - Assume that you successfully configured prefix filtering. Based on the __BGP path selection rules__, explain why R12 selects a specific path for the prefix 65.0.204.0/24. Use the following output as reference [link](https://www.cisco.com/en/US/tech/tk365/technologies_tech_note09186a0080094431.shtml):
 
@@ -2799,11 +3102,29 @@ Paths: (2 available, best #2, table Default-IP-Routing-Table)
      Origin IGP, localpref 100, valid, external, best  
 ```
 
-__TODO__
+R12 selects the path via __1273 701__ as best because:
+
+1. Both paths have the same __Local Preference (100)__.
+2. The path via __1273 701__ is __external__ (eBGP), while the other is __internal__ (iBGP). BGP prefers __eBGP over iBGP__ when other attributes are equal.
+3. The __AS_PATH__ length is the same (2 AS hops).
+4. No difference in __MED__, __Origin__, or other attributes to influence the decision.
 
 #### 3.4.5 - Imagine that one of your prefixes was not selected as the best path in your lab. Based on the __BGP decision process__, propose a configuration change (e.g., adjusting local preference, MED, or weight) that would alter the selection. Justify your answer by showing the relevant command(s) and predicting the impact on the routing table.
 
-__TODO__
+Supposing that prefix `46.88.20.0/24` is not selected as best because it comes via an AS with longer __AS_PATH__. To influence selection, we could increase the __Local Preference__ for that path.
+
+Configuration change on R12 (inbound from desired neighbor):
+
+```txt
+route-map PREFER_PATH permit 10
+ match ip address prefix-list PREFIX_LIST
+ set local-preference 200
+!
+router bgp 5511
+ neighbor 48.73.240.18 route-map PREFER_PATH in
+```
+
+Increasing __Local Preference__ to 200 makes this path more preferred than others with default __Local Preference__ (100). This change influences the first step of BGP decision process, ensuring this path is selected as best.
 
 <div style="page-break-after: always"></div>
 

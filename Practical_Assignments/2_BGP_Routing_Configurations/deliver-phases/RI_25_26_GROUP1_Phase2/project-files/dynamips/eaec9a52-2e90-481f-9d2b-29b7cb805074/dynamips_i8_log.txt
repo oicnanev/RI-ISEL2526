@@ -1,0 +1,106 @@
+Dec 03 16:23:21.504 HYPERVISOR: Release 0.2.23-amd64/Darwin (tag 2023010200)
+Dec 03 16:23:21.504 HYPERVISOR: Started on IP = 127.0.0.1, TCP port = 49300.
+Dec 03 16:23:21.506 HYPERVISOR: exec_cmd: hypervisor version 
+Dec 03 16:23:21.506 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips 
+Dec 03 16:23:21.506 GENERAL: working_dir=/Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips
+Dec 03 16:23:21.506 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips/eaec9a52-2e90-481f-9d2b-29b7cb805074 
+Dec 03 16:23:21.506 GENERAL: working_dir=/Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips/eaec9a52-2e90-481f-9d2b-29b7cb805074
+Dec 03 16:23:21.507 HYPERVISOR: exec_cmd: vm create R8 8 c7200 
+Dec 03 16:23:21.507 VM: VM R8 created.
+Dec 03 16:23:21.507 HYPERVISOR: exec_cmd: vm set_con_tcp_port R8 5031 
+Dec 03 16:23:21.507 HYPERVISOR: exec_cmd: c7200 get_mac_addr R8 
+Dec 03 16:23:21.508 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 03 16:23:21.508 HYPERVISOR: exec_cmd: vm slot_add_binding R8 0 0 C7200-IO-FE 
+Dec 03 16:23:21.508 HYPERVISOR: exec_cmd: vm set_disk0 R8 0 
+Dec 03 16:23:21.508 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 03 16:23:21.508 HYPERVISOR: exec_cmd: vm set_idle_pc R8 0x606df0c8 
+Dec 03 16:23:21.509 HYPERVISOR: exec_cmd: vm set_ios R8 /Users/oicnanev/GNS3/images/IOS/c7200-advipservicesk9-mz.124-24.T8.image 
+Dec 03 16:23:21.509 HYPERVISOR: exec_cmd: c7200 set_mac_addr R8 ca08.306b.0000 
+Dec 03 16:23:21.509 HYPERVISOR: exec_cmd: vm set_nvram R8 512 
+Dec 03 16:23:21.509 HYPERVISOR: exec_cmd: vm set_ram R8 512 
+Dec 03 16:23:21.510 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 03 16:23:21.510 HYPERVISOR: exec_cmd: vm slot_add_binding R8 1 0 PA-GE 
+Dec 03 16:23:21.510 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 03 16:23:21.510 HYPERVISOR: exec_cmd: vm slot_add_binding R8 2 0 PA-GE 
+Dec 03 16:23:21.510 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 03 16:23:21.510 HYPERVISOR: exec_cmd: vm slot_add_binding R8 3 0 PA-GE 
+Dec 03 16:23:21.511 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 03 16:23:21.511 HYPERVISOR: exec_cmd: vm slot_add_binding R8 4 0 PA-GE 
+Dec 03 16:23:21.511 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 03 16:23:21.511 HYPERVISOR: exec_cmd: vm slot_add_binding R8 5 0 PA-GE 
+Dec 03 16:23:23.909 HYPERVISOR: exec_cmd: nio create_udp udp-0019b36b-e2b4-44f4-8f87-eaf011a8e949 10044 127.0.0.1 10045 
+Dec 03 16:23:24.261 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R8 4 0 udp-0019b36b-e2b4-44f4-8f87-eaf011a8e949 
+Dec 03 16:23:24.263 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 03 16:23:24.585 HYPERVISOR: exec_cmd: nio create_udp udp-a3e81ef8-092b-4be8-8987-dec1849889a4 10058 127.0.0.1 10059 
+Dec 03 16:23:24.586 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R8 0 0 udp-a3e81ef8-092b-4be8-8987-dec1849889a4 
+Dec 03 16:23:24.586 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 03 16:23:26.440 HYPERVISOR: exec_cmd: nio create_udp udp-5c39d4d9-b907-4a6d-9020-b533cf4fbeeb 10110 127.0.0.1 10111 
+Dec 03 16:23:26.441 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R8 1 0 udp-5c39d4d9-b907-4a6d-9020-b533cf4fbeeb 
+Dec 03 16:23:26.441 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 03 16:23:26.512 HYPERVISOR: exec_cmd: nio create_udp udp-6f1163a2-5299-40b7-95bb-1c7f3631fc88 10120 127.0.0.1 10121 
+Dec 03 16:23:26.512 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R8 5 0 udp-6f1163a2-5299-40b7-95bb-1c7f3631fc88 
+Dec 03 16:23:26.513 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 03 16:23:36.681 HYPERVISOR: exec_cmd: vm set_ghost_status R8 2 
+Dec 03 16:23:36.681 HYPERVISOR: exec_cmd: vm set_ghost_file R8 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 03 16:23:36.682 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 03 16:23:36.682 HYPERVISOR: exec_cmd: vm set_config R8 configs/i8_startup-config.cfg 
+Dec 03 16:23:36.682 HYPERVISOR: exec_cmd: vm start R8 
+Dec 03 16:24:06.941 HYPERVISOR: exec_cmd: vm extract_config R8 
+Dec 03 16:44:09.817 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 03 16:44:09.817 HYPERVISOR: exec_cmd: vm stop R8 
+Dec 03 16:44:09.944 VM: VM R8 shutdown.
+Dec 03 16:44:09.944 HYPERVISOR: exec_cmd: vm extract_config R8 
+Dec 03 16:45:02.097 HYPERVISOR: exec_cmd: vm set_ghost_status R8 2 
+Dec 03 16:45:02.097 HYPERVISOR: exec_cmd: vm set_ghost_file R8 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 03 16:45:02.098 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 03 16:45:02.098 HYPERVISOR: exec_cmd: vm set_config R8 configs/i8_startup-config.cfg 
+Dec 03 16:45:02.098 HYPERVISOR: exec_cmd: vm start R8 
+Dec 03 17:42:00.431 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 03 17:42:00.431 HYPERVISOR: exec_cmd: vm stop R8 
+Dec 03 17:42:00.574 VM: VM R8 shutdown.
+Dec 03 17:42:00.575 HYPERVISOR: exec_cmd: vm extract_config R8 
+Dec 03 17:42:06.560 HYPERVISOR: exec_cmd: vm set_ghost_status R8 2 
+Dec 03 17:42:06.560 HYPERVISOR: exec_cmd: vm set_ghost_file R8 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 03 17:42:06.560 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 03 17:42:06.561 HYPERVISOR: exec_cmd: vm set_config R8 configs/i8_startup-config.cfg 
+Dec 03 17:42:06.561 HYPERVISOR: exec_cmd: vm start R8 
+Dec 03 22:25:10.060 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 03 22:25:10.060 HYPERVISOR: exec_cmd: vm stop R8 
+Dec 03 22:25:10.202 VM: VM R8 shutdown.
+Dec 03 22:25:10.203 HYPERVISOR: exec_cmd: vm extract_config R8 
+Dec 03 22:30:48.990 HYPERVISOR: exec_cmd: vm set_ghost_status R8 2 
+Dec 03 22:30:48.990 HYPERVISOR: exec_cmd: vm set_ghost_file R8 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 03 22:30:48.991 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 03 22:30:48.991 HYPERVISOR: exec_cmd: vm set_config R8 configs/i8_startup-config.cfg 
+Dec 03 22:30:48.991 HYPERVISOR: exec_cmd: vm start R8 
+Dec 06 09:28:41.668 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 06 09:28:41.669 HYPERVISOR: exec_cmd: vm stop R8 
+Dec 06 09:28:41.831 VM: VM R8 shutdown.
+Dec 06 09:28:41.832 HYPERVISOR: exec_cmd: vm extract_config R8 
+Dec 06 09:28:53.575 HYPERVISOR: exec_cmd: vm set_ghost_status R8 2 
+Dec 06 09:28:53.575 HYPERVISOR: exec_cmd: vm set_ghost_file R8 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 06 09:28:53.575 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 06 09:28:53.577 HYPERVISOR: exec_cmd: vm set_config R8 configs/i8_startup-config.cfg 
+Dec 06 09:28:53.577 HYPERVISOR: exec_cmd: vm start R8 
+Dec 06 09:33:06.474 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 06 09:33:06.474 HYPERVISOR: exec_cmd: vm stop R8 
+Dec 06 09:33:06.604 VM: VM R8 shutdown.
+Dec 06 09:33:06.604 HYPERVISOR: exec_cmd: vm extract_config R8 
+Dec 06 09:34:55.191 HYPERVISOR: exec_cmd: vm set_ghost_status R8 2 
+Dec 06 09:34:55.191 HYPERVISOR: exec_cmd: vm set_ghost_file R8 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 06 09:34:55.191 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 06 09:34:55.192 HYPERVISOR: exec_cmd: vm set_config R8 configs/i8_startup-config.cfg 
+Dec 06 09:34:55.192 HYPERVISOR: exec_cmd: vm start R8 
+Dec 06 09:35:59.480 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 06 09:35:59.481 HYPERVISOR: exec_cmd: vm stop R8 
+Dec 06 09:35:59.632 VM: VM R8 shutdown.
+Dec 06 09:35:59.632 HYPERVISOR: exec_cmd: vm extract_config R8 
+Dec 06 09:37:06.574 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 06 09:37:06.574 HYPERVISOR: exec_cmd: vm extract_config R8 
+Dec 06 09:37:26.190 HYPERVISOR: exec_cmd: vm get_status R8 
+Dec 06 09:37:26.190 HYPERVISOR: exec_cmd: vm extract_config R8 
+Dec 06 09:37:26.191 HYPERVISOR: exec_cmd: vm delete R8 
+Dec 06 09:37:26.191 VM: VM R8 destroyed.
+Dec 06 09:37:26.192 HYPERVISOR: exec_cmd: hypervisor stop 
+Dec 06 09:37:26.588 HYPERVISOR: Stopped.
+Dec 06 09:37:26.588 GENERAL: reset done.

@@ -1,0 +1,100 @@
+Dec 03 16:23:21.587 HYPERVISOR: Release 0.2.23-amd64/Darwin (tag 2023010200)
+Dec 03 16:23:21.588 HYPERVISOR: Started on IP = 127.0.0.1, TCP port = 49306.
+Dec 03 16:23:21.590 HYPERVISOR: exec_cmd: hypervisor version 
+Dec 03 16:23:21.590 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips 
+Dec 03 16:23:21.590 GENERAL: working_dir=/Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips
+Dec 03 16:23:21.590 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips/88fff113-26b5-45f5-af97-d092d2fb29b5 
+Dec 03 16:23:21.590 GENERAL: working_dir=/Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips/88fff113-26b5-45f5-af97-d092d2fb29b5
+Dec 03 16:23:21.591 HYPERVISOR: exec_cmd: vm create R10 10 c7200 
+Dec 03 16:23:21.591 VM: VM R10 created.
+Dec 03 16:23:21.591 HYPERVISOR: exec_cmd: vm set_con_tcp_port R10 5033 
+Dec 03 16:23:21.591 HYPERVISOR: exec_cmd: c7200 get_mac_addr R10 
+Dec 03 16:23:21.592 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 16:23:21.592 HYPERVISOR: exec_cmd: vm slot_add_binding R10 0 0 C7200-IO-FE 
+Dec 03 16:23:21.592 HYPERVISOR: exec_cmd: vm set_disk0 R10 0 
+Dec 03 16:23:21.592 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 16:23:21.592 HYPERVISOR: exec_cmd: vm set_idle_pc R10 0x606df0c8 
+Dec 03 16:23:21.593 HYPERVISOR: exec_cmd: vm set_ios R10 /Users/oicnanev/GNS3/images/IOS/c7200-advipservicesk9-mz.124-24.T8.image 
+Dec 03 16:23:21.593 HYPERVISOR: exec_cmd: c7200 set_mac_addr R10 ca0a.306f.0000 
+Dec 03 16:23:21.593 HYPERVISOR: exec_cmd: vm set_nvram R10 512 
+Dec 03 16:23:21.593 HYPERVISOR: exec_cmd: vm set_ram R10 512 
+Dec 03 16:23:21.593 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 16:23:21.594 HYPERVISOR: exec_cmd: vm slot_add_binding R10 1 0 PA-GE 
+Dec 03 16:23:21.594 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 16:23:21.594 HYPERVISOR: exec_cmd: vm slot_add_binding R10 2 0 PA-GE 
+Dec 03 16:23:21.594 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 16:23:21.594 HYPERVISOR: exec_cmd: vm slot_add_binding R10 3 0 PA-GE 
+Dec 03 16:23:21.594 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 16:23:21.594 HYPERVISOR: exec_cmd: vm slot_add_binding R10 4 0 PA-GE 
+Dec 03 16:23:21.594 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 16:23:21.594 HYPERVISOR: exec_cmd: vm slot_add_binding R10 5 0 PA-GE 
+Dec 03 16:23:25.759 HYPERVISOR: exec_cmd: nio create_udp udp-c88bae8a-1a07-4090-865d-f0f81a5898b6 10086 127.0.0.1 10087 
+Dec 03 16:23:26.027 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R10 1 0 udp-c88bae8a-1a07-4090-865d-f0f81a5898b6 
+Dec 03 16:23:26.028 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 16:23:26.360 HYPERVISOR: exec_cmd: nio create_udp udp-0cc4d2bb-689b-44fc-8228-51304c932f37 10096 127.0.0.1 10097 
+Dec 03 16:23:26.361 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R10 3 0 udp-0cc4d2bb-689b-44fc-8228-51304c932f37 
+Dec 03 16:23:26.361 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 16:23:27.306 HYPERVISOR: exec_cmd: nio create_udp udp-99fcd732-5863-4026-9ae0-a268f2aed97a 10158 127.0.0.1 10159 
+Dec 03 16:23:27.307 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R10 4 0 udp-99fcd732-5863-4026-9ae0-a268f2aed97a 
+Dec 03 16:23:27.307 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 16:23:27.344 HYPERVISOR: exec_cmd: nio create_udp udp-35e51709-5b24-4f38-a705-633458362d7e 10162 127.0.0.1 10163 
+Dec 03 16:23:27.345 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R10 2 0 udp-35e51709-5b24-4f38-a705-633458362d7e 
+Dec 03 16:23:27.345 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 16:23:27.388 HYPERVISOR: exec_cmd: nio create_udp udp-db0e2285-a03f-443d-a2fb-354beb188e29 10168 127.0.0.1 10169 
+Dec 03 16:23:27.388 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R10 5 0 udp-db0e2285-a03f-443d-a2fb-354beb188e29 
+Dec 03 16:23:27.389 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 16:23:36.921 HYPERVISOR: exec_cmd: vm set_ghost_status R10 2 
+Dec 03 16:23:36.921 HYPERVISOR: exec_cmd: vm set_ghost_file R10 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 03 16:23:36.921 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 16:23:36.922 HYPERVISOR: exec_cmd: vm set_config R10 configs/i10_startup-config.cfg 
+Dec 03 16:23:36.922 HYPERVISOR: exec_cmd: vm start R10 
+Dec 03 16:24:07.132 HYPERVISOR: exec_cmd: vm extract_config R10 
+Dec 03 16:44:09.911 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 16:44:09.911 HYPERVISOR: exec_cmd: vm stop R10 
+Dec 03 16:44:10.079 VM: VM R10 shutdown.
+Dec 03 16:44:10.079 HYPERVISOR: exec_cmd: vm extract_config R10 
+Dec 03 16:45:02.316 HYPERVISOR: exec_cmd: vm set_ghost_status R10 2 
+Dec 03 16:45:02.316 HYPERVISOR: exec_cmd: vm set_ghost_file R10 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 03 16:45:02.317 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 16:45:02.317 HYPERVISOR: exec_cmd: vm set_config R10 configs/i10_startup-config.cfg 
+Dec 03 16:45:02.317 HYPERVISOR: exec_cmd: vm start R10 
+Dec 03 17:42:00.579 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 17:42:00.579 HYPERVISOR: exec_cmd: vm stop R10 
+Dec 03 17:42:00.735 VM: VM R10 shutdown.
+Dec 03 17:42:00.736 HYPERVISOR: exec_cmd: vm extract_config R10 
+Dec 03 17:42:06.794 HYPERVISOR: exec_cmd: vm set_ghost_status R10 2 
+Dec 03 17:42:06.794 HYPERVISOR: exec_cmd: vm set_ghost_file R10 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 03 17:42:06.794 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 17:42:06.795 HYPERVISOR: exec_cmd: vm set_config R10 configs/i10_startup-config.cfg 
+Dec 03 17:42:06.795 HYPERVISOR: exec_cmd: vm start R10 
+Dec 03 22:25:10.183 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 22:25:10.183 HYPERVISOR: exec_cmd: vm stop R10 
+Dec 03 22:25:10.344 VM: VM R10 shutdown.
+Dec 03 22:25:10.344 HYPERVISOR: exec_cmd: vm extract_config R10 
+Dec 03 22:30:49.209 HYPERVISOR: exec_cmd: vm set_ghost_status R10 2 
+Dec 03 22:30:49.209 HYPERVISOR: exec_cmd: vm set_ghost_file R10 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 03 22:30:49.209 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 03 22:30:49.210 HYPERVISOR: exec_cmd: vm set_config R10 configs/i10_startup-config.cfg 
+Dec 03 22:30:49.210 HYPERVISOR: exec_cmd: vm start R10 
+Dec 06 09:33:06.608 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 06 09:33:06.608 HYPERVISOR: exec_cmd: vm stop R10 
+Dec 06 09:33:06.761 VM: VM R10 shutdown.
+Dec 06 09:33:06.762 HYPERVISOR: exec_cmd: vm extract_config R10 
+Dec 06 09:34:55.435 HYPERVISOR: exec_cmd: vm set_ghost_status R10 2 
+Dec 06 09:34:55.436 HYPERVISOR: exec_cmd: vm set_ghost_file R10 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase2/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 06 09:34:55.436 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 06 09:34:55.436 HYPERVISOR: exec_cmd: vm set_config R10 configs/i10_startup-config.cfg 
+Dec 06 09:34:55.436 HYPERVISOR: exec_cmd: vm start R10 
+Dec 06 09:35:59.636 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 06 09:35:59.637 HYPERVISOR: exec_cmd: vm stop R10 
+Dec 06 09:35:59.796 VM: VM R10 shutdown.
+Dec 06 09:35:59.796 HYPERVISOR: exec_cmd: vm extract_config R10 
+Dec 06 09:37:06.576 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 06 09:37:06.577 HYPERVISOR: exec_cmd: vm extract_config R10 
+Dec 06 09:37:26.197 HYPERVISOR: exec_cmd: vm get_status R10 
+Dec 06 09:37:26.197 HYPERVISOR: exec_cmd: vm extract_config R10 
+Dec 06 09:37:26.198 HYPERVISOR: exec_cmd: vm delete R10 
+Dec 06 09:37:26.198 VM: VM R10 destroyed.
+Dec 06 09:37:26.198 HYPERVISOR: exec_cmd: hypervisor stop 
+Dec 06 09:37:26.628 HYPERVISOR: Stopped.
+Dec 06 09:37:26.628 GENERAL: reset done.
