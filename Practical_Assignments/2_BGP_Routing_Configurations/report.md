@@ -3140,6 +3140,111 @@ In this phase the objectives are:
 
 ### 4.2 - Implementation
 
+#### Enable MD5 Authentication on eBGP Peerings (AS701)
+
+In all the routers (R5, R7, R14 and R15) we used the command `service password-encryption`, to prevent the visualisation of the password  when running the command `show running-configuration`
+
+On router R14 from AS 701 - Verizon
+
+```txt
+router bgp 701
+ bgp router-id 10.14.14.14
+ ! ...
+ neighbor 64.112.0.10 remote-as 4637
+ neighbor 64.112.0.10 password BGP@p455w0rd_701-4637             
+ ! ...
+ neighbor 64.112.0.2 remote-as 1273
+ neighbor 64.112.0.2 password BGP@p455w0rd_701-1273               
+ ! ...
+ neighbor 64.112.0.6 remote-as 17390
+ neighbor 64.112.0.6 password BGP@p455w0rd_701-17390
+ ! ...
+```
+
+On Router R5 from AS 1273 - Vodafone
+
+```txt
+router bgp 1273
+ bgp router-id 10.5.5.5
+ ! ...
+ neighbor 64.112.0.1 remote-as 701
+ neighbor 64.112.0.1 password BGP@p455w0rd_701-1273
+ ! ...
+```
+
+On router R7 from AS 17390 IBM
+
+```txt
+router bgp 17390
+ bgp router-id 10.7.7.7
+ ! ...
+ neighbor 64.112.0.5 remote-as 701
+ neighbor 64.112.0.5 password BGP@p455w0rd_701-17390 
+ ! ...
+```
+
+On router R15 from AS 4637 Telstra
+
+```txt
+router bgp 4637
+ bgp router-id 10.15.15.15
+ !...
+ neighbor 64.112.0.9 remote-as 701
+ neighbor 64.112.0.9 password BGP@p455w0rd_701-4637 
+ ! ...
+```
+
+#### Filter Bogon Prefixes from BadGuy Router
+
+In all the routers, we defined a __BOGON-FILTER__ with all the IP addresses that are not permitted in the internet
+
+```txt
+ip prefix-list BOGON-FILTER seq 5 deny 0.0.0.0/8 le 32        ! Software (current local network)
+ip prefix-list BOGON-FILTER seq 10 deny 10.0.0.0/8 le 32      ! Private
+ip prefix-list BOGON-FILTER seq 15 deny 100.64.0.0/10 le 32   ! Shared Address Space - CG-NAT
+ip prefix-list BOGON-FILTER seq 20 deny 127.0.0.0/8 le 32     ! Loopback addresses to Localhost
+ip prefix-list BOGON-FILTER seq 25 deny 169.254.0.0/16 le 32  ! APIPA - Automatic Private IP Address
+ip prefix-list BOGON-FILTER seq 30 deny 172.16.0.0/12 le 32   ! Private
+ip prefix-list BOGON-FILTER seq 35 deny 192.0.0.0/24 le 32    ! IETF Protocol Assignments
+ip prefix-list BOGON-FILTER seq 40 deny 192.0.2.0/24 le 32    ! Documentation - TEST-NET-1
+ip prefix-list BOGON-FILTER seq 45 deny 192.88.99.0/24 le 32  ! Reserved
+ip prefix-list BOGON-FILTER seq 50 deny 192.168.0.0/16 le 32  ! Private
+ip prefix-list BOGON-FILTER seq 55 deny 198.18.0.0/15 le 32   ! Benchmark testing
+ip prefix-list BOGON-FILTER seq 60 deny 198.51.100.0/24 le 32 ! Documentation - TEST-NET-2
+ip prefix-list BOGON-FILTER seq 65 deby 203.0.113.0/24 le 32  ! Documentation - TEST-NET-3
+ip prefix-list BOGON-FILTER seq 70 deny 224.0.0.0/4 le 32     ! Multicast
+ip prefix-list BOGON-FILTER seq 75 deny 233.252.0.0/24 le 32  ! Documentation - MCAST-TEST-NET
+ip prefix-list BOGON-FILTER seq 80 deny 240.0.0.0/4 le 32     ! Reserved for future use
+ip prefix-list BOGON-FILTER seq 85 deny 255.255.255.255/32    ! Broadcast
+ip prefix-list BOGON-FILTER seq 90 permit 0.0.0.0/0 le 32     ! All address space
+```
+
+Then, in all the eBGP `neighbor` command we apply the filter to the input:
+
+```txt
+neighbor [neighbor ip address] prefix-list BOGON-FILTER in
+```
+
+__TODO__: perguntar ao professor se é o acesso ao BadGuy que queremos filtrar. BadGuy não anuncia prefixos!!
+
+In the router peering the __BadGuy__ (R15), we add to the __BOGON-FILTER__
+
+```txt
+ip prefix-list BOGON-FILTER seq 67 deny 211.176.129.6/32 le 32
+```
+
+#### Apply Remote Triggered Black Hole (RTBH) filtering to mitigate a DoS attack within AS1273 ??? - Não é só na parte 5?
+
+Create route-maps that match these lists and apply BGP aoributes (e.g., local-preference, ASpath prepending).
+3. Apply policy to neighbors: inbound and outbound. This involves se~ng how your AS prefers
+routes learned from external peers and which prefixes your AS announces and with what
+aoributes.
+4. In case you need to use regular expressions, the following link can help to test the logic:
+hops://regex101.com/. You can find some examples from most common regular expressions in
+hops://conference.apnic.net/22/docs/tut-rouXng-pres-bgp-bcp.pdf
+
+__Não é pedido para AS 20717 ser o preferido__ !!!
+
 __TODO__
 
 ### 4.3 - Test and Validation

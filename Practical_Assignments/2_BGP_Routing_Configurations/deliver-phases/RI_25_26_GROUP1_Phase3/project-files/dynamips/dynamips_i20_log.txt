@@ -38,3 +38,18 @@ Dec 06 10:38:18.445 HYPERVISOR: exec_cmd: vm get_status R2
 Dec 06 10:38:21.841 HYPERVISOR: exec_cmd: nio create_udp udp-48d197e8-7cc3-46da-bd29-caefbf0aa7ac 10306 127.0.0.1 10307 
 Dec 06 10:38:21.841 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R2 0 0 udp-48d197e8-7cc3-46da-bd29-caefbf0aa7ac 
 Dec 06 10:38:21.842 HYPERVISOR: exec_cmd: vm get_status R2 
+Dec 06 10:41:04.339 HYPERVISOR: exec_cmd: vm set_ghost_status R2 2 
+Dec 06 10:41:04.339 HYPERVISOR: exec_cmd: vm set_ghost_file R2 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 06 10:41:04.340 HYPERVISOR: exec_cmd: vm get_status R2 
+Dec 06 10:41:04.340 HYPERVISOR: exec_cmd: vm set_config R2 configs/i2_startup-config.cfg 
+Dec 06 10:41:04.340 HYPERVISOR: exec_cmd: vm start R2 
+Dec 06 12:33:32.612 HYPERVISOR: exec_cmd: vm get_status R2 
+Dec 06 12:33:32.613 HYPERVISOR: exec_cmd: vm stop R2 
+Dec 06 12:33:32.761 VM: VM R2 shutdown.
+Dec 06 12:33:32.762 HYPERVISOR: exec_cmd: vm extract_config R2 
+Dec 06 12:36:22.557 HYPERVISOR: exec_cmd: vm set_ghost_status R2 2 
+Dec 06 12:36:22.558 HYPERVISOR: exec_cmd: vm set_ghost_file R2 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 06 12:36:22.559 HYPERVISOR: exec_cmd: vm get_status R2 
+Dec 06 12:36:22.559 HYPERVISOR: exec_cmd: vm set_config R2 configs/i2_startup-config.cfg 
+Dec 06 12:36:22.559 HYPERVISOR: exec_cmd: vm start R2 
+Dec 06 17:19:57.125 HYPERVISOR: exec_cmd: vm extract_config R2 
