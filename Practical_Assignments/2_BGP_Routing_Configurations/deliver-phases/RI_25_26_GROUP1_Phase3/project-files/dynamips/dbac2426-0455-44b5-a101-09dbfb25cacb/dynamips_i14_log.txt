@@ -1,0 +1,42 @@
+Dec 10 18:19:26.690 HYPERVISOR: Release 0.2.23-amd64/Darwin (tag 2023010200)
+Dec 10 18:19:26.691 HYPERVISOR: Started on IP = 127.0.0.1, TCP port = 54971.
+Dec 10 18:19:26.693 HYPERVISOR: exec_cmd: hypervisor version 
+Dec 10 18:19:26.693 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips 
+Dec 10 18:19:26.693 GENERAL: working_dir=/Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips
+Dec 10 18:19:26.693 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/b791b2d4-4ce4-4e81-8246-ffd6c0a195e4 
+Dec 10 18:19:26.693 GENERAL: working_dir=/Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/b791b2d4-4ce4-4e81-8246-ffd6c0a195e4
+Dec 10 18:19:26.694 HYPERVISOR: exec_cmd: vm create R13 13 c7200 
+Dec 10 18:19:26.694 VM: VM R13 created.
+Dec 10 18:19:26.694 HYPERVISOR: exec_cmd: vm set_con_tcp_port R13 5026 
+Dec 10 18:19:26.694 HYPERVISOR: exec_cmd: c7200 get_mac_addr R13 
+Dec 10 18:19:26.695 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 10 18:19:26.695 HYPERVISOR: exec_cmd: vm slot_add_binding R13 0 0 C7200-IO-FE 
+Dec 10 18:19:26.695 HYPERVISOR: exec_cmd: vm set_disk0 R13 0 
+Dec 10 18:19:26.695 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 10 18:19:26.695 HYPERVISOR: exec_cmd: vm set_idle_pc R13 0x606df0c8 
+Dec 10 18:19:26.696 HYPERVISOR: exec_cmd: vm set_ios R13 /Users/oicnanev/GNS3/images/IOS/c7200-advipservicesk9-mz.124-24.T8.image 
+Dec 10 18:19:26.696 HYPERVISOR: exec_cmd: c7200 set_mac_addr R13 ca0d.3077.0000 
+Dec 10 18:19:26.696 HYPERVISOR: exec_cmd: vm set_nvram R13 512 
+Dec 10 18:19:26.696 HYPERVISOR: exec_cmd: vm set_ram R13 512 
+Dec 10 18:19:26.697 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 10 18:19:26.697 HYPERVISOR: exec_cmd: vm slot_add_binding R13 1 0 PA-GE 
+Dec 10 18:19:26.697 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 10 18:19:26.697 HYPERVISOR: exec_cmd: vm slot_add_binding R13 2 0 PA-GE 
+Dec 10 18:19:26.697 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 10 18:19:26.697 HYPERVISOR: exec_cmd: vm slot_add_binding R13 3 0 PA-GE 
+Dec 10 18:19:26.697 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 10 18:19:26.697 HYPERVISOR: exec_cmd: vm slot_add_binding R13 4 0 PA-GE 
+Dec 10 18:19:26.698 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 10 18:19:26.698 HYPERVISOR: exec_cmd: vm slot_add_binding R13 5 0 PA-GE 
+Dec 10 18:19:30.299 HYPERVISOR: exec_cmd: nio create_udp udp-d4675af7-89bb-4fb5-98ea-506d3da9e2f3 10080 127.0.0.1 10081 
+Dec 10 18:19:30.534 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R13 0 0 udp-d4675af7-89bb-4fb5-98ea-506d3da9e2f3 
+Dec 10 18:19:30.535 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 10 18:19:31.479 HYPERVISOR: exec_cmd: nio create_udp udp-12f3d3b4-e560-4816-b832-57e35935ee49 10140 127.0.0.1 10141 
+Dec 10 18:19:31.480 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R13 1 0 udp-12f3d3b4-e560-4816-b832-57e35935ee49 
+Dec 10 18:19:31.480 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 10 18:23:29.295 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 10 18:23:29.295 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 10 18:23:29.296 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 10 18:23:29.296 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 10 18:23:29.296 HYPERVISOR: exec_cmd: vm start R13 
+Dec 10 18:23:59.556 HYPERVISOR: exec_cmd: vm extract_config R13 

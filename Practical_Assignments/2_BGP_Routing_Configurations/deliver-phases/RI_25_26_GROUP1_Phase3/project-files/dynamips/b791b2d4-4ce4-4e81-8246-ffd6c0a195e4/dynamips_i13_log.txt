@@ -1,0 +1,45 @@
+Dec 10 18:19:26.646 HYPERVISOR: Release 0.2.23-amd64/Darwin (tag 2023010200)
+Dec 10 18:19:26.646 HYPERVISOR: Started on IP = 127.0.0.1, TCP port = 54968.
+Dec 10 18:19:26.648 HYPERVISOR: exec_cmd: hypervisor version 
+Dec 10 18:19:26.649 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips 
+Dec 10 18:19:26.649 GENERAL: working_dir=/Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips
+Dec 10 18:19:26.649 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/b8b7a598-ac07-4b57-b321-c5316bf585b4 
+Dec 10 18:19:26.649 GENERAL: working_dir=/Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/b8b7a598-ac07-4b57-b321-c5316bf585b4
+Dec 10 18:19:26.649 HYPERVISOR: exec_cmd: vm create R12 12 c7200 
+Dec 10 18:19:26.649 VM: VM R12 created.
+Dec 10 18:19:26.649 HYPERVISOR: exec_cmd: vm set_con_tcp_port R12 5025 
+Dec 10 18:19:26.650 HYPERVISOR: exec_cmd: c7200 get_mac_addr R12 
+Dec 10 18:19:26.650 HYPERVISOR: exec_cmd: vm get_status R12 
+Dec 10 18:19:26.650 HYPERVISOR: exec_cmd: vm slot_add_binding R12 0 0 C7200-IO-FE 
+Dec 10 18:19:26.650 HYPERVISOR: exec_cmd: vm set_disk0 R12 0 
+Dec 10 18:19:26.651 HYPERVISOR: exec_cmd: vm get_status R12 
+Dec 10 18:19:26.651 HYPERVISOR: exec_cmd: vm set_idle_pc R12 0x606df0c8 
+Dec 10 18:19:26.651 HYPERVISOR: exec_cmd: vm set_ios R12 /Users/oicnanev/GNS3/images/IOS/c7200-advipservicesk9-mz.124-24.T8.image 
+Dec 10 18:19:26.651 HYPERVISOR: exec_cmd: c7200 set_mac_addr R12 ca0c.3075.0000 
+Dec 10 18:19:26.652 HYPERVISOR: exec_cmd: vm set_nvram R12 512 
+Dec 10 18:19:26.652 HYPERVISOR: exec_cmd: vm set_ram R12 512 
+Dec 10 18:19:26.652 HYPERVISOR: exec_cmd: vm get_status R12 
+Dec 10 18:19:26.652 HYPERVISOR: exec_cmd: vm slot_add_binding R12 1 0 PA-GE 
+Dec 10 18:19:26.653 HYPERVISOR: exec_cmd: vm get_status R12 
+Dec 10 18:19:26.653 HYPERVISOR: exec_cmd: vm slot_add_binding R12 2 0 PA-GE 
+Dec 10 18:19:26.653 HYPERVISOR: exec_cmd: vm get_status R12 
+Dec 10 18:19:26.653 HYPERVISOR: exec_cmd: vm slot_add_binding R12 3 0 PA-GE 
+Dec 10 18:19:26.653 HYPERVISOR: exec_cmd: vm get_status R12 
+Dec 10 18:19:26.653 HYPERVISOR: exec_cmd: vm slot_add_binding R12 4 0 PA-GE 
+Dec 10 18:19:26.653 HYPERVISOR: exec_cmd: vm get_status R12 
+Dec 10 18:19:26.653 HYPERVISOR: exec_cmd: vm slot_add_binding R12 5 0 PA-GE 
+Dec 10 18:19:30.879 HYPERVISOR: exec_cmd: nio create_udp udp-b12c98b4-dcf1-45ce-862b-bd7da21dc9d8 10092 127.0.0.1 10093 
+Dec 10 18:19:31.106 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R12 2 0 udp-b12c98b4-dcf1-45ce-862b-bd7da21dc9d8 
+Dec 10 18:19:31.106 HYPERVISOR: exec_cmd: vm get_status R12 
+Dec 10 18:19:31.160 HYPERVISOR: exec_cmd: nio create_udp udp-d874afbc-ff41-4680-8c9e-9faa8881d5fe 10098 127.0.0.1 10099 
+Dec 10 18:19:31.161 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R12 3 0 udp-d874afbc-ff41-4680-8c9e-9faa8881d5fe 
+Dec 10 18:19:31.161 HYPERVISOR: exec_cmd: vm get_status R12 
+Dec 10 18:19:31.444 HYPERVISOR: exec_cmd: nio create_udp udp-a135e573-cb0b-4230-a1be-547f8034b220 10136 127.0.0.1 10137 
+Dec 10 18:19:31.444 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R12 0 0 udp-a135e573-cb0b-4230-a1be-547f8034b220 
+Dec 10 18:19:31.445 HYPERVISOR: exec_cmd: vm get_status R12 
+Dec 10 18:23:29.123 HYPERVISOR: exec_cmd: vm set_ghost_status R12 2 
+Dec 10 18:23:29.123 HYPERVISOR: exec_cmd: vm set_ghost_file R12 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 10 18:23:29.123 HYPERVISOR: exec_cmd: vm get_status R12 
+Dec 10 18:23:29.123 HYPERVISOR: exec_cmd: vm set_config R12 configs/i12_startup-config.cfg 
+Dec 10 18:23:29.124 HYPERVISOR: exec_cmd: vm start R12 
+Dec 10 18:23:59.348 HYPERVISOR: exec_cmd: vm extract_config R12 

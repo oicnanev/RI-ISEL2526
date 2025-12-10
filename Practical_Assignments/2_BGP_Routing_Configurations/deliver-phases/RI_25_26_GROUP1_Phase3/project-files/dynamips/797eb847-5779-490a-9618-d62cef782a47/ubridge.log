@@ -1,14 +1,14 @@
 uBridge version 0.9.16 running with libpcap version 1.10.1
-Hypervisor TCP control server started (IP localhost port 64092).
-UDP tunnel connecting from local port 10185 to IPv4 addresss 127.0.0.1 on port 10184
-UDP tunnel connecting from local port 10182 to IPv4 addresss 127.0.0.1 on port 10183
-Source NIO listener thread for DYNAMIPS-10184-10185 has started
-Destination NIO listener thread for DYNAMIPS-10184-10185 has started
-UDP tunnel connecting from local port 10191 to IPv4 addresss 127.0.0.1 on port 10190
-UDP tunnel connecting from local port 10188 to IPv4 addresss 127.0.0.1 on port 10189
-Source NIO listener thread for DYNAMIPS-10190-10191 has started
-Destination NIO listener thread for DYNAMIPS-10190-10191 has started
-UDP tunnel connecting from local port 10229 to IPv4 addresss 127.0.0.1 on port 10228
-UDP tunnel connecting from local port 10225 to IPv4 addresss 127.0.0.1 on port 10224
-Source NIO listener thread for DYNAMIPS-10228-10229 has started
-Destination NIO listener thread for DYNAMIPS-10228-10229 has started
+Hypervisor TCP control server started (IP localhost port 54994).
+UDP tunnel connecting from local port 10003 to IPv4 addresss 127.0.0.1 on port 10002
+UDP tunnel connecting from local port 10000 to IPv4 addresss 127.0.0.1 on port 10001
+Source NIO listener thread for DYNAMIPS-10002-10003 has started
+Destination NIO listener thread for DYNAMIPS-10002-10003 has started
+UDP tunnel connecting from local port 10009 to IPv4 addresss 127.0.0.1 on port 10008
+UDP tunnel connecting from local port 10006 to IPv4 addresss 127.0.0.1 on port 10007
+Source NIO listener thread for DYNAMIPS-10008-10009 has started
+Destination NIO listener thread for DYNAMIPS-10008-10009 has started
+UDP tunnel connecting from local port 10047 to IPv4 addresss 127.0.0.1 on port 10046
+UDP tunnel connecting from local port 10043 to IPv4 addresss 127.0.0.1 on port 10042
+Source NIO listener thread for DYNAMIPS-10046-10047 has started
+Destination NIO listener thread for DYNAMIPS-10046-10047 has started

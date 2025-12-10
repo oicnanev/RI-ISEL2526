@@ -1,0 +1,12 @@
+Dec 10 18:19:26.563 HYPERVISOR: Release 0.2.23-amd64/Darwin (tag 2023010200)
+Dec 10 18:19:26.565 HYPERVISOR: Started on IP = 127.0.0.1, TCP port = 54962.
+Dec 10 18:19:26.566 HYPERVISOR: exec_cmd: hypervisor version 
+Dec 10 18:19:26.566 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips 
+Dec 10 18:19:26.566 GENERAL: working_dir=/Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips
+Dec 10 18:19:26.567 HYPERVISOR: exec_cmd: ethsw create IXP1 
+Dec 10 18:19:30.032 HYPERVISOR: exec_cmd: nio create_udp udp-27177c5b-9f97-40a1-94c9-c2f68ab26184 10073 127.0.0.1 10072 
+Dec 10 18:19:30.032 HYPERVISOR: exec_cmd: ethsw add_nio IXP1 udp-27177c5b-9f97-40a1-94c9-c2f68ab26184 
+Dec 10 18:19:30.032 HYPERVISOR: exec_cmd: ethsw set_access_port IXP1 udp-27177c5b-9f97-40a1-94c9-c2f68ab26184 1 
+Dec 10 18:19:32.147 HYPERVISOR: exec_cmd: nio create_udp udp-85e2487b-4d7c-41ae-b7ff-8c6680c0ef8c 10166 127.0.0.1 10167 
+Dec 10 18:19:32.147 HYPERVISOR: exec_cmd: ethsw add_nio IXP1 udp-85e2487b-4d7c-41ae-b7ff-8c6680c0ef8c 
+Dec 10 18:19:32.158 HYPERVISOR: exec_cmd: ethsw set_access_port IXP1 udp-85e2487b-4d7c-41ae-b7ff-8c6680c0ef8c 1 
