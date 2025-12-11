@@ -137,8 +137,7 @@ router ospf 1
 
 ! ROUTER 12 ---------------------------------------------------------------
 router ospf 1
- router-id 10.12.12.12
- !passive-interface Loopback0              
+ router-id 10.12.12.12             
  network 10.11.12.0 0.0.0.3 area 1      ! R11
  network 10.10.12.0 0.0.0.3 area 1      ! R10
  network 10.12.12.12 0.0.0.0 area 1     ! Lo0
@@ -3134,11 +3133,56 @@ Increasing __Local Preference__ to 200 makes this path more preferred than other
 
 In this phase the objectives are:
 
-- Enable authentication on eBGP peerings in __AS701__
-- Filter Bogon prefixes received from the _“BadGuy”_ router
-- Apply __Remote Triggered Black Hole (RTBH)__ filtering to mitigate a DoS attack within __AS1273__
+- Use BGP attributes to ensure __AS20717__ is the preferred path for traffic originated in __AS1273__ and __AS511__
+- Enforce this preference symmetrically, guaranteeing consistent selection in both directions.
+- Apply the rule along the full path (e.g., AS17390 <-> AS1273 <-> IXP1 <-> AS551) for routing coherence
 
 ### 4.2 - Implementation
+
+
+Create route-maps that match these lists and apply BGP aoributes (e.g., local-preference, ASpath prepending).
+3. Apply policy to neighbors: inbound and outbound. This involves se~ng how your AS prefers
+routes learned from external peers and which prefixes your AS announces and with what
+aoributes.
+4. In case you need to use regular expressions, the following link can help to test the logic:
+hops://regex101.com/. You can find some examples from most common regular expressions in
+hops://conference.apnic.net/22/docs/tut-rouXng-pres-bgp-bcp.pdf
+
+__Não é pedido para AS 20717 ser o preferido__ !!!
+
+__TODO__
+
+### 4.3 - Test and Validation
+
+__TODO__
+
+### 4.4 - Practical Questions
+
+#### 4.4.1 - Describe in your report the policy options you used to implement the routing policies (include all the details of the configurations (e.g., prefix-list, route-map, etc)
+
+__TODO__
+
+#### 4.4.2 - Provide command output screenshots that demonstrate the successful application of the configured policies
+
+__TODO__
+
+#### 4.4.3 - Discuss other alternative to achieve the same results and comment on their relative pros and cons, compared to your implementation
+
+__TODO__
+
+<div style="page-break-after: always"></div>
+
+## 5 - Phase 5 - Security Practices
+
+### 5.1 Objectives
+
+In this last phase, the objectives are:
+
+- Activate the MD5 authentication on all the eBGP peering’s on the AS701. This a good practice for all the peers nevertheless for the lab proposes will be ok to test on this AS only
+- Filter the `Bogon` prefixes on the peer routers from AS 1273. The BadGuy router is advertising `Bogons` (see: [BGP Best Practices for ISPs](https://conference.apnic.net/22/docs/tut-routing-pres-bgp-bcp.pdf)
+- Implement Remote Triggered Black Hole (RTBH) filtering - a popular and effective technique for the mitigation of denial-of-service (DoS) attack on AS1273 coming from the prefix `63.96.0.115`. [Remotely Triggered Black Hole Filtering - Destination Based and Source Based](https://www.cisco.com/c/dam/en_us/about/security/intelligence/blackhole.pdf)
+
+### 5.2 - Implementation
 
 #### Enable MD5 Authentication on eBGP Peerings (AS701)
 
@@ -3211,11 +3255,10 @@ ip prefix-list BOGON-FILTER seq 45 deny 192.88.99.0/24 le 32  ! Reserved
 ip prefix-list BOGON-FILTER seq 50 deny 192.168.0.0/16 le 32  ! Private
 ip prefix-list BOGON-FILTER seq 55 deny 198.18.0.0/15 le 32   ! Benchmark testing
 ip prefix-list BOGON-FILTER seq 60 deny 198.51.100.0/24 le 32 ! Documentation - TEST-NET-2
-ip prefix-list BOGON-FILTER seq 65 deby 203.0.113.0/24 le 32  ! Documentation - TEST-NET-3
+ip prefix-list BOGON-FILTER seq 65 deny 203.0.113.0/24 le 32  ! Documentation - TEST-NET-3
 ip prefix-list BOGON-FILTER seq 70 deny 224.0.0.0/4 le 32     ! Multicast
 ip prefix-list BOGON-FILTER seq 75 deny 233.252.0.0/24 le 32  ! Documentation - MCAST-TEST-NET
 ip prefix-list BOGON-FILTER seq 80 deny 240.0.0.0/4 le 32     ! Reserved for future use
-ip prefix-list BOGON-FILTER seq 85 deny 255.255.255.255/32    ! Broadcast
 ip prefix-list BOGON-FILTER seq 90 permit 0.0.0.0/0 le 32     ! All address space
 ```
 
@@ -3225,61 +3268,114 @@ Then, in all the eBGP `neighbor` command we apply the filter to the input:
 neighbor [neighbor ip address] prefix-list BOGON-FILTER in
 ```
 
-__TODO__: perguntar ao professor se é o acesso ao BadGuy que queremos filtrar. BadGuy não anuncia prefixos!!
-
-In the router peering the __BadGuy__ (R15), we add to the __BOGON-FILTER__
+In the router __BadGuy__, to simulate the advertising of `Bogons`, we created the `bogon` static routes pointing to `Null0` and in the BGP section we advertise them with the `redistribute static` command. This command allow the injection of all the static routes of the routing table in the BGP routing process
 
 ```txt
-ip prefix-list BOGON-FILTER seq 67 deny 211.176.129.6/32 le 32
-```
+! ============================================================================
+!                                BOGON PREFIXES
+! ============================================================================
+!
+ip route 0.0.0.0 255.0.0.0 Null0           ! Software (current local network)
+ip route 10.0.0.0 255.0.0.0 Null0          ! Private
+ip route 100.64.0.0 255.192.0.0 Null0      ! Shared Address Space - CG-NAT
+ip route 127.0.0.0 255.0.0.0 Null0         ! Loopback addresses to Localhost
+ip route 169.254.0.0 255.255.0.0 Null0     ! APIPA - Automatic Private IP Address
+ip route 172.16.0.0 255.240.0.0 Null0      ! Private
+ip route 192.0.0.0 255.255.255.0 Null0     ! IETF Protocol Assignments
+ip route 192.0.2.0 255.255.255.0 Null0     ! Documentation - TEST-NET-1
+ip route 192.88.99.0 255.255.255.0 Null0   ! Reserved
+ip route 192.168.0.0 255.255.0.0 Null0     ! Private
+ip route 198.18.0.0 255.254.0.0 Null0      ! Benchmark testing
+ip route 198.51.100.0 255.255.255.0 Null0  ! Documentation - TEST-NET-2
+ip route 203.0.113.0 255.255.255.0 Null0   ! Documentation - TEST-NET-3
+ip route 224.0.0.0 240.0.0.0 Null0         ! Multicast
+ip route 233.252.0.0 255.255.255.0 Null0   ! Documentation - MCAST-TEST-NET
+ip route 240.0.0.0 240.0.0.0 Null0         ! Reserved for future use
+!
+! ===========================================================================
+!                                   BGP
+! ===========================================================================
+!
+router bgp 1
+ bgp router-id 10.66.66.66
+ !...
+ redistribute static
+ ```
 
-#### Apply Remote Triggered Black Hole (RTBH) filtering to mitigate a DoS attack within AS1273 ??? - Não é só na parte 5?
+#### Apply Remote Triggered Black Hole (RTBH) filtering to mitigate a DoS attack within AS1273
 
-Create route-maps that match these lists and apply BGP aoributes (e.g., local-preference, ASpath prepending).
-3. Apply policy to neighbors: inbound and outbound. This involves se~ng how your AS prefers
-routes learned from external peers and which prefixes your AS announces and with what
-aoributes.
-4. In case you need to use regular expressions, the following link can help to test the logic:
-hops://regex101.com/. You can find some examples from most common regular expressions in
-hops://conference.apnic.net/22/docs/tut-rouXng-pres-bgp-bcp.pdf
+To simulate an attack from the Router __R14__ to the __AS 1273__ - Vodafone, we created the interface `Loopback 2` with the IP address `63.96.0.115 255.255.255.255`.
 
-__Não é pedido para AS 20717 ser o preferido__ !!!
+Inside the __AS 1273__ - Vodafone, we configured the Router __R4__ as a `trigger router` to filter the attacking prefix
 
-__TODO__
+```txt
+! ===========================================================================
+! Blackhole Routing Configuration (BGP Traffic Scrubbing / DDoS Mitigation)
+! ===========================================================================
 
-### 4.3 - Test and Validation
+! ---------------------------------------------------------------------------
+! 1. Static Route to Null0 (Blackhole Route)
+!    - Creates a discard route for a specific host (64.96.0.115/32)
+!    - Traffic matching this route will be silently dropped by the router
+!    - TAG 66: Used for route tracking or identification (can be matched in route-maps)
+! ---------------------------------------------------------------------------
+ip route 64.96.0.115 255.255.255.255 Null0 tag 66
 
-__TODO__
+! ---------------------------------------------------------------------------
+! 2. Prefix List for Route Matching
+!    - Defines the specific prefix (64.96.0.115/32) to be matched in route-maps
+!    - Used to selectively apply BGP policies to this specific host route
+! ---------------------------------------------------------------------------
+ip prefix-list BH seq 5 permit 64.96.0.115/32
 
-### 4.4 - Practical Questions
+! ---------------------------------------------------------------------------
+! 3. Route Map for BGP Announcement Manipulation
+!    - Applied when advertising this prefix to BGP peers
+!    - "black-hole-trigger": Descriptive name indicating DDoS mitigation trigger
+!    - Sequence 10: First (and likely only) policy statement
+! ---------------------------------------------------------------------------
+route-map black-hole-trigger permit 10
+  ! Match the specific blackhole prefix defined above
+  match ip address prefix-list BH
+  
+  ! Set BGP LOCAL_PREFERENCE to 200 (high priority within local AS)
+  ! This makes the blackhole route preferred over regular paths
+  set local-preference 200
+  
+  ! Set BGP ORIGIN attribute to IGP (indicates internal origin)
+  set origin igp
+  
+  ! Add NO-EXPORT community (well-known community 0xFFFFFF01)
+  ! Prevents this route from being advertised outside the local AS
+  set community no-export
+  
+  ! Modify NEXT_HOP to a specific scrubbing center IP (192.0.2.1)
+  ! This redirects traffic to a DDoS mitigation/scrubbing appliance
+  set ip next-hop 192.0.2.1
 
-#### 4.4.1 - Describe in your report the policy options you used to implement the routing policies (include all the details of the configurations (e.g., prefix-list, route-map, etc)
+! -----------------------------------------------------------------------------
+! 4. Static Route to Scrubbing Center
+!    - Routes traffic destined to the scrubbing center (192.0.2.1) to Null0
+!    - This is a LOOP PREVENTION mechanism:
+!       1. BGP announces 64.96.0.115/32 with next-hop 192.0.2.1
+!       2. Traffic to victim (64.96.0.115) goes to scrubbing center (192.0.2.1)
+!       3. This route ensures traffic to scrubbing center itself doesn't loop
+!       4. Actual scrubbing center reachability via other means (not shown)
+! -----------------------------------------------------------------------------
+ip route 192.0.2.1 255.255.255.255 Null0
 
-__TODO__
-
-#### 4.4.2 - Provide command output screenshots that demonstrate the successful application of the configured policies
-
-__TODO__
-
-#### 4.4.3 - Discuss other alternative to achieve the same results and comment on their relative pros and cons, compared to your implementation
-
-__TODO__
-
-<div style="page-break-after: always"></div>
-
-## 5 - Phase 5 - Security Practices
-
-### 5.1 Objectives
-
-In this last phase, the objectives are:
-
-- Activate the MD5 authentication on all the eBGP peering’s on the AS701. This a good practice for all the peers nevertheless for the lab proposes will be ok to test on this AS only
-- Filter the Bogon prefixes on the peer routers from AS 1273. The BadGuy router is advertising Bogons (see: [link](https://conference.apnic.net/22/docs/tut-routing-pres-bgp-bcp.pdf))
-- Implement Remote Triggered Black Hole (RTBH) filtering - a popular and effective technique for the mitigation of denial-of-service (DoS) attack on AS1273 coming from the prefix `63.96.0.115` [link](https://www.cisco.com/c/dam/en_us/about/security/intelligence/blackhole)
-
-### 5.2 - Implementation
-
-__TODO__
+! IN BGP SECTION
+router bgp 1273
+ redistribute static        ! Redistributes static routes (includes 64.96.0.115/32)
+ ! ...
+ !---------------------------------------------------------------------------
+ ! CRITICAL: Apply blackhole route-map to outgoing advertisements
+ !    - Applies the 'black-hole-trigger' route-map to modify BGP attributes
+ !    - This ensures blackhole routes get special treatment when advertised
+ ! --------------------------------------------------------------------------
+ neighbor iBGP route-map black-hole-trigger out
+ ! ...
+``` 
 
 ### 5.3 - Test and Validation
 

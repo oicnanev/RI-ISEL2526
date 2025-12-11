@@ -37,3 +37,16 @@ Dec 10 18:23:29.561 HYPERVISOR: exec_cmd: vm get_status BadGuy
 Dec 10 18:23:29.562 HYPERVISOR: exec_cmd: vm set_config BadGuy configs/i16_startup-config.cfg 
 Dec 10 18:23:29.563 HYPERVISOR: exec_cmd: vm start BadGuy 
 Dec 10 18:23:59.795 HYPERVISOR: exec_cmd: vm extract_config BadGuy 
+Dec 11 19:07:33.318 HYPERVISOR: exec_cmd: vm get_status BadGuy 
+Dec 11 19:07:33.318 HYPERVISOR: exec_cmd: vm stop BadGuy 
+Dec 11 19:07:33.392 VM: VM BadGuy shutdown.
+Dec 11 19:07:33.392 HYPERVISOR: exec_cmd: vm extract_config BadGuy 
+Dec 11 19:07:46.882 HYPERVISOR: exec_cmd: vm get_status BadGuy 
+Dec 11 19:07:46.882 HYPERVISOR: exec_cmd: vm extract_config BadGuy 
+Dec 11 19:07:46.928 HYPERVISOR: exec_cmd: vm get_status BadGuy 
+Dec 11 19:07:46.928 HYPERVISOR: exec_cmd: vm extract_config BadGuy 
+Dec 11 19:07:46.929 HYPERVISOR: exec_cmd: vm delete BadGuy 
+Dec 11 19:07:46.929 VM: VM BadGuy destroyed.
+Dec 11 19:07:46.929 HYPERVISOR: exec_cmd: hypervisor stop 
+Dec 11 19:07:47.416 HYPERVISOR: Stopped.
+Dec 11 19:07:47.416 GENERAL: reset done.

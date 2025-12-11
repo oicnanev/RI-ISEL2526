@@ -55,3 +55,16 @@ Dec 10 18:29:04.902 HYPERVISOR: exec_cmd: vm set_ghost_file R14 /Users/oicnanev/
 Dec 10 18:29:04.902 HYPERVISOR: exec_cmd: vm get_status R14 
 Dec 10 18:29:04.902 HYPERVISOR: exec_cmd: vm set_config R14 configs/i14_startup-config.cfg 
 Dec 10 18:29:04.903 HYPERVISOR: exec_cmd: vm start R14 
+Dec 11 19:07:33.222 HYPERVISOR: exec_cmd: vm get_status R14 
+Dec 11 19:07:33.223 HYPERVISOR: exec_cmd: vm stop R14 
+Dec 11 19:07:33.361 VM: VM R14 shutdown.
+Dec 11 19:07:33.361 HYPERVISOR: exec_cmd: vm extract_config R14 
+Dec 11 19:07:46.879 HYPERVISOR: exec_cmd: vm get_status R14 
+Dec 11 19:07:46.879 HYPERVISOR: exec_cmd: vm extract_config R14 
+Dec 11 19:07:46.948 HYPERVISOR: exec_cmd: vm get_status R14 
+Dec 11 19:07:46.949 HYPERVISOR: exec_cmd: vm extract_config R14 
+Dec 11 19:07:46.949 HYPERVISOR: exec_cmd: vm delete R14 
+Dec 11 19:07:46.949 VM: VM R14 destroyed.
+Dec 11 19:07:46.949 HYPERVISOR: exec_cmd: hypervisor stop 
+Dec 11 19:07:47.416 HYPERVISOR: Stopped.
+Dec 11 19:07:47.416 GENERAL: reset done.

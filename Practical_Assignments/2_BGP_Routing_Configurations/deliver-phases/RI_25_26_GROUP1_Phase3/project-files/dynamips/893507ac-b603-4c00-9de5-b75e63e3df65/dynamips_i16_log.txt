@@ -49,3 +49,16 @@ Dec 10 18:23:29.350 HYPERVISOR: exec_cmd: vm get_status R15
 Dec 10 18:23:29.350 HYPERVISOR: exec_cmd: vm set_config R15 configs/i15_startup-config.cfg 
 Dec 10 18:23:29.350 HYPERVISOR: exec_cmd: vm start R15 
 Dec 10 18:23:59.582 HYPERVISOR: exec_cmd: vm extract_config R15 
+Dec 11 19:07:33.247 HYPERVISOR: exec_cmd: vm get_status R15 
+Dec 11 19:07:33.248 HYPERVISOR: exec_cmd: vm stop R15 
+Dec 11 19:07:33.421 VM: VM R15 shutdown.
+Dec 11 19:07:33.422 HYPERVISOR: exec_cmd: vm extract_config R15 
+Dec 11 19:07:46.881 HYPERVISOR: exec_cmd: vm get_status R15 
+Dec 11 19:07:46.881 HYPERVISOR: exec_cmd: vm extract_config R15 
+Dec 11 19:07:46.932 HYPERVISOR: exec_cmd: vm get_status R15 
+Dec 11 19:07:46.932 HYPERVISOR: exec_cmd: vm extract_config R15 
+Dec 11 19:07:46.933 HYPERVISOR: exec_cmd: vm delete R15 
+Dec 11 19:07:46.933 VM: VM R15 destroyed.
+Dec 11 19:07:46.933 HYPERVISOR: exec_cmd: hypervisor stop 
+Dec 11 19:07:47.410 HYPERVISOR: Stopped.
+Dec 11 19:07:47.410 GENERAL: reset done.

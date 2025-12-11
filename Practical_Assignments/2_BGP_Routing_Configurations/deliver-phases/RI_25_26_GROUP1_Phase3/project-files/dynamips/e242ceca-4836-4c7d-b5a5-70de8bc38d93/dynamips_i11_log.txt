@@ -10,3 +10,7 @@ Dec 10 18:19:30.032 HYPERVISOR: exec_cmd: ethsw set_access_port IXP1 udp-27177c5
 Dec 10 18:19:32.147 HYPERVISOR: exec_cmd: nio create_udp udp-85e2487b-4d7c-41ae-b7ff-8c6680c0ef8c 10166 127.0.0.1 10167 
 Dec 10 18:19:32.147 HYPERVISOR: exec_cmd: ethsw add_nio IXP1 udp-85e2487b-4d7c-41ae-b7ff-8c6680c0ef8c 
 Dec 10 18:19:32.158 HYPERVISOR: exec_cmd: ethsw set_access_port IXP1 udp-85e2487b-4d7c-41ae-b7ff-8c6680c0ef8c 1 
+Dec 11 19:07:46.891 HYPERVISOR: exec_cmd: ethsw delete IXP1 
+Dec 11 19:07:46.926 HYPERVISOR: exec_cmd: hypervisor stop 
+Dec 11 19:07:46.932 HYPERVISOR: Stopped.
+Dec 11 19:07:46.932 GENERAL: reset done.

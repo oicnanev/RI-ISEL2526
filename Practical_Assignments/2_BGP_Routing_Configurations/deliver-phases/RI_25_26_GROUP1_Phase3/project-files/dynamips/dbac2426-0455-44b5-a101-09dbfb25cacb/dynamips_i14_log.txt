@@ -40,3 +40,16 @@ Dec 10 18:23:29.296 HYPERVISOR: exec_cmd: vm get_status R13
 Dec 10 18:23:29.296 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
 Dec 10 18:23:29.296 HYPERVISOR: exec_cmd: vm start R13 
 Dec 10 18:23:59.556 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 11 19:07:33.217 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 11 19:07:33.218 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 11 19:07:33.316 VM: VM R13 shutdown.
+Dec 11 19:07:33.316 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 11 19:07:46.878 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 11 19:07:46.879 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 11 19:07:46.931 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 11 19:07:46.931 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 11 19:07:46.931 HYPERVISOR: exec_cmd: vm delete R13 
+Dec 11 19:07:46.931 VM: VM R13 destroyed.
+Dec 11 19:07:46.932 HYPERVISOR: exec_cmd: hypervisor stop 
+Dec 11 19:07:46.955 HYPERVISOR: Stopped.
+Dec 11 19:07:46.955 GENERAL: reset done.

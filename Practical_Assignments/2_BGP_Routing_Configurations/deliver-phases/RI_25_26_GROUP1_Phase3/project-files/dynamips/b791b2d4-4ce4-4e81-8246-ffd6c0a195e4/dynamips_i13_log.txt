@@ -43,3 +43,16 @@ Dec 10 18:23:29.123 HYPERVISOR: exec_cmd: vm get_status R12
 Dec 10 18:23:29.123 HYPERVISOR: exec_cmd: vm set_config R12 configs/i12_startup-config.cfg 
 Dec 10 18:23:29.124 HYPERVISOR: exec_cmd: vm start R12 
 Dec 10 18:23:59.348 HYPERVISOR: exec_cmd: vm extract_config R12 
+Dec 11 19:07:33.085 HYPERVISOR: exec_cmd: vm get_status R12 
+Dec 11 19:07:33.085 HYPERVISOR: exec_cmd: vm stop R12 
+Dec 11 19:07:33.220 VM: VM R12 shutdown.
+Dec 11 19:07:33.220 HYPERVISOR: exec_cmd: vm extract_config R12 
+Dec 11 19:07:46.878 HYPERVISOR: exec_cmd: vm get_status R12 
+Dec 11 19:07:46.878 HYPERVISOR: exec_cmd: vm extract_config R12 
+Dec 11 19:07:46.947 HYPERVISOR: exec_cmd: vm get_status R12 
+Dec 11 19:07:46.948 HYPERVISOR: exec_cmd: vm extract_config R12 
+Dec 11 19:07:46.948 HYPERVISOR: exec_cmd: vm delete R12 
+Dec 11 19:07:46.948 VM: VM R12 destroyed.
+Dec 11 19:07:46.949 HYPERVISOR: exec_cmd: hypervisor stop 
+Dec 11 19:07:47.446 HYPERVISOR: Stopped.
+Dec 11 19:07:47.446 GENERAL: reset done.

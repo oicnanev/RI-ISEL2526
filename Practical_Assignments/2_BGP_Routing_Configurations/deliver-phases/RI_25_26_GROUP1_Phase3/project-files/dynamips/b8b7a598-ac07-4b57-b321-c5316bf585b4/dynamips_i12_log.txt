@@ -43,3 +43,16 @@ Dec 10 18:23:29.101 HYPERVISOR: exec_cmd: vm get_status R11
 Dec 10 18:23:29.101 HYPERVISOR: exec_cmd: vm set_config R11 configs/i11_startup-config.cfg 
 Dec 10 18:23:29.102 HYPERVISOR: exec_cmd: vm start R11 
 Dec 10 18:23:59.320 HYPERVISOR: exec_cmd: vm extract_config R11 
+Dec 11 19:07:33.079 HYPERVISOR: exec_cmd: vm get_status R11 
+Dec 11 19:07:33.079 HYPERVISOR: exec_cmd: vm stop R11 
+Dec 11 19:07:33.214 VM: VM R11 shutdown.
+Dec 11 19:07:33.215 HYPERVISOR: exec_cmd: vm extract_config R11 
+Dec 11 19:07:46.876 HYPERVISOR: exec_cmd: vm get_status R11 
+Dec 11 19:07:46.876 HYPERVISOR: exec_cmd: vm extract_config R11 
+Dec 11 19:07:47.400 HYPERVISOR: exec_cmd: vm get_status R11 
+Dec 11 19:07:47.400 HYPERVISOR: exec_cmd: vm extract_config R11 
+Dec 11 19:07:47.402 HYPERVISOR: exec_cmd: vm delete R11 
+Dec 11 19:07:47.402 VM: VM R11 destroyed.
+Dec 11 19:07:47.403 HYPERVISOR: exec_cmd: hypervisor stop 
+Dec 11 19:07:47.429 HYPERVISOR: Stopped.
+Dec 11 19:07:47.430 GENERAL: reset done.
