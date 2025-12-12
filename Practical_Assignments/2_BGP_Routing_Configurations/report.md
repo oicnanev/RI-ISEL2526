@@ -3139,18 +3139,65 @@ In this phase the objectives are:
 
 ### 4.2 - Implementation
 
+To ensure that __AA20717__ is the preferred path for traffic originated in __AS1273__ with destination or passing through __AS511__, or traffic originated in __AS511__ with destination or passing through __AS1273__, we first created an AS-Path  Access List that matches the desired route.
 
-Create route-maps that match these lists and apply BGP aoributes (e.g., local-preference, ASpath prepending).
-3. Apply policy to neighbors: inbound and outbound. This involves se~ng how your AS prefers
-routes learned from external peers and which prefixes your AS announces and with what
-aoributes.
-4. In case you need to use regular expressions, the following link can help to test the logic:
-hops://regex101.com/. You can find some examples from most common regular expressions in
-hops://conference.apnic.net/22/docs/tut-rouXng-pres-bgp-bcp.pdf
+```txt
+Router6 - AS1273 ===========================================================
+! AS-PATH Access List for traffic engineering
+! Matches routes that have passed through both AS20717 and AS5511
+! Syntax: _20717_5511$ = ends with AS5511 and has AS20717 somewhere before it
+ip as-path access-list 1 permit _20717_5511$
 
-__Não é pedido para AS 20717 ser o preferido__ !!!
+Router10 - AS5511 ==========================================================
+! AS-PATH Access List for traffic engineering
+! Matches routes that have passed through AS20171 then AS1273
+! Syntax: _20171_1273$ = ends with AS1273 and has AS20171 somewhere before it
+ip as-path access-list 1 permit _20171_1273$
+``` 
 
-__TODO__
+Then, we created route map with `weight 300` matching the previously configured AS-Path ACL, in both routers (R6 - AS1273 - Vodafone, and R10 - AS5511 - Orange
+
+```txt
+Router6 - AS1273 ===========================================================
+! Route-map for traffic engineering - preferring routes via AS20717+AS5511
+! Sets WEIGHT=300 for routes that come via AS20717 then AS5511
+! WEIGHT is Cisco proprietary (local to router, highest value wins)
+route-map RM_PREF_LOCAL_AS5511 permit 10
+ match as-path 1                  ! Match routes with AS-PATH _20717_5511$
+ set weight 300                   ! Set high weight to prefer these routes
+
+Router10 - AS5511 ==========================================================
+! Route-map for traffic engineering - preferring routes via AS20171+AS1273
+! Sets WEIGHT=300 for routes that come via AS20171 then AS1273
+! WEIGHT is Cisco proprietary (local to router, highest value wins)
+! This influences Orange's preference for paths through DE-CIX then Vodafone
+route-map RM_PREF_LOCAL_AS1273 permit 10
+ match as-path 1                  ! Match routes with AS-PATH _20171_1273$
+ set weight 300                   ! Set high weight to prefer these routes
+```
+
+At least, in the direct links connecting the transit __AS20717__ - DE-CIX, in the both routers we apply the Route Map
+
+```txt
+Router6 - AS1273 ===========================================================
+router bgp 1273
+! ...
+ ! eBGP Peer 2: AS20717 (DE-CIX)
+ neighbor 48.73.240.22 remote-as 20717
+ ! ...
+ ! Apply route-map for traffic engineering (prefer routes via AS20717+AS5511)
+ neighbor 48.73.240.22 route-map RM_PREF_LOCAL_AS5511 in
+ ! ...
+
+Router10 - AS5511 ==========================================================
+router bgp 5511
+ ! ...
+ ! eBGP Peer 1: AS20717 (DE-CIX)
+ neighbor 46.88.20.2 remote-as 20717
+ ! ...
+ ! Apply route-map for traffic engineering (prefer routes via AS20171+AS1273)
+ neighbor 46.88.20.2 route-map RM_PREF_LOCAL_AS1273 in
+```
 
 ### 4.3 - Test and Validation
 
@@ -3160,7 +3207,7 @@ __TODO__
 
 #### 4.4.1 - Describe in your report the policy options you used to implement the routing policies (include all the details of the configurations (e.g., prefix-list, route-map, etc)
 
-__TODO__
+Described and explained in the previous point 4.2 - Implementation
 
 #### 4.4.2 - Provide command output screenshots that demonstrate the successful application of the configured policies
 
@@ -3168,7 +3215,120 @@ __TODO__
 
 #### 4.4.3 - Discuss other alternative to achieve the same results and comment on their relative pros and cons, compared to your implementation
 
-__TODO__
+Alternative Approaches to Achieve the Same Result:
+
+**1. Local Preference (LOCAL_PREF)**
+
+```cisco
+! Instead of WEIGHT (Cisco proprietary, local to router)
+route-map RM_PREF_LOCAL_AS5511 permit 10
+  match as-path 1
+  set local-preference 200          ! Higher LOCAL_PREF wins (default is 100)
+```
+
+**Pros:**
+- Standard BGP attribute (RFC 4271) - interoperable across vendors
+- Propagated within the AS to all iBGP peers
+- More granular control (can be set on per-neighbor basis)
+- Well-understood and widely deployed
+
+**Cons:**
+- Affects all routers in the AS (global effect within the AS)
+- Requires careful planning to avoid unintended consequences
+- Cannot override LOCAL_PREF from other iBGP speakers within same AS
+
+**Comparison to our WEIGHT implementation:**
+- WEIGHT is router-local, LOCAL_PREF is AS-wide
+- WEIGHT has higher precedence than LOCAL_PREF in Cisco's decision process
+- Our WEIGHT approach is simpler for single-router policy but doesn't scale to multi-router AS
+
+**2. AS_PATH Prepending**
+
+```cisco
+! Make other paths less desirable by artificially lengthening AS_PATH
+route-map RM_PREPEND_OUT permit 10
+  set as-path prepend 1273 1273 1273  ! Add our AS 3 times
+```
+
+Applied to outbound advertisements to other transit providers (not DE-CIX).
+
+**Pros:**
+- Simple to implement and understand
+- Effective for making your AS less preferred by others
+- Works well for outbound traffic engineering
+- No special configuration needed on neighbor's side
+
+**Cons:**
+- Only affects inbound traffic to your AS
+- Can be filtered by neighbors with AS_PATH length limits
+- Less precise control compared to WEIGHT/LOCAL_PREF
+- Doesn't help with our specific requirement (preferring certain transit paths)
+
+**3. MED (Multi-Exit Discriminator)**
+
+```cisco
+! Lower MED is preferred (default is 0)
+route-map RM_SET_MED permit 10
+  match as-path 1
+  set metric 50                     ! Lower MED for preferred paths
+```
+
+**Pros:**
+- Standard BGP attribute
+- Useful when you have multiple connections to same AS
+- Can influence neighboring AS's routing decisions
+
+**Cons:**
+- Only comparable between routes from the same neighboring AS
+- Often ignored by many ISPs for security/policy reasons
+- Not transitive (only sent to direct neighbors)
+- Less effective for our cross-AS path preference scenario
+
+**4. Community-Based Traffic Engineering**
+
+```cisco
+! Tag routes with communities and apply policies based on them
+route-map RM_TAG_COMMUNITIES permit 10
+  match as-path 1
+  set community 1273:100 20717:200  ! Tag with custom communities
+
+! Neighbor configuration to send communities
+neighbor 48.73.240.22 send-community
+neighbor 48.73.240.22 route-map RM_TAG_COMMUNITIES out
+```
+
+**Pros:**
+- Highly scalable and flexible
+- Enables coordinated policies across multiple ASes
+- Can implement sophisticated routing policies
+- Well-supported by major ISPs
+
+**Cons:**
+- Requires agreement and coordination between ASes
+- More complex to implement and debug
+- Dependent on neighbor honoring your communities
+- Not all ISPs accept or act on customer communities
+
+**5. BGP Add-Path (RFC 7911)**
+
+```cisco
+! Enable multiple paths for same prefix
+router bgp 1273
+  bgp additional-paths select best 3
+  neighbor 48.73.240.22 additional-paths send receive
+```
+
+**Pros:**
+- Maintains multiple paths simultaneously
+- Enables faster failover
+- More granular path selection capabilities
+- Future-proof approach
+
+**Cons:**
+- Requires support on both ends
+- Increased memory and CPU usage
+- More complex configuration
+- Not yet universally deployed
 
 <div style="page-break-after: always"></div>
 
@@ -3385,19 +3545,239 @@ __TODO__
 
 #### 5.4.1 - How does MD5 authentication improve the security of BGP sessions? What happens if it is not enabled?
 
-__TODO__
+**1. Protection Against Session Hijacking**
+
+MD5 authentication prevents unauthorized routers from establishing BGP sessions with your router by requiring a shared secret key.
+
+**2. Defense Against Replay Attacks**
+
+The MD5 hash includes a sequence number/timestamp, making it resistant to replay attacks where an attacker captures and resends valid BGP packets.
+
+**3. Prevention of Rogue Peer Establishment**
+
+Without authentication, any router claiming to be from a legitimate AS could form a BGP session and:
+
+- Inject malicious routes
+- Hijack prefixes
+- Cause routing instability
+
+**4. Integrity Verification**
+
+Each BGP packet is checksummed with the secret key, ensuring the packet hasn't been tampered with in transit.
+
+**5. Basic Peer Identity Verification**
+
+While not strong cryptographic authentication, MD5 provides a basic level of identity verification for BGP peers.
+
+##### **What Happens Without MD5 Authentication**
+
+**Critical Vulnerabilities Exposed:**
+
+**1. Route Hijacking Attacks**
+
+```cisco
+# Example of what an attacker could do:
+# 1. Spoof BGP OPEN message from legitimate peer
+# 2. Establish unauthorized BGP session
+# 3. Announce hijacked prefixes:
+network 8.8.8.0/24    # Hijack Google DNS
+network 203.0.113.0/24 # Announce bogon space
+```
+
+**Real-World Example**: In 2018, attackers hijacked Amazon's Route 53 DNS prefixes, redirecting traffic to malicious servers. [link](https://blog.cloudflare.com/bgp-leaks-and-crypto-currencies/)
+
+**2. BGP Session Reset Attacks**
+
+Without authentication, attackers can send:
+- **TCP RST packets** to tear down legitimate BGP sessions
+- **BGP NOTIFICATION messages** to cause session resets
+- **Malformed BGP packets** to crash BGP processes
+
+**3. Route Poisoning/Instability**
+
+Attackers can inject:
+- **Malformed attributes** (corrupted AS_PATH, communities)
+- **Excessive updates** causing CPU exhaustion
+- **Withdrawals for critical prefixes** causing blackholes
+
+**4. Man-in-the-Middle Attacks**
+
+Legitimate Path:   AS1273 <--> [Internet] <--> AS5511
+Compromised Path:  AS1273 <--> [Attacker] <--> AS5511
+
+Attacker can:
+
+1. Intercept and modify BGP updates
+2. Learn internal network topology
+3. Perform traffic analysis
+4. Selectively drop or modify routes
+
+
+**5. Prefix De-aggregation Attacks**
+
+Legitimate announcement:   192.0.2.0/24
+Attacker announcement:     192.0.2.0/25
+                          192.0.2.128/25
+                          
+More specific routes win, allowing traffic hijacking.
+
+**Impact of Missing Authentication - Case Study**
+
+**The YouTube Hijack Incident (2008)**
+
+WHAT HAPPENED:
+
+- Pakistan Telecom (AS17557) announced YouTube's prefix (208.65.153.0/24)
+- No authentication between Pakistan Telecom and PCCW (AS3491)
+- Route propagated globally
+- YouTube inaccessible worldwide for ~2 hours
+
+ROOT CAUSE:
+
+1. No BGP session authentication
+2. No route filtering
+3. No RPKI/ROV validation
+4. No maximum prefix limits
+
+**Financial Impact:**
+- **Direct costs**: $1.5M+ in lost ad revenue (YouTube)
+- **Indirect costs**: Brand damage, customer trust erosion
+- **Operational costs**: Emergency response, mitigation efforts
+
+[Wikipedia page about Google Outages](https://en.wikipedia.org/wiki/Google_services_outages)
+
+## **Conclusion**
+
+**Without MD5 authentication, BGP sessions are vulnerable to:**
+- ✓ Session hijacking
+- ✓ Route poisoning  
+- ✓ Traffic interception
+- ✓ Denial of service
+- ✓ Prefix hijacking
+
+**MD5 authentication is a fundamental, minimum-security requirement** that should be deployed on ALL eBGP sessions. While MD5 itself has cryptographic weaknesses, it's vastly better than no authentication at all and provides a critical first layer of defense in BGP security.
+
+The ideal approach is **defense-in-depth**: combine MD5/TCP-AO authentication with prefix filtering, AS_PATH validation, RPKI/ROV, and operational monitoring to create a robust BGP security posture.
 
 #### 5.4.2 - Which Bogon ranges did you filter in your lab, and why must they not appear in the global routing table?
 
-__TODO__
+##### Filtered Ranges:
+
+__Private/Internal Space__:
+
+- `10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16` - Corporate/Home networks
+- `100.64.0.0/10` - Carrier-Grade NAT (ISP internal use)
+
+__Special/Reserved__:
+
+- `0.0.0.0/8` - "This" network
+- `127.0.0.0/8` - Loopback (localhost)
+- `169.254.0.0/16` - Link-local auto-configuration
+
+__Documentation/Testing__:
+
+- `192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24` - Test networks
+- `233.252.0.0/24` - Multicast testing
+
+##### Reasons why must they not appear in the global routing table
+
+1. __Security Threats__:
+ - Spoofing attacks - Fake sources enable DDoS
+ - Route hijacking - Redirect internal traffic
+ - Resource exhaustion - Fill routing tables with junk
+
+2. Breaks Networks:
+ - VPNs fail when private routes leak
+ - NAT stops working
+ - Cloud services conflict
+
+3. Violates Standards:
+ - RFC 1918: Private addresses must stay local
+ - BCP 38: Required ingress filtering
+ - MANRS: Industry security requirement
+
+4. Internet Stability:
+ - Pollutes global BGP table (~900K routes)
+ - Causes routing confusion globally
+ - Wastes ISP resources
 
 #### 5.4.3 - Explain how RTBH was implemented in AS1273. Include a diagram showing how the trigger router propagates the blackhole route
 
 __TODO__
 
-#### 5.4.4 - Describe the role of uRPF in validating traffic source addresses and prevenXng spoofing
+#### 5.4.4 - Describe the role of uRPF in validating traffic source addresses and preventing spoofing
 
-__TODO__
+**uRPF (Unicast Reverse Path Forwarding) - Anti-Spoofing Defense**
+
+Core Function:
+
+- Validates that incoming packets arrive on the interface that would be used to send packets BACK to the source address.**
+
+**How uRPF Works:**
+
+Three Operating Modes:
+
+**1. Strict Mode (`ip verify unicast source reachable-via rx`)**
+
+```cisco
+interface GigabitEthernet0/1
+ ip verify unicast source reachable-via rx
+```
+
+**Logic:** "Packet must arrive on THE EXACT interface my routing table would use to reach the source."
+- **Check:** Does RIB/FIB have a route to source? Is the best path via this interface?
+- **Drop if:** Source isn't routable OR best return path ≠ incoming interface
+- **Best for:** Single-homed networks, edge interfaces
+
+**2. Loose Mode (`ip verify unicast source reachable-via any`)**
+
+```cisco
+interface GigabitEthernet0/1
+ ip verify unicast source reachable-via any
+```
+
+**Logic:** "Packet source must be routable SOMEWHERE in my table."
+- **Check:** Does any route exist to source? (Any interface)
+- **Drop if:** Source isn't routable at all
+- **Best for:** Multi-homed networks, core interfaces
+
+**3. VRF Mode (Per-VRF checking)**
+
+```cisco
+interface GigabitEthernet0/1
+ ip verify unicast vrf CUSTOMER-A source reachable-via rx
+```
+
+**Logic:** Same as strict/loose but within specific VRF routing table.
+
+**Key Benefits:**
+
+**1. Stops DDoS Reflection/Amplification**
+
+```text
+Common DDoS: Spoof victim's IP → DNS/NTP servers → Amplified reply floods victim
+With uRPF: Spoofed packets dropped at first hop
+```
+
+**2. Prevents IP Address Hijacking**
+
+- Can't impersonate other networks
+- Can't use bogon addresses
+- Can't spoof internal resources
+
+**3. Simple but Effective**
+
+- Single command implementation
+- Hardware-accelerated on most ASICs
+- Minimal performance impact
+
+**4. Compliance Ready**
+
+- Meets PCI-DSS, NIST, ISO 27001 requirements
+- Implements BCP 38/RFC 2827
+- MANRS Action 4 recommendation
+
+uRPF acts as a "return address checker" for network traffic, dropping any packets that arrive on the "wrong door" based on your routing table, making source address spoofing virtually impossible at the network edge.
 
 #### 5.4.5 - What impact would the attack from 64.96.0.115 have on AS1273 if RTBH was not deployed?
 
