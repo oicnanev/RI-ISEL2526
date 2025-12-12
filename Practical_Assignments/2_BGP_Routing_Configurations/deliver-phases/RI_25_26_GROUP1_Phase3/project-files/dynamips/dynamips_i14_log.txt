@@ -1,0 +1,204 @@
+Dec 12 16:16:06.046 HYPERVISOR: Release 0.2.23-amd64/Darwin (tag 2023010200)
+Dec 12 16:16:06.046 HYPERVISOR: Started on IP = 127.0.0.1, TCP port = 65158.
+Dec 12 16:16:06.050 HYPERVISOR: exec_cmd: hypervisor version 
+Dec 12 16:16:06.050 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips 
+Dec 12 16:16:06.050 GENERAL: working_dir=/Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips
+Dec 12 16:16:06.051 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/b791b2d4-4ce4-4e81-8246-ffd6c0a195e4 
+Dec 12 16:16:06.051 GENERAL: working_dir=/Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/b791b2d4-4ce4-4e81-8246-ffd6c0a195e4
+Dec 12 16:16:06.051 HYPERVISOR: exec_cmd: vm create R13 13 c7200 
+Dec 12 16:16:06.051 VM: VM R13 created.
+Dec 12 16:16:06.051 HYPERVISOR: exec_cmd: vm set_con_tcp_port R13 5026 
+Dec 12 16:16:06.051 HYPERVISOR: exec_cmd: c7200 get_mac_addr R13 
+Dec 12 16:16:06.051 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 16:16:06.052 HYPERVISOR: exec_cmd: vm slot_add_binding R13 0 0 C7200-IO-FE 
+Dec 12 16:16:06.052 HYPERVISOR: exec_cmd: vm set_disk0 R13 0 
+Dec 12 16:16:06.052 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 16:16:06.052 HYPERVISOR: exec_cmd: vm set_idle_pc R13 0x606df0c8 
+Dec 12 16:16:06.052 HYPERVISOR: exec_cmd: vm set_ios R13 /Users/oicnanev/GNS3/images/IOS/c7200-advipservicesk9-mz.124-24.T8.image 
+Dec 12 16:16:06.053 HYPERVISOR: exec_cmd: c7200 set_mac_addr R13 ca0d.3077.0000 
+Dec 12 16:16:06.053 HYPERVISOR: exec_cmd: vm set_nvram R13 512 
+Dec 12 16:16:06.053 HYPERVISOR: exec_cmd: vm set_ram R13 512 
+Dec 12 16:16:06.053 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 16:16:06.053 HYPERVISOR: exec_cmd: vm slot_add_binding R13 1 0 PA-GE 
+Dec 12 16:16:06.053 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 16:16:06.053 HYPERVISOR: exec_cmd: vm slot_add_binding R13 2 0 PA-GE 
+Dec 12 16:16:06.054 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 16:16:06.054 HYPERVISOR: exec_cmd: vm slot_add_binding R13 3 0 PA-GE 
+Dec 12 16:16:06.054 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 16:16:06.054 HYPERVISOR: exec_cmd: vm slot_add_binding R13 4 0 PA-GE 
+Dec 12 16:16:06.054 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 16:16:06.054 HYPERVISOR: exec_cmd: vm slot_add_binding R13 5 0 PA-GE 
+Dec 12 16:16:10.079 HYPERVISOR: exec_cmd: nio create_udp udp-e59d7466-4e87-47ad-b61a-1a44c34b50e3 10080 127.0.0.1 10081 
+Dec 12 16:16:10.315 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R13 0 0 udp-e59d7466-4e87-47ad-b61a-1a44c34b50e3 
+Dec 12 16:16:10.316 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 16:16:11.256 HYPERVISOR: exec_cmd: nio create_udp udp-797ee113-cce1-454c-852c-ad75798d01e7 10140 127.0.0.1 10141 
+Dec 12 16:16:11.257 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R13 1 0 udp-797ee113-cce1-454c-852c-ad75798d01e7 
+Dec 12 16:16:11.257 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 16:20:18.811 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 16:20:18.811 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 16:20:18.812 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 16:20:18.812 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 16:20:18.812 HYPERVISOR: exec_cmd: vm start R13 
+Dec 12 16:20:49.027 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 16:32:21.424 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 16:32:21.424 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 12 16:32:21.519 VM: VM R13 shutdown.
+Dec 12 16:32:21.519 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 16:32:56.995 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 16:32:56.995 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 16:32:56.996 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 16:32:56.996 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 16:32:56.996 HYPERVISOR: exec_cmd: vm start R13 
+Dec 12 16:35:19.839 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 16:35:19.839 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 12 16:35:19.929 VM: VM R13 shutdown.
+Dec 12 16:35:19.929 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 16:37:40.275 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 16:37:40.275 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 16:37:40.276 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 16:37:40.276 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 16:37:40.276 HYPERVISOR: exec_cmd: vm start R13 
+Dec 12 16:42:55.634 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 16:42:55.634 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 12 16:42:55.724 VM: VM R13 shutdown.
+Dec 12 16:42:55.725 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 16:43:12.621 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 16:43:12.621 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 16:43:12.621 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 16:43:12.621 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 16:43:12.621 HYPERVISOR: exec_cmd: vm start R13 
+Dec 12 18:35:42.873 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 18:35:42.873 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 12 18:35:42.975 VM: VM R13 shutdown.
+Dec 12 18:35:42.975 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 18:38:13.936 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 18:38:13.936 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 18:38:13.937 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 18:38:13.937 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 18:38:13.937 HYPERVISOR: exec_cmd: vm start R13 
+Dec 12 19:31:22.035 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 19:31:22.036 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 12 19:31:22.117 VM: VM R13 shutdown.
+Dec 12 19:31:22.117 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 19:31:40.302 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 19:31:40.302 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 19:31:40.303 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 19:31:40.303 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 19:31:40.303 HYPERVISOR: exec_cmd: vm start R13 
+Dec 12 19:36:14.302 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 19:36:14.302 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 12 19:36:14.391 VM: VM R13 shutdown.
+Dec 12 19:36:14.392 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 19:36:27.638 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 19:36:27.638 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 19:36:27.639 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 19:36:27.639 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 19:36:27.639 HYPERVISOR: exec_cmd: vm start R13 
+Dec 12 19:40:29.974 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 19:40:29.974 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 12 19:40:30.080 VM: VM R13 shutdown.
+Dec 12 19:40:30.080 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 19:40:50.212 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 19:40:50.212 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 19:40:50.212 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 19:40:50.212 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 19:40:50.213 HYPERVISOR: exec_cmd: vm start R13 
+Dec 12 19:46:31.760 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 19:46:31.760 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 12 19:46:31.847 VM: VM R13 shutdown.
+Dec 12 19:46:31.848 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 19:46:44.645 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 19:46:44.646 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 19:46:44.646 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 19:46:44.646 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 19:46:44.646 HYPERVISOR: exec_cmd: vm start R13 
+Dec 12 19:53:23.843 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 19:53:23.843 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 12 19:53:23.926 VM: VM R13 shutdown.
+Dec 12 19:53:23.927 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 19:53:52.579 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 19:53:52.580 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 19:53:52.580 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 19:53:52.580 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 19:53:52.580 HYPERVISOR: exec_cmd: vm start R13 
+Dec 12 20:08:54.977 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 20:08:54.977 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 12 20:08:55.069 VM: VM R13 shutdown.
+Dec 12 20:08:55.070 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 20:09:08.958 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 20:09:08.958 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 20:09:08.958 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 20:09:08.958 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 20:09:08.958 HYPERVISOR: exec_cmd: vm start R13 
+Dec 12 20:20:56.770 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 20:20:56.770 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 12 20:20:56.872 VM: VM R13 shutdown.
+Dec 12 20:20:56.873 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 20:23:08.515 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 20:23:08.515 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 20:23:08.515 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 20:23:08.515 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 20:23:08.516 HYPERVISOR: exec_cmd: vm start R13 
+Dec 12 20:27:04.014 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 20:27:04.014 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 12 20:27:04.098 VM: VM R13 shutdown.
+Dec 12 20:27:04.098 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 20:27:18.817 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 20:27:18.817 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 20:27:18.818 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 20:27:18.818 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 20:27:18.818 HYPERVISOR: exec_cmd: vm start R13 
+Dec 12 20:30:05.763 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 20:30:05.763 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 12 20:30:05.866 VM: VM R13 shutdown.
+Dec 12 20:30:05.866 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 20:30:18.570 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 20:30:18.570 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 20:30:18.571 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 20:30:18.571 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 20:30:18.571 HYPERVISOR: exec_cmd: vm start R13 
+Dec 12 20:46:36.007 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 20:46:36.007 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 12 20:46:36.096 VM: VM R13 shutdown.
+Dec 12 20:46:36.096 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 20:46:57.824 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 20:46:57.824 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 20:46:57.824 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 20:46:57.825 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 20:46:57.825 HYPERVISOR: exec_cmd: vm start R13 
+Dec 12 21:02:23.806 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 21:02:23.806 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 12 21:02:23.911 VM: VM R13 shutdown.
+Dec 12 21:02:23.911 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 21:02:36.863 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 21:02:36.863 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 21:02:36.863 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 21:02:36.864 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 21:02:36.864 HYPERVISOR: exec_cmd: vm start R13 
+Dec 12 21:32:36.983 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 21:32:36.983 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 12 21:32:37.066 VM: VM R13 shutdown.
+Dec 12 21:32:37.066 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 21:32:50.853 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 21:32:50.854 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 21:32:50.854 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 21:32:50.854 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 21:32:50.854 HYPERVISOR: exec_cmd: vm start R13 
+Dec 12 21:57:55.510 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 21:57:55.510 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 12 21:57:55.606 VM: VM R13 shutdown.
+Dec 12 21:57:55.607 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 21:58:09.739 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 21:58:09.739 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 21:58:09.739 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 21:58:09.740 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 21:58:09.740 HYPERVISOR: exec_cmd: vm start R13 
+Dec 12 22:58:53.388 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 22:58:53.388 HYPERVISOR: exec_cmd: vm stop R13 
+Dec 12 22:58:53.486 VM: VM R13 shutdown.
+Dec 12 22:58:53.487 HYPERVISOR: exec_cmd: vm extract_config R13 
+Dec 12 22:58:58.033 HYPERVISOR: exec_cmd: vm set_ghost_status R13 2 
+Dec 12 22:58:58.033 HYPERVISOR: exec_cmd: vm set_ghost_file R13 /Users/oicnanev/Projects/RI-ISEL2526/Practical_Assignments/2_BGP_Routing_Configurations/deliver-phases/RI_25_26_GROUP1_Phase3/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 12 22:58:58.033 HYPERVISOR: exec_cmd: vm get_status R13 
+Dec 12 22:58:58.034 HYPERVISOR: exec_cmd: vm set_config R13 configs/i13_startup-config.cfg 
+Dec 12 22:58:58.034 HYPERVISOR: exec_cmd: vm start R13 

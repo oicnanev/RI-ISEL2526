@@ -55,7 +55,20 @@
 
 ## Introduction
 
-__TODO__
+# Introduction
+
+This project provides a comprehensive, hands-on exploration of **Border Gateway Protocol (BGP)** – the foundational protocol for routing between Autonomous Systems (ASes) on the global Internet.
+
+In this lab, we built a realistic, multi-AS topology that simulates an Internet ecosystem, including Tier-1 and Tier-2 Internet Service Providers (ISPs), content providers, enterprise networks, and an Internet Exchange Point (IXP). The project was structured into five progressive phases, each building upon the previous to develop a complete, policy-driven, and secure inter-domain routing environment.
+
+The core objectives of this lab were to:
+
+1.  **Establish a Stable Interior Foundation:** Configure and validate **OSPF** as the Interior Gateway Protocol (IGP) across all ASes. This included implementing a hierarchical multi-area OSPF design within AS 5511, featuring a backbone area (Area 0) and a stub area (Area 1) to optimize internal routing efficiency and scalability.
+2.  **Master BGP Fundamentals:** Establish internal (iBGP) and external (eBGP) BGP sessions, understand next-hop resolution, and implement scalable designs using route reflectors to avoid full-mesh iBGP requirements.
+3.  **Implement Routing Policies:** Use BGP attributes and filtering mechanisms to control route advertisement, influence path selection, aggregate prefixes, and enforce operational and security best practices.
+4.  **Enhance Network Security:** Deploy critical security measures including BGP session authentication (MD5), bogon prefix filtering, and advanced DDoS mitigation techniques like Remote Triggered Black Hole (RTBH) filtering.
+
+This report documents our group's systematic approach to each phase. We present detailed configurations, validation tests, and thorough analyses of the practical questions. Through this project, we have gained invaluable, practical experience—from designing a robust OSPF backbone to implementing complex BGP policies—equipping us with the skills necessary to design, operate, and secure the routing infrastructure of the modern Internet.
 
 <div style="page-break-after: always"></div>
 
@@ -850,7 +863,7 @@ pings do AS que tem um AS privado
 | 17390 | IBM                                    | US        |
 | 4637  | Telstra Global (APNIC)                 | Hong Kong |
 | 1273  | Vodafone                               | UK        |
-| 1     | Level 3 Parent, LLC                    | US        |
+| 1     | Level 3 Parent, LLC (Historical ARPANET) | US        |
 | 20717 | DE-CIX Management GmbH                 | Germany   |
 | 5511  | FTRSI (Orange - Worldwide IP Backbone) | France    |
 | 23344 | Disney Worldwide Services, Inc.        | US        |
@@ -2474,8 +2487,6 @@ Using a loopback interface for iBGP sessions offers:
 
 #### 2.4.3 - Create and present a detailed table with all the connectivity tests performed using the TCLSH procedure, as previously outlined
 
-__TODO__
-
 | AS                 | Source Router(s) | Destination IP | Result |
 | ------------------ | ---------------- | -------------- | ------ |
 | AS 1273 - Vodafone | R1, R2, R3, R4, R5, R6 | 48.73.239.11 (R1 Lo1)| Success |
@@ -2632,7 +2643,7 @@ __TODO__
 |  |  | 46.87.162.1 (Server5) | Success |
 |  |  | 158.23.228.1 (Server6) | Success |
 |  |  |  |   |
-| AS 20717 - DE-CIX | R16 | 48.73.239.11 (R1 Lo1)| Success |
+| AS 20717 - DE-CIX | R16 (without `source Lo1`)| 48.73.239.11 (R1 Lo1)| Success |
 |  |  | 48.73.239.22 (R2 Lo1) | Success |
 |  |  | 48.73.239.33 (R3 Lo1)| Success |
 |  |  | 48.73.239.44 (R4 Lo1)	 | Success | 
@@ -2654,7 +2665,7 @@ __TODO__
 |  |  | 46.87.162.1 (Server5) | Success |
 |  |  | 158.23.228.1 (Server6) | Success |
 |  |  |  |   |
-| AS 1 - Level 3 Parent, LCC | BadGuy | 48.73.239.11 (R1 Lo1)| Success |
+| AS 1 - Level 3 Parent, LCC | BadGuy (without `source Lo1`) | 48.73.239.11 (R1 Lo1)| Success |
 |  |  | 48.73.239.22 (R2 Lo1) | Success |
 |  |  | 48.73.239.33 (R3 Lo1)| Success |
 |  |  | 48.73.239.44 (R4 Lo1)	 | Success | 
@@ -3431,9 +3442,9 @@ neighbor [neighbor ip address] prefix-list BOGON-FILTER in
 In the router __BadGuy__, to simulate the advertising of `Bogons`, we created the `bogon` static routes pointing to `Null0` and in the BGP section we advertise them with the `redistribute static` command. This command allow the injection of all the static routes of the routing table in the BGP routing process
 
 ```txt
-! ============================================================================
+! ===========================================================================
 !                                BOGON PREFIXES
-! ============================================================================
+! ===========================================================================
 !
 ip route 0.0.0.0 255.0.0.0 Null0           ! Software (current local network)
 ip route 10.0.0.0 255.0.0.0 Null0          ! Private
@@ -3468,7 +3479,15 @@ To simulate an attack from the Router __R14__ to the __AS 1273__ - Vodafone, we 
 
 Inside the __AS 1273__ - Vodafone, we configured the Router __R4__ as a `trigger router` to filter the attacking prefix
 
+
 ```txt
+interface GigabitEthernet1/0
+ ! Internal OSPF link to R3 (10.3.4.0/30 network)
+ ip address 10.3.4.2 255.255.255.252
+ !uRPF (Unicast Reverse Path Forwarding)
+ ip verify unicast reverse-path
+ no shutdown
+!
 ! ===========================================================================
 ! Blackhole Routing Configuration (BGP Traffic Scrubbing / DDoS Mitigation)
 ! ===========================================================================
@@ -3703,54 +3722,149 @@ __Documentation/Testing__:
 
 #### 5.4.3 - Explain how RTBH was implemented in AS1273. Include a diagram showing how the trigger router propagates the blackhole route
 
-__TODO__
+RTBH was implemented in **AS1273 (Vodafone)** using a **trigger-based approach** where **Router R4** acts as the **trigger router** that injects and propagates the blackhole route throughout the AS. 
+
+**1. Attack Identification & Static Route Creation**
+
+```cisco
+! On R4 (Trigger Router)
+ip route 64.96.0.115 255.255.255.255 Null0 tag 66
+```
+- **Purpose**: Creates a discard route for the attacking IP (`64.96.0.115/32`)
+- **Action**: Traffic matching this route is silently dropped at R4
+- **Tag 66**: Used for route identification in redistribution policies
+
+### **2. Route Redistribution into BGP**
+
+```cisco
+router bgp 1273
+ redistribute static
+```
+- **Purpose**: Injects the static blackhole route into BGP
+- **Result**: The `/32` host route becomes a BGP prefix that can be advertised
+
+### **3. BGP Attribute Manipulation via Route-Map**
+
+```cisco
+! Prefix list to match the attack target
+ip prefix-list BH seq 5 permit 64.96.0.115/32
+
+! Route-map to modify BGP attributes
+route-map black-hole-trigger permit 10
+ match ip address prefix-list BH
+ set local-preference 200        ! Make it preferred internally
+ set origin igp                  ! Mark as internally originated
+ set community no-export         ! Prevent export outside AS1273
+ set ip next-hop 192.0.2.1      ! Redirect to scrubbing center
+
+! Apply route-map to iBGP peers
+neighbor iBGP route-map black-hole-trigger out
+```
+**Key Attribute Settings:**
+
+- **LOCAL_PREF 200**: Ensures all iBGP peers prefer this route over any external paths
+- **NO-EXPORT Community**: Prevents the route from being advertised to eBGP peers
+- **Next-Hop 192.0.2.1**: Points to a (simulated) scrubbing/drop center
+
+### **4. Scrubbing Center Route & uRPF**
+
+```cisco
+! Static route for the scrubbing center
+ip route 192.0.2.1 255.255.255.255 Null0
+
+! uRPF on ingress interfaces
+interface GigabitEthernet1/0
+ ip verify unicast reverse-path
+```
+
+- **192.0.2.1**: Reserved TEST-NET address used as the scrubbing destination
+- **uRPF**: Validates source addresses and prevents spoofing
+
+### **5. Propagation Throughout AS1273**
+
+```mermaid
+graph TD
+    A[Attack Source<br/>64.96.0.115] --> B[R14 - AS701]
+    B --> C[R5 - AS1273 Edge]
+    C --> D[AS1273 Internal Network]
+    
+    subgraph "AS1273 RTBH Propagation"
+        E[R4 - Trigger Router] --> F[Static: 64.96.0.115/32 → Null0]
+        F --> G[Redistribute into BGP]
+        G --> H[Apply Route-Map]
+        H --> I[Set: LOCAL_PREF=200,<br/>COMMUNITY=NO_EXPORT,<br/>NEXT_HOP=192.0.2.1]
+        I --> J[Advertise to iBGP Peers]
+    end
+    
+    J --> K[R1, R2, R3, R5, R6]
+    K --> L[Install Route with<br/>Next-Hop 192.0.2.1]
+    
+    subgraph "Traffic Flow After RTBH"
+        D --> M[Traffic to 64.96.0.115]
+        M --> N[All AS1273 Routers]
+        N --> O[Next-Hop: 192.0.2.1]
+        O --> P[Static Route: 192.0.2.1/32 → Null0]
+        P --> Q[🚫 Traffic Dropped]
+    end
+    
+    style E fill:#e1f5e1
+    style F fill:#fff3e0
+    style H fill:#fff3e0
+    style P fill:#ffebee
+```
+
+**How the Blackhole Route Propagates**
+
+Step 1: Trigger Injection
+
+- **R4** creates the blackhole static route with tag 66
+- Route is redistributed into BGP with `redistribute static`
+
+Step 2: Attribute Transformation
+
+- The route-map `black-hole-trigger` matches the prefix (`64.96.0.115/32`)
+- BGP attributes are modified:
+  - **LOCAL_PREF**: Increased to 200 (default is 100)
+  - **COMMUNITY**: `NO_EXPORT` added
+  - **NEXT_HOP**: Changed to `192.0.2.1`
+  - **ORIGIN**: Set to `IGP`
+
+Step 3: Internal Propagation
+
+- Modified route is advertised to all iBGP peers (R1, R2, R3, R5, R6)
+- Due to **LOCAL_PREF=200**, all routers prefer this internal route over any external paths
+- **NO_EXPORT** community prevents advertisement to eBGP peers (AS701, AS17390, etc.)
+
+Step 4: Traffic Redirection
+
+1. **Incoming attack traffic** enters AS1273 via R5 or R6
+2. All routers have the best path: `64.96.0.115/32 → Next-Hop 192.0.2.1`
+3. Routers forward traffic toward `192.0.2.1`
+4. **Static route on all routers**: `192.0.2.1/32 → Null0`
+5. **Result**: Traffic is silently dropped at the ingress point to the scrubbing center
+
+Step 5: uRPF Validation
+
+- **uRPF** on edge interfaces ensures spoofed return traffic is dropped
+- Prevents the attacker from using spoofed source addresses
+
+**Key Design Principles**
+
+1. **Centralized Trigger**: Single point (R4) controls blackhole activation
+2. **Selective Propagation**: Only affects the specific attack target (`/32`)
+3. **Containment**: `NO_EXPORT` keeps the blackhole within AS1273
+4. **Scalability**: Can trigger multiple blackholes simultaneously
+5. **Reversibility**: Simply remove the static route on R4 to restore normal routing
+
+This implementation provides a **rapid, scalable DDoS mitigation** mechanism that can drop attack traffic within seconds of activation, while maintaining normal service for all other traffic.
 
 #### 5.4.4 - Describe the role of uRPF in validating traffic source addresses and preventing spoofing
 
-**uRPF (Unicast Reverse Path Forwarding) - Anti-Spoofing Defense**
-
 Core Function:
 
-- Validates that incoming packets arrive on the interface that would be used to send packets BACK to the source address.**
+- Validates that incoming packets arrive on the interface that would be used to send packets BACK to the source address.
 
-**How uRPF Works:**
-
-Three Operating Modes:
-
-**1. Strict Mode (`ip verify unicast source reachable-via rx`)**
-
-```cisco
-interface GigabitEthernet0/1
- ip verify unicast source reachable-via rx
-```
-
-**Logic:** "Packet must arrive on THE EXACT interface my routing table would use to reach the source."
-- **Check:** Does RIB/FIB have a route to source? Is the best path via this interface?
-- **Drop if:** Source isn't routable OR best return path ≠ incoming interface
-- **Best for:** Single-homed networks, edge interfaces
-
-**2. Loose Mode (`ip verify unicast source reachable-via any`)**
-
-```cisco
-interface GigabitEthernet0/1
- ip verify unicast source reachable-via any
-```
-
-**Logic:** "Packet source must be routable SOMEWHERE in my table."
-- **Check:** Does any route exist to source? (Any interface)
-- **Drop if:** Source isn't routable at all
-- **Best for:** Multi-homed networks, core interfaces
-
-**3. VRF Mode (Per-VRF checking)**
-
-```cisco
-interface GigabitEthernet0/1
- ip verify unicast vrf CUSTOMER-A source reachable-via rx
-```
-
-**Logic:** Same as strict/loose but within specific VRF routing table.
-
-**Key Benefits:**
+**Benefits:**
 
 **1. Stops DDoS Reflection/Amplification**
 
@@ -3777,17 +3891,39 @@ With uRPF: Spoofed packets dropped at first hop
 - Implements BCP 38/RFC 2827
 - MANRS Action 4 recommendation
 
-uRPF acts as a "return address checker" for network traffic, dropping any packets that arrive on the "wrong door" based on your routing table, making source address spoofing virtually impossible at the network edge.
+uRPF acts as a "return address checker" for network traffic, dropping any packets that arrive on the "wrong door" based on our routing table, making source address spoofing virtually impossible at the network edge and in our case to enable the RTBH.
 
 #### 5.4.5 - What impact would the attack from 64.96.0.115 have on AS1273 if RTBH was not deployed?
 
-__TODO__
+**Immediate Technical Impact:**
+
+- **Link Saturation**: All Vodafone uplinks (R5→AS701, R6→AS4637, R6→AS5511) become 100% saturated
+- **Router Resource Exhaustion**: Border routers (R5, R6) hit 100% CPU, memory exhaustion
+- **Service Blackout**: All Vodafone customers lose Internet connectivity
+- **BGP/OSPF Instability**: Routing protocols crash due to resource exhaustion
+- **Business Impact:**: Revenue loss, SLA violations, costumer churn and reputation damage
+- **Long response Time Without RTBH**
+- **Cascade Effects:**
+    - **Backscatter**: Innocent victims receive attack responses
+    - **Peering Impact**: Neighbors (AS5511, AS4637) experience congestion
+    - **Blacklisting**: AS1273 potentially gets blacklisted by DDoS protection services
 
 <div style="page-break-after: always"></div>
 
 ## Conclusion
 
-__TODO__
+The completion of **Lab Project No. 2 - BGP Routing Configurations** has provided us with an end-to-end, practical understanding of inter-domain routing in the Internet. This hands-on journey from basic IGP configuration to advanced BGP policy implementation and security hardening has been instrumental in solidifying the theoretical concepts covered in the Internet Networks course.
+
+Throughout the five phases, we successfully:
+
+1.  **Built a Robust Foundation:** Established a stable OSPF backbone within each AS, including a complex multi-area design with a stub area in AS 5511, ensuring efficient internal routing.
+2.  **Engineered Inter-AS Connectivity:** Configured both iBGP (using route reflectors for scalability) and eBGP sessions to seamlessly connect all eight Autonomous Systems, enabling global reachability as validated by comprehensive TCLSH ping tests.
+3.  **Implemented Professional-Grade Policies:** Applied real-world routing policies, including prefix aggregation, filtering of private AS numbers and long prefixes (> /24), and influencing path selection using attributes like weight and local preference to meet specific traffic engineering goals.
+4.  **Fortified the Network:** Enhanced the security posture of our topology by implementing MD5 authentication for BGP peers, deploying strict bogon prefix filters at network edges, and configuring a sophisticated RTBH system to mitigate potential DDoS attacks.
+
+The key takeaways from this project extend beyond specific commands. We have learned the critical importance of **hierarchical design** (OSPF areas, route reflection), the **policy-centric nature of BGP**, and the **non-negotiable requirement for security** in inter-domain routing. 
+
+This lab has effectively showed us the operational reality of large-scale networks. The skills developed—encompassing design, configuration, troubleshooting, and policy implementation—are directly applicable to roles in network engineering, ISP operations, and cloud infrastructure. We conclude this project with a significantly deepened appreciation for the complexity and elegance of the protocols that keep the global Internet connected and secure.
 
 <div style="page-break-after: always"></div>
 
