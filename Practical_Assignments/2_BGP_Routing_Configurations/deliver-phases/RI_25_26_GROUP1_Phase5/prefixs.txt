@@ -1,0 +1,85 @@
+	
+210.176.128.0/24	Telstra Global Internet Services Network /24 Block
+210.176.129.0/24	TELSTRA_BLUECOAT
+################
+210.176.128.0/23
+
+
+210.176.130.0/24	Telstra Global Internet Service
+210.176.130.0/23	Telstra Global Internet Services Network Blocks
+################
+	210.176.130.0/23
+
+
+
+	210.176.132.0/24	Telstra Global Internet Services Network Blocks
+	210.176.135.0/24	Telstra Global Internet Services Network /24 Block
+
+210.176.136.0/24	Telstra Global Internet Services Network /24 Block
+210.176.137.0/24	Telstra Global Internet Services Network /24 Block
+################
+210.176.136.0/23
+
+
+210.176.138.0/24	Telstra
+210.176.139.0/24	Telstra
+################
+210.176.138.0/23
+
+	210.176.136.0/22
+
+210.176.140.0/24	Telstra Global Internet Services Network Blocks
+210.176.141.0/24	Telstra Global Internet Services Network Blocks
+################
+	210.176.140.0/23
+
+	210.176.142.0/24	Telstra
+
+
+
+####################################################################################################
+
+47.73.239.0/24	Vodafone Group Services GmbH
+47.73.240.0/22	Vodafone Group Services GmbH
+62.25.64.0/18	Vodafone Limited
+
+
+
+
+
+
+
+
+
+
+
+The BGP TTL Security Hack (BGP TSH) (RFC 5082) was originally designed to protect the BGP infrastructure from CPU 
+utilization-based attacks. It is based on the fact that the vast majority of ISP eBGP peerings are established between adjacent routers. 
+Since TTL spoofing is considered nearly impossible, a mechanism based on an expected TTL value can provide a simple and reasonably robust defense from infrastructure attacks based on forged BGP packets
+
+###################################################################
+configure router static-route 192.0.2.1/32 black-hole
+
+A:7750# configure router policy-options
+            prefix-list "attack-prefix"
+                prefix 10.11.12.13/32 exact
+            exit
+	      community "NO-EXPORT" members "no-export" 
+	      community "RTBH" members "37693:TBD" 
+            policy-statement "rr-v4-out"
+                …						## see chapter 6.8.6
+                entry 80
+                    from
+                        prefix-list "attack-prefix"
+                    exit
+                    action accept
+                        community add "NO-EXPORT" "RTBH"
+                        next-hop 192.0.2.1
+                    exit
+                exit
+            exit
+
+
+uRPF (unicast reverse path forwarding) needs to be applied on all edge peering points 
+so when the offending packets enters the interface, uRPF lookup will resolve to static black-hole and discard.
+uRPF lookup is verifying the reachability of the source address in packets entering the interface. uRPF can work in strict mode or loose mode

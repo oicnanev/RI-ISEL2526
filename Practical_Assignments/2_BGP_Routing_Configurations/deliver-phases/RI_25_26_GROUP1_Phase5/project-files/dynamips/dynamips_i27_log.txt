@@ -1,0 +1,36 @@
+Dec 13 09:13:09.250 HYPERVISOR: Release 0.2.23-amd64/Darwin (tag 2023010200)
+Dec 13 09:13:09.250 HYPERVISOR: Started on IP = 127.0.0.1, TCP port = 51883.
+Dec 13 09:13:09.255 HYPERVISOR: exec_cmd: hypervisor version 
+Dec 13 09:13:09.255 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/GNS3/projects/RI_25_26_GROUP1_Phase5/project-files/dynamips 
+Dec 13 09:13:09.255 GENERAL: working_dir=/Users/oicnanev/GNS3/projects/RI_25_26_GROUP1_Phase5/project-files/dynamips
+Dec 13 09:13:09.255 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/GNS3/projects/RI_25_26_GROUP1_Phase5/project-files/dynamips/15b2523b-9fe6-41ce-ba9e-81d52b4d077b 
+Dec 13 09:13:09.255 GENERAL: working_dir=/Users/oicnanev/GNS3/projects/RI_25_26_GROUP1_Phase5/project-files/dynamips/15b2523b-9fe6-41ce-ba9e-81d52b4d077b
+Dec 13 09:13:09.255 HYPERVISOR: exec_cmd: vm create R9 9 c7200 
+Dec 13 09:13:09.256 VM: VM R9 created.
+Dec 13 09:13:09.256 HYPERVISOR: exec_cmd: vm set_con_tcp_port R9 5032 
+Dec 13 09:13:09.256 HYPERVISOR: exec_cmd: c7200 get_mac_addr R9 
+Dec 13 09:13:09.256 HYPERVISOR: exec_cmd: vm get_status R9 
+Dec 13 09:13:09.256 HYPERVISOR: exec_cmd: vm slot_add_binding R9 0 0 C7200-IO-FE 
+Dec 13 09:13:09.257 HYPERVISOR: exec_cmd: vm set_disk0 R9 0 
+Dec 13 09:13:09.257 HYPERVISOR: exec_cmd: vm get_status R9 
+Dec 13 09:13:09.257 HYPERVISOR: exec_cmd: vm set_idle_pc R9 0x606df0c8 
+Dec 13 09:13:09.257 HYPERVISOR: exec_cmd: vm set_ios R9 /Users/oicnanev/GNS3/images/IOS/c7200-advipservicesk9-mz.124-24.T8.image 
+Dec 13 09:13:09.257 HYPERVISOR: exec_cmd: c7200 set_mac_addr R9 ca09.306d.0000 
+Dec 13 09:13:09.258 HYPERVISOR: exec_cmd: vm set_nvram R9 512 
+Dec 13 09:13:09.258 HYPERVISOR: exec_cmd: vm set_ram R9 512 
+Dec 13 09:13:09.258 HYPERVISOR: exec_cmd: vm get_status R9 
+Dec 13 09:13:09.258 HYPERVISOR: exec_cmd: vm slot_add_binding R9 1 0 PA-FE-TX 
+Dec 13 09:13:09.258 HYPERVISOR: exec_cmd: vm get_status R9 
+Dec 13 09:13:09.258 HYPERVISOR: exec_cmd: vm slot_add_binding R9 2 0 PA-FE-TX 
+Dec 13 09:13:09.259 HYPERVISOR: exec_cmd: vm set_con_tcp_port R9 5032 
+Dec 13 09:13:11.958 HYPERVISOR: exec_cmd: nio create_udp udp-665cf46c-0aa3-44a5-9711-10ec0f6736ac 10232 127.0.0.1 10233 
+Dec 13 09:13:12.187 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R9 0 0 udp-665cf46c-0aa3-44a5-9711-10ec0f6736ac 
+Dec 13 09:13:12.188 HYPERVISOR: exec_cmd: vm get_status R9 
+Dec 13 09:13:12.244 HYPERVISOR: exec_cmd: nio create_udp udp-84c7f1c1-70a1-48ae-a473-34d0e2494d90 10238 127.0.0.1 10239 
+Dec 13 09:13:12.245 HYPERVISOR: exec_cmd: vm slot_add_nio_binding R9 1 0 udp-84c7f1c1-70a1-48ae-a473-34d0e2494d90 
+Dec 13 09:13:12.245 HYPERVISOR: exec_cmd: vm get_status R9 
+Dec 13 09:13:20.190 HYPERVISOR: exec_cmd: vm set_ghost_status R9 2 
+Dec 13 09:13:20.191 HYPERVISOR: exec_cmd: vm set_ghost_file R9 /Users/oicnanev/GNS3/projects/RI_25_26_GROUP1_Phase5/project-files/dynamips/c7200-advipservicesk9-mz.124-24.T8.image-512.ghost 
+Dec 13 09:13:20.191 HYPERVISOR: exec_cmd: vm get_status R9 
+Dec 13 09:13:20.191 HYPERVISOR: exec_cmd: vm set_config R9 configs/i9_startup-config.cfg 
+Dec 13 09:13:20.191 HYPERVISOR: exec_cmd: vm start R9 
