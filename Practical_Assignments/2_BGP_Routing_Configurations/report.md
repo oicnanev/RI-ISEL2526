@@ -597,7 +597,7 @@ Portugal's Internet infrastructure consists of numerous independent networks. Th
 
 ---
 
-### Justification and Analysis
+__Justification and Analysis__
 
 The classification is based on the core differentiator between tiers: **transit and peering relationships**.
 
@@ -3297,6 +3297,8 @@ interface GigabitEthernet1/0
 
 - **192.0.2.1**: Reserved TEST-NET address used as the scrubbing destination
 - **uRPF**: Validates source addresses and prevents spoofing
+
+<div style="page-break-after: always"></div>
 
 **5. Propagation Throughout AS1273**
 
