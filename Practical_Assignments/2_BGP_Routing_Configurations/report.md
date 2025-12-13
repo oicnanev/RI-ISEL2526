@@ -47,10 +47,6 @@
 	+ 5.3 - Test and Validation
 	+ 5.4 - Practical Questions
 - Conclusion
-- Appendices
-	+ IP Addressing for Lab Topology
-	+ TCLSH (Tool Control Language) Shell for Testing
-	+ Router and Server Configuration Files
 	
 <div style="page-break-after: always"></div>
 
@@ -116,7 +112,7 @@ ip 130.41.46.1 130.41.46.2 30
 set pcname Server1
 ```
 
-#### OSPF Configuration
+#### OSPF Configuration Example
 
 __AS 1273__ - Vodafone and __AS 17390__ - IBM
 
@@ -205,7 +201,7 @@ Sending 5, 100-byte ICMP Echos to 10.6.6.6, timeout is 2 seconds:
 Success rate is 100 percent (5/5), round-trip min/avg/max = 24/36/52 ms
 ```
 
-OSPF configuration analysis
+OSPF configuration analysis example Router 1
 
 ```txt
 ! ROUTER 1 --------------------------------------------------------------
@@ -261,265 +257,6 @@ Gi2/0        1     0               10.1.3.1/30        1     DR    1/1
 Gi1/0        1     0               10.1.2.1/30        1     BDR   1/1
 ```
 
-```txt
-! ROUTER 2 --------------------------------------------------------------
-R2#sh ip ospf database
-
-            OSPF Router with ID (48.73.239.22) (Process ID 1)
-
-		Router Link States (Area 0)
-
-Link ID         ADV Router      Age         Seq#       Checksum Link count
-48.73.239.11    48.73.239.11    61          0x8000000B 0x004294 3
-48.73.239.22    48.73.239.22    521         0x80000008 0x004971 3
-48.73.239.33    48.73.239.33    21          0x8000000A 0x008DD7 4
-48.73.239.44    48.73.239.44    18          0x8000000A 0x003111 4
-48.73.239.55    48.73.239.55    12          0x80000009 0x006C2B 2
-48.73.239.66    48.73.239.66    1573        0x80000005 0x003945 2
-
-		Net Link States (Area 0)
-
-Link ID         ADV Router      Age         Seq#       Checksum
-10.1.2.2        48.73.239.22    521         0x80000006 0x00EDC7
-10.1.3.1        48.73.239.11    62          0x80000006 0x00F5BF
-10.2.4.2        48.73.239.44    1791        0x80000004 0x00C2BA
-10.3.4.2        48.73.239.44    18          0x80000008 0x004924
-10.3.5.2        48.73.239.55    12          0x80000008 0x006AEB
-10.4.6.2        48.73.239.66    1573        0x80000004 0x002215
-
-R2#sh ip route ospf
-     10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       10.4.6.0/30 [110/2] via 10.2.4.2, 02:06:08, GigabitEthernet2/0
-O       10.1.3.0/30 [110/2] via 10.1.2.1, 01:43:58, GigabitEthernet1/0
-O       10.3.3.3/32 [110/3] via 10.2.4.2, 01:40:50, GigabitEthernet2/0
-                    [110/3] via 10.1.2.1, 01:40:50, GigabitEthernet1/0
-O       10.1.1.1/32 [110/2] via 10.1.2.1, 02:06:18, GigabitEthernet1/0
-O       10.6.6.6/32 [110/3] via 10.2.4.2, 02:06:08, GigabitEthernet2/0
-O       10.3.5.0/30 [110/3] via 10.2.4.2, 01:40:50, GigabitEthernet2/0
-                    [110/3] via 10.1.2.1, 01:40:50, GigabitEthernet1/0
-O       10.3.4.0/30 [110/2] via 10.2.4.2, 01:40:50, GigabitEthernet2/0
-O       10.4.4.4/32 [110/2] via 10.2.4.2, 02:06:08, GigabitEthernet2/0
-O       10.5.5.5/32 [110/4] via 10.2.4.2, 01:40:50, GigabitEthernet2/0
-                    [110/4] via 10.1.2.1, 01:40:50, GigabitEthernet1/0
-                    
-R2#sh ip ospf neighbor
-
-Neighbor ID     Pri   State           Dead Time   Address         Interface
-48.73.239.44      1   FULL/DR         00:00:32    10.2.4.2        GigabitEthernet2/0
-48.73.239.11      1   FULL/BDR        00:00:36    10.1.2.1        GigabitEthernet1/0
-
-R2#sh ip ospf interface brief
-Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
-Lo0          1     0               10.2.2.2/32        1     LOOP  0/0
-Gi2/0        1     0               10.2.4.1/30        1     BDR   1/1
-Gi1/0        1     0               10.1.2.2/30        1     DR    1/1
-```
-
-```txt
-! ROUTER 3 --------------------------------------------------------------
-R3#sh ip ospf database
-
-            OSPF Router with ID (48.73.239.33) (Process ID 1)
-
-		Router Link States (Area 0)
-
-Link ID         ADV Router      Age         Seq#       Checksum Link count
-48.73.239.11    48.73.239.11    163         0x8000000B 0x004294 3
-48.73.239.22    48.73.239.22    625         0x80000008 0x004971 3
-48.73.239.33    48.73.239.33    121         0x8000000A 0x008DD7 4
-48.73.239.44    48.73.239.44    120         0x8000000A 0x003111 4
-48.73.239.55    48.73.239.55    112         0x80000009 0x006C2B 2
-48.73.239.66    48.73.239.66    1675        0x80000005 0x003945 2
-
-		Net Link States (Area 0)
-
-Link ID         ADV Router      Age         Seq#       Checksum
-10.1.2.2        48.73.239.22    625         0x80000006 0x00EDC7
-10.1.3.1        48.73.239.11    163         0x80000006 0x00F5BF
-10.2.4.2        48.73.239.44    1893        0x80000004 0x00C2BA
-10.3.4.2        48.73.239.44    120         0x80000008 0x004924
-10.3.5.2        48.73.239.55    112         0x80000008 0x006AEB
-10.4.6.2        48.73.239.66    1675        0x80000004 0x002215
-
-R3#sh ip route ospf
-     10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       10.4.6.0/30 [110/2] via 10.3.4.2, 01:42:37, GigabitEthernet1/0
-O       10.2.2.2/32 [110/3] via 10.3.4.2, 01:42:37, GigabitEthernet1/0
-                    [110/3] via 10.1.3.1, 01:42:37, GigabitEthernet2/0
-O       10.1.2.0/30 [110/2] via 10.1.3.1, 01:42:37, GigabitEthernet2/0
-O       10.1.1.1/32 [110/2] via 10.1.3.1, 01:42:37, GigabitEthernet2/0
-O       10.6.6.6/32 [110/3] via 10.3.4.2, 01:42:37, GigabitEthernet1/0
-O       10.2.4.0/30 [110/2] via 10.3.4.2, 01:42:37, GigabitEthernet1/0
-O       10.4.4.4/32 [110/2] via 10.3.4.2, 01:42:37, GigabitEthernet1/0
-O       10.5.5.5/32 [110/2] via 10.3.5.2, 01:42:37, GigabitEthernet3/0
-
-R3#sh ip ospf neighbor
-
-Neighbor ID     Pri   State           Dead Time   Address         Interface
-48.73.239.55      1   FULL/DR         00:00:30    10.3.5.2        GigabitEthernet3/0
-48.73.239.11      1   FULL/DR         00:00:39    10.1.3.1        GigabitEthernet2/0
-48.73.239.44      1   FULL/DR         00:00:38    10.3.4.2        GigabitEthernet1/0
-
-R3#sh ip ospf interface brief
-Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
-Lo0          1     0               10.3.3.3/32        1     LOOP  0/0
-Gi3/0        1     0               10.3.5.1/30        1     BDR   1/1
-Gi2/0        1     0               10.1.3.2/30        1     BDR   1/1
-Gi1/0        1     0               10.3.4.1/30        1     BDR   1/1
-```
-
-```txt 
-! ROUTER 4 --------------------------------------------------------------
-R4#sh ip ospf database
-
-            OSPF Router with ID (48.73.239.44) (Process ID 1)
-
-		Router Link States (Area 0)
-
-Link ID         ADV Router      Age         Seq#       Checksum Link count
-48.73.239.11    48.73.239.11    254         0x8000000B 0x004294 3
-48.73.239.22    48.73.239.22    713         0x80000008 0x004971 3
-48.73.239.33    48.73.239.33    212         0x8000000A 0x008DD7 4
-48.73.239.44    48.73.239.44    208         0x8000000A 0x003111 4
-48.73.239.55    48.73.239.55    203         0x80000009 0x006C2B 2
-48.73.239.66    48.73.239.66    1764        0x80000005 0x003945 2
-
-		Net Link States (Area 0)
-
-Link ID         ADV Router      Age         Seq#       Checksum
-10.1.2.2        48.73.239.22    713         0x80000006 0x00EDC7
-10.1.3.1        48.73.239.11    254         0x80000006 0x00F5BF
-10.2.4.2        48.73.239.44    1982        0x80000004 0x00C2BA
-10.3.4.2        48.73.239.44    208         0x80000008 0x004924
-10.3.5.2        48.73.239.55    203         0x80000008 0x006AEB
-10.4.6.2        48.73.239.66    1764        0x80000004 0x002215
-
-R4#sh ip route ospf
-     10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       10.2.2.2/32 [110/2] via 10.2.4.1, 02:09:24, GigabitEthernet2/0
-O       10.1.3.0/30 [110/2] via 10.3.4.1, 01:44:06, GigabitEthernet1/0
-O       10.3.3.3/32 [110/2] via 10.3.4.1, 01:44:06, GigabitEthernet1/0
-O       10.1.2.0/30 [110/2] via 10.2.4.1, 02:09:24, GigabitEthernet2/0
-O       10.1.1.1/32 [110/3] via 10.3.4.1, 01:44:06, GigabitEthernet1/0
-                    [110/3] via 10.2.4.1, 01:53:06, GigabitEthernet2/0
-O       10.6.6.6/32 [110/2] via 10.4.6.2, 02:09:34, GigabitEthernet3/0
-O       10.3.5.0/30 [110/2] via 10.3.4.1, 01:44:06, GigabitEthernet1/0
-O       10.5.5.5/32 [110/3] via 10.3.4.1, 01:44:06, GigabitEthernet1/0
-
-R4#sh ip ospf neighbor
-
-Neighbor ID     Pri   State           Dead Time   Address         Interface
-48.73.239.66      1   FULL/DR         00:00:37    10.4.6.2        GigabitEthernet3/0
-48.73.239.22      1   FULL/BDR        00:00:33    10.2.4.1        GigabitEthernet2/0
-48.73.239.33      1   FULL/BDR        00:00:32    10.3.4.1        GigabitEthernet1/0
-
-R4#sh ip ospf interface brief
-Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
-Lo0          1     0               10.4.4.4/32        1     LOOP  0/0
-Gi3/0        1     0               10.4.6.1/30        1     BDR   1/1
-Gi2/0        1     0               10.2.4.2/30        1     DR    1/1
-Gi1/0        1     0               10.3.4.2/30        1     DR    1/1
-```
-
-```txt
-! ROUTER 5 --------------------------------------------------------------
-R5#show ip ospf database
-
-            OSPF Router with ID (48.73.239.55) (Process ID 1)
-
-		Router Link States (Area 0)
-
-Link ID         ADV Router      Age         Seq#       Checksum Link count
-48.73.239.11    48.73.239.11    342         0x8000000B 0x004294 3
-48.73.239.22    48.73.239.22    803         0x80000008 0x004971 3
-48.73.239.33    48.73.239.33    300         0x8000000A 0x008DD7 4
-48.73.239.44    48.73.239.44    298         0x8000000A 0x003111 4
-48.73.239.55    48.73.239.55    289         0x80000009 0x006C2B 2
-48.73.239.66    48.73.239.66    1853        0x80000005 0x003945 2
-
-		Net Link States (Area 0)
-
-Link ID         ADV Router      Age         Seq#       Checksum
-10.1.2.2        48.73.239.22    803         0x80000006 0x00EDC7
-10.1.3.1        48.73.239.11    342         0x80000006 0x00F5BF
-10.2.4.2        48.73.239.44    41          0x80000005 0x00C0BB
-10.3.4.2        48.73.239.44    298         0x80000008 0x004924
-10.3.5.2        48.73.239.55    289         0x80000008 0x006AEB
-10.4.6.2        48.73.239.66    1853        0x80000004 0x002215
-
-R5#show ip route ospf
-     10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       10.4.6.0/30 [110/3] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
-O       10.2.2.2/32 [110/4] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
-O       10.1.3.0/30 [110/2] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
-O       10.3.3.3/32 [110/2] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
-O       10.1.2.0/30 [110/3] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
-O       10.1.1.1/32 [110/3] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
-O       10.6.6.6/32 [110/4] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
-O       10.2.4.0/30 [110/3] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
-O       10.3.4.0/30 [110/2] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
-O       10.4.4.4/32 [110/3] via 10.3.5.1, 01:45:23, GigabitEthernet3/0
-
-R5#show ip ospf neighbor
-
-Neighbor ID     Pri   State           Dead Time   Address         Interface
-48.73.239.33      1   FULL/BDR        00:00:34    10.3.5.1        GigabitEthernet3/0
-
-R5#show ip ospf interface brief
-Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
-Lo0          1     0               10.5.5.5/32        1     LOOP  0/0
-Gi3/0        1     0               10.3.5.2/30        1     DR    1/1
-```
-
-```txt
-! ROUTER 6 --------------------------------------------------------------
-R6#show ip ospf database
-
-            OSPF Router with ID (48.73.239.66) (Process ID 1)
-
-		Router Link States (Area 0)
-
-Link ID         ADV Router      Age         Seq#       Checksum Link count
-48.73.239.11    48.73.239.11    419         0x8000000B 0x004294 3
-48.73.239.22    48.73.239.22    879         0x80000008 0x004971 3
-48.73.239.33    48.73.239.33    377         0x8000000A 0x008DD7 4
-48.73.239.44    48.73.239.44    374         0x8000000A 0x003111 4
-48.73.239.55    48.73.239.55    368         0x80000009 0x006C2B 2
-48.73.239.66    48.73.239.66    1927        0x80000005 0x003945 2
-
-		Net Link States (Area 0)
-
-Link ID         ADV Router      Age         Seq#       Checksum
-10.1.2.2        48.73.239.22    879         0x80000006 0x00EDC7
-10.1.3.1        48.73.239.11    419         0x80000006 0x00F5BF
-10.2.4.2        48.73.239.44    117         0x80000005 0x00C0BB
-10.3.4.2        48.73.239.44    374         0x80000008 0x004924
-10.3.5.2        48.73.239.55    368         0x80000008 0x006AEB
-10.4.6.2        48.73.239.66    1927        0x80000004 0x002215
-
-R6#show ip route ospf
-     10.0.0.0/8 is variably subnetted, 12 subnets, 2 masks
-O       10.2.2.2/32 [110/3] via 10.4.6.1, 02:11:58, GigabitEthernet3/0
-O       10.1.3.0/30 [110/3] via 10.4.6.1, 01:46:40, GigabitEthernet3/0
-O       10.3.3.3/32 [110/3] via 10.4.6.1, 01:46:40, GigabitEthernet3/0
-O       10.1.2.0/30 [110/3] via 10.4.6.1, 02:11:58, GigabitEthernet3/0
-O       10.1.1.1/32 [110/4] via 10.4.6.1, 01:55:40, GigabitEthernet3/0
-O       10.3.5.0/30 [110/3] via 10.4.6.1, 01:46:40, GigabitEthernet3/0
-O       10.2.4.0/30 [110/2] via 10.4.6.1, 02:12:08, GigabitEthernet3/0
-O       10.3.4.0/30 [110/2] via 10.4.6.1, 01:46:40, GigabitEthernet3/0
-O       10.4.4.4/32 [110/2] via 10.4.6.1, 02:12:08, GigabitEthernet3/0
-O       10.5.5.5/32 [110/4] via 10.4.6.1, 01:46:40, GigabitEthernet3/0
-
-R6#show ip ospf neighbor
-
-Neighbor ID     Pri   State           Dead Time   Address         Interface
-48.73.239.44      1   FULL/BDR        00:00:31    10.4.6.1        GigabitEthernet3/0
-
-R6#show ip ospf interface brief
-Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
-Lo0          1     0               10.6.6.6/32        1     LOOP  0/0
-Gi3/0        1     0               10.4.6.2/30        1     DR    1/1
-```
 
 __AS 17390__ - IBM
 
@@ -533,7 +270,7 @@ Sending 5, 100-byte ICMP Echos to 10.8.8.8, timeout is 2 seconds:
 Success rate is 100 percent (5/5), round-trip min/avg/max = 12/21/36 ms
 ```
 
-OSPF configuration analysis
+OSPF configuration analysis example Router 7
 
 ```txt
 ! ROUTER 7 --------------------------------------------------------------
@@ -567,37 +304,6 @@ Lo0          1     0               10.7.7.7/32        1     LOOP  0/0
 Gi1/0        1     0               10.7.8.1/30        1     BDR   1/1
 ```
 
-```txt
-! ROUTER 8 --------------------------------------------------------------
-R8#show ip ospf database
-
-            OSPF Router with ID (130.41.46.88) (Process ID 1)
-
-		Router Link States (Area 0)
-
-Link ID         ADV Router      Age         Seq#       Checksum Link count
-130.41.46.77    130.41.46.77    400         0x80000006 0x007703 2
-130.41.46.88    130.41.46.88    358         0x80000006 0x00FB64 2
-
-		Net Link States (Area 0)
-
-Link ID         ADV Router      Age         Seq#       Checksum
-10.7.8.2        130.41.46.88    358         0x80000005 0x00177B
-
-R8#show ip route ospf
-     10.0.0.0/8 is variably subnetted, 3 subnets, 2 masks
-O       10.7.7.7/32 [110/2] via 10.7.8.1, 02:19:58, GigabitEthernet1/0
-
-R8#show ip ospf neighbor
-
-Neighbor ID     Pri   State           Dead Time   Address         Interface
-130.41.46.77      1   FULL/BDR        00:00:37    10.7.8.1        GigabitEthernet1/0
-
-R8#show ip ospf interface brief
-Interface    PID   Area            IP Address/Mask    Cost  State Nbrs F/C
-Lo0          1     0               10.8.8.8/32        1     LOOP  0/0
-Gi1/0        1     0               10.7.8.2/30        1     DR    1/1
-```
 
 __AS 5511__ - FTRSI (Orange - Worldwide IP Backbone)
 
@@ -850,10 +556,7 @@ We have no connectivity between ASes, even in direct connected links. To have co
 
 #### 1.4.1 - Create a comprehensive table presenting all the connectivity tests carried out and the respective outcome (e.g., success, failure). You don’t need to provide exhaustive snapshots for all test results. Choose only **three example cases**, from different ASes, to include in your report and briefly comment on each selected case.
 
-__TODO__
-pings do R1 para os routers do mesmo AS e para R7, R8
-pings do AS com area 0 e area 1
-pings do AS que tem um AS privado
+Inside ASes we have connectivity between all routers but no connectivity outside as shown previously in the Test and Validation part and in the previous question.
 
 #### 1.4.2 - Identification of the ASes entities involved in the lab topology
 
@@ -879,20 +582,16 @@ Portugal's Internet infrastructure consists of numerous independent networks. Th
 
 #### 1.4.4 - Classification of each AS in the lab project as Tier-1 or Tier-2. For each classification, describe the evidence you find in the lab topology that justifies it
 
-__TODO__: check and discuss
-
-
 ### Classification of Autonomous Systems
 
 | AS Number | AS Name / Entity | Classification | Evidence from Lab Topology |
 | :--- | :--- | :--- | :--- |
 | **AS701** | Verizon Business | **Tier-1** | Described as a "Tier 1" AS in the project overview (Section 3.2). It peers with multiple other major ASes (AS1273, AS17390) and does not need to purchase transit from anyone, fitting the definition of a top-level provider. |
-| **AS1** | Level 3 Parent, LLC | **Tier-1** | A historically well-known Tier-1 ISP. The topology shows it is directly connected to other major networks (AS4637), and it is mentioned as part of the "Tier 1 and Tier 2" ecosystem. |
 | **AS1273** | Vodafone | **Tier-2** | A large telecommunications provider. While global, it acts as a customer of AS701 (purchasing transit), which is a key indicator of a Tier-2. It also peers with multiple other ASes (AS17390, AS20717, AS5511) to reduce its transit costs. |
 | **AS4637** | Telstra Global | **Tier-2** | A dominant national provider in Australia, but on the global stage, it functions as a Tier-2. The topology shows it connecting to other major ASes (AS1, AS20717, AS23344), engaging in a mix of peering and transit relationships. |
 | **AS5511** | Orange (FTRSI) | **Tier-2** | Another major international telecom operator. Its role in the lab is that of a large provider that peers with others (e.g., via AS20717) but is not depicted as part of the exclusive Tier-1 core. |
-| **AS17390** | IBM | **Enterprise (Tier-3)** | This is a corporate enterprise network. Its purpose is to connect its own services (like IBM Cloud) to the internet, not to sell transit to others. It purchases transit from AS1273, making it a classic Tier-3 / "stub" AS. |
-| **AS23344** | Disney | **Enterprise (Tier-3)** | This is a content/enterprise network for Disney. It has only one eBGP peering to the internet (with AS4637) and is configured to receive only a default route, which is typical behavior for an enterprise customer. |
+| **AS17390** | IBM | **Enterprise (Tier-2)** | This is a corporate enterprise network. Its purpose is to connect its own services (like IBM Cloud) to the internet, not to sell transit to others. It purchases transit from AS1273, making it a classic Tier-3 / "stub" AS. |
+| **AS23344** | Disney | **Enterprise (Tier-2)** | This is a content/enterprise network for Disney. It has only one eBGP peering to the internet (with AS4637) and is configured to receive only a default route, which is typical behavior for an enterprise customer. |
 | **AS20717** | DE-CIX Management GmbH | **Internet Exchange (IXP)** | This is not a transit provider. It is the AS for the DE-CIX Internet Exchange Point. Its function is to provide a neutral fabric for other ASes to peer, which places it outside the Tier hierarchy. |
 | **AS64513** | (Private AS) | **Unclassifiable** | This is a Private AS number (range 64512-65534) used internally, likely for a multihomed customer within AS17390. It is not advertised to the global internet and has no tier classification. |
 
@@ -909,9 +608,7 @@ The classification is based on the core differentiator between tiers: **transit 
     *   Crucially, they also **purchase transit** from Tier-1s (as seen with AS1273 and AS701).
     *   They engage in extensive **peering** at neutral points (like AS20717) to exchange traffic directly with other networks, reducing their reliance on expensive Tier-1 transit links. This mixed strategy of buying transit and peering for free is the hallmark of a Tier-2.
 
-3.  **Enterprise (Tier-3) Evidence:** AS17390 (IBM) and AS23344 (Disney) are "leaf" networks. Their primary goal is to have their services reachable on the internet. They do not sell transit to any other AS. Instead, they are customers of larger ISPs. Disney's requirement to receive "only the default route" from its provider is a common configuration for enterprise networks that do not want to hold the full internet routing table.
-
-4.  **Special Case - IXP:** AS20717 (DE-CIX) is not a tiered AS. It is infrastructure. It does not buy or sell transit. It exists so that ASes from all tiers (including the Tier-1s, Tier-2s, and Enterprises in this lab) can connect and exchange traffic efficiently.
+3. **Special Case - IXP:** AS20717 (DE-CIX) is not a tiered AS. It is infrastructure. It does not buy or sell transit. It exists so that ASes from all tiers (including the Tier-1s, Tier-2s, and Enterprises in this lab) can connect and exchange traffic efficiently.
 
 #### 1.4.5 - Table showcasing all the peering relations established in the provided topology
 
@@ -957,15 +654,17 @@ By connecting to these neutral hubs, the Tier-2 ISPs can exchange a large volume
 
 #### 1.4.8 - Explain the role of R12 in AS 5511, and how are its interfaces divided between the OSPF areas involved
 
-R12 serves as an Area Border Router (ABR). This is its primary and most important role.
+R12 is Router inside a Stub Area
 
-As an ABR, R12 has the following key responsibilities:
+R10 and R11 serves as an Area Border Router (ABR). This is its primary and most important role.
+
+As an ABR, R10 and R11 has the following key responsibilities:
 
 Connecting Different OSPF Areas: It has interfaces in two separate OSPF areas: the backbone area (Area 0) and a stub area (Area 1). It is the sole router providing a pathway between these two parts of the network.
 
 Summarizing and Filtering LSAs: It controls the flow of Link-State Advertisements (LSAs) between Area 0 and Area 1.
 
-Injecting a Default Route: As Area 1 is a stub area, R12 does not flood external LSAs (Type 5 LSAs) into it. Instead, it injects a default route (0.0.0.0/0) into Area 1, telling all routers in that area, "if you don't have a more specific route, send the traffic to me to reach external destinations."
+Injecting a Default Route: As Area 1 is a stub area, R10 and R11 does not flood external LSAs (Type 5 LSAs) into it. Instead, it injects a default route (0.0.0.0/0) into Area 1, telling all routers in that area, "if you don't have a more specific route, send the traffic to me to reach external destinations."
 
 #### 1.4.9 - Explain what a stub area is and discuss the resulting advantages and potential limitations. In your discussion, please detail under what conditions would multi-area OSPF be preferred over a single backbone area in real networks
 
@@ -982,8 +681,6 @@ Instead of learning these potentially vast numbers of external routes, a router 
 *   **Uses a Default Route:** The ABR automatically generates and advertises a default route (Type 3 LSA) into the stub area.
 *   **Cannot be a Transit Area:** Traffic from one non-backbone area cannot use a stub area to reach another non-backbone area. Virtual Links cannot be configured through a stub area.
 *   **No ASBRs Allowed:** An Autonomous System Boundary Router (ASBR) cannot be located inside a stub area, as its job is to generate the very Type 5 LSAs that are blocked.
-
-There are more specific types of stub areas like **Totally Stubby Areas** (which also block inter-area routes, Type 3 LSAs) and **NSSA (Not-So-Stubby Area)** which allows for limited external route import, but the classic stub area is the foundational concept.
 
 __Advantages__
 
@@ -1028,7 +725,7 @@ In this phase we have as objectives:
 
 #### BGP Configuration
 
-__AS 1273__ - Vodafone
+__AS 1273__ - Vodafone , R1 and R4 as examples
 
 ```txt
 ! Router 1 ==================================================================
@@ -1041,9 +738,9 @@ ip route 48.73.239.0 255.255.255.0 Null0
 ip route 48.73.240.0 255.255.252.0 Null0
 ip route 63.25.64.0 255.255.192.0 Null0
 !
-! =============================================================================
+! ===========================================================================
 !                                   BGP
-! =============================================================================
+! ===========================================================================
 !
 router bgp 1273
  bgp router-id 10.1.1.1
@@ -1070,98 +767,6 @@ router bgp 1273
  network 48.73.240.0 mask 255.255.252.0
  network 63.25.64.0 mask 255.255.192.0
  no auto-summary                               ! Do not summarize routes 
-```
-
-```txt
-! Router 2 ==================================================================
-!
-! ===========================================================================
-!                               STATIC ROUTES
-! ===========================================================================
-!
-ip route 48.73.239.0 255.255.255.0 Null0
-ip route 48.73.240.0 255.255.252.0 Null0
-ip route 63.25.64.0 255.255.192.0 Null0
-!
-! ===========================================================================
-!                                   BGP
-! ===========================================================================
-!
-router bgp 1273
- bgp router-id 10.2.2.2
- no synchronization
- bgp log-neighbor-changes
- !
- ! iBGP -------------------------------
- neighbor iBGP peer-group
- neighbor iBGP remote-as 1273
- neighbor iBGP update-source Loopback0
- neighbor iBGP next-hop-self
- neighbor iBGP soft-reconfiguration inbound
- !
- neighbor 10.3.3.3 peer-group iBGP
- neighbor 10.4.4.4 peer-group iBGP
- !
- ! Advertise Routes -------------------
- network 48.73.239.22 mask 255.255.255.255       ! Lo1
- network 48.73.239.0 mask 255.255.255.0
- network 48.73.239.0 mask 255.255.255.252        ! avoid black-hole in access to server2
- network 48.73.240.0 mask 255.255.252.0
- network 63.25.64.0 mask 255.255.192.0
- no auto-summary
-```
-
-```txt
-! Router 3 ==================================================================
-!
-! ===========================================================================
-!                               STATIC ROUTES
-! ===========================================================================
-!
-ip route 48.73.239.0 255.255.255.0 Null0
-ip route 48.73.240.0 255.255.252.0 Null0
-ip route 63.25.64.0 255.255.192.0 Null0
-! 
-! ===========================================================================
-!                                   BGP
-! ===========================================================================
-!
-router bgp 1273
- bgp router-id 10.3.3.3
- bgp cluster-id 1273
- no synchronization
- bgp log-neighbor-changes
- !
- ! iBGP -------------------------------
- neighbor iBGP peer-group
- neighbor iBGP remote-as 1273
- neighbor iBGP update-source Loopback0
- neighbor iBGP route-reflector-client
- neighbor iBGP next-hop-self
- neighbor iBGP soft-reconfiguration inbound
- !
- neighbor iBGP_RR peer-group
- neighbor iBGP_RR remote-as 1273
- neighbor iBGP_RR update-source Loopback0
- neighbor iBGP_RR soft-reconfiguration inbound
- !
- neighbor 10.1.1.1 peer-group iBGP
- neighbor 10.2.2.2 peer-group iBGP
- neighbor 10.4.4.4 peer-group iBGP_RR
- neighbor 10.5.5.5 peer-group iBGP
- neighbor 10.6.6.6 peer-group iBGP
- !
- ! eBGP -------------------------------
- neighbor 48.73.240.6 remote-as 17390
- neighbor 48.73.240.6 soft-reconfiguration inbound
- !
- ! Advertise Routes -------------------
- network 48.73.239.33 mask 255.255.255.255   ! Lo1
- network 48.73.239.0 mask 255.255.255.0
- network 48.73.240.0 mask 255.255.252.0
- network 48.73.240.4 mask 255.255.255.252    ! to AS 17390 avoiding black-hole
- network 63.25.64.0 mask 255.255.192.0
- no auto-summary
 ```
 
 ```txt
@@ -1211,93 +816,7 @@ router bgp 1273
  no auto-summary
 ```
 
-```txt
-! Router 5 ==================================================================
-!
-! ===========================================================================
-!                               STATIC ROUTES
-! ===========================================================================
-!
-ip route 48.73.239.0 255.255.255.0 Null0
-ip route 48.73.240.0 255.255.252.0 Null0
-ip route 63.25.64.0 255.255.192.0 Null0
-! 
-! ===========================================================================
-!                                   BGP
-! ===========================================================================
-!
-router bgp 1273
- bgp router-id 10.5.5.5
- no synchronization
- bgp log-neighbor-changes
- ! iBGP -------------------------------
- neighbor iBGP peer-group
- neighbor iBGP remote-as 1273
- neighbor iBGP update-source Loopback0
- neighbor iBGP next-hop-self
- neighbor iBGP soft-reconfiguration inbound
- !
- neighbor 10.3.3.3 peer-group iBGP
- neighbor 10.4.4.4 peer-group iBGP
- !
- ! eBGP -------------------------------
- neighbor 64.112.0.1 remote-as 701
- neighbor 64.112.0.1 soft-reconfiguration-inbound
- !
- ! Advertise Routes -------------------
- network 48.73.239.55 mask 255.255.255.255   ! Lo1
- network 48.73.239.0 mask 255.255.255.0
- network 48.73.240.0 mask 255.255.252.0
- network 63.25.64.0 mask 255.255.192.0
- no auto-summary
-```
-
-```txt
-! Router 6 ==================================================================
-!
-! ===========================================================================
-!                               STATIC ROUTES
-! ===========================================================================
-!
-ip route 48.73.239.0 255.255.255.0 Null0
-ip route 48.73.240.0 255.255.252.0 Null0
-ip route 63.25.64.0 255.255.192.0 Null0
-! 
-! ===========================================================================
-!                                   BGP
-! ===========================================================================
-!
-router bgp 1273
- bgp router-id 10.6.6.6
- no synchronization
- bgp log-neighbor-changes
- ! iBGP -------------------------------
- neighbor iBGP peer-group
- neighbor iBGP remote-as 1273
- neighbor iBGP update-source Loopback0
- neighbor iBGP next-hop-self
- neighbor iBGP soft-reconfiguration inbound
- !
- neighbor 10.3.3.3 peer-group iBGP
- neighbor 10.4.4.4 peer-group iBGP
- !
- ! eBGP -------------------------------
- neighbor 48.73.240.14 remote-as 4637
- neighbor 48.73.240.14 soft-reconfiguration inbound
- neighbor 48.73.240.22 remote-as 20717
- neighbor 48.73.240.22 soft-reconfiguration inbound
- neighbor 48.73.240.18 remote-as 5511
- neighbor 48.73.240.18 soft-reconfiguration inbound
- !
- ! Advertise Routes -------------------
- network 48.73.239.66 mask 255.255.255.255   ! Lo1
- network 48.73.239.0 mask 255.255.255.0
- network 48.73.240.0 mask 255.255.252.0
- network 63.25.64.0 mask 255.255.192.0
- no auto-summary
-```
-
-__AS 17390__ - IBM
+__AS 17390__ - IBM, Router 7 as example
 
 ```txt
 ! Router 7 ==================================================================
@@ -1334,43 +853,6 @@ router bgp 17390
  ! Advertise Routes -------------------
  network 130.41.46.77 mask 255.255.255.255     ! Lo1
  network 130.41.46.0 mask 255.255.255.0
- no auto-summary
-```
-
-```txt
-! Router 8 ==================================================================
-!
-! ===========================================================================
-!                               STATIC ROUTES
-! ===========================================================================
-!
-ip route 130.41.46.0 255.255.255.0 Null0
-!
-! ===========================================================================
-!                                   BGP
-! ===========================================================================
-!
-router bgp 17390
- bgp router-id 10.8.8.8
- no synchronization
- bgp log-neighbor-changes
- !
- ! iBGP -------------------------------
- neighbor 10.7.7.7 remote-as 17390
- neighbor 10.7.7.7 update-source Loopback0
- neighbor 10.7.7.7 next-hop-self
- neighbor 10.7.7.7 soft-reconfiguration inbound
- !
- ! eBGP -------------------------------
- neighbor 130.41.46.6 remote-as 64513
- neighbor 130.41.46.6 soft-reconfiguration inbound
- neighbor 48.73.240.1 remote-as 1273
- neighbor 48.73.240.1 soft-reconfiguration inbound
- !
- ! Advertise Routes -------------------
- network 130.41.46.0 mask 255.255.255.0
- network 130.41.46.0 mask 255.255.255.252   ! avoid black hole / access server1
- network 130.41.46.88 mask 255.255.255.255  ! Loopback1
  no auto-summary
 ```
 
@@ -1670,7 +1152,6 @@ router bgp 4637
 
 ```txt
 ! Router 16 =================================================================
-!
 ! ===========================================================================
 !                                   BGP
 ! ===========================================================================
@@ -1693,7 +1174,6 @@ __AS 1__ - Level 3 Parent
 
 ```txt
 ! BadGuy ====================================================================
-!
 ! ===========================================================================
 !                                   BGP
 ! ===========================================================================
@@ -2158,7 +1638,7 @@ Origin codes: i - IGP, e - EGP, ? - incomplete
 
 Total number of prefixes 30
 
-! ----------------------------------------------------------------------
+
 
 R3#show ip bgp neighbors 10.6.6.6 advertised-routes
 BGP table version is 356, local router ID is 10.3.3.3
@@ -2729,7 +2209,6 @@ This allows scalable propagation of prefixes across the AS without a full iBGP m
 
 #### 2.4.7 - Simulate and explain using Wireshark the BGP messages associated to each BGP state (see: [article](https://www.ciscopress.com/articles/article.asp?p=2756480&seqNum=4) )
 
-__TODO__ error in mac OSX
 
 BGP uses a state machine with the following states and associated messages:
 
@@ -2742,14 +2221,18 @@ BGP uses a state machine with the following states and associated messages:
 | OpenConfirm	| KEEPALIVE	| Waits for KEEPALIVE; if received, moves to Established. | 
 | Established	UPDATE	Session is up; routes are exchanged via UPDATE messages. | 
 
-Wireshark Capture Notes:
+![](./assets/img/wireshar1.png)
+BGP Messages
+<br>
+
+![](./assets/img/wireshar2.png)
+Advertised routes in `UPDATE`
+
 
 - OPEN: Contains AS number, BGP version, hold time, and BGP identifier.
 - KEEPALIVE: Maintains session alive.
 - UPDATE: Advertises or withdraws routes.
 - NOTIFICATION: Used for error reporting or session termination.
-
-In Wireshark, filter with tcp.port == 179 to observe BGP messages and correlate them with BGP state transitions.
 
 <div style="page-break-after: always"></div>
 
@@ -2769,6 +2252,8 @@ In this phase, we have as objectives:
 
 In the ASes with one peer router only and that advertise routes, we used the `aggregate-address` command.
 
+Example from Router 9
+
 ```txt
 ! AS 64513 (private to IBM) - Router 9 =====================================
 router bgp 64513
@@ -2776,48 +2261,14 @@ router bgp 64513
  ! ...
  network 130.41.47.0 mask 255.255.255.0
  aggregate-address 130.41.47.0 255.255.255.0 summary-only
-
-! AS 23344 Disney - Router 13 ==============================================
-router bgp 23344
- bgp router-id 10.13.13.13
- ! ...
- network 158.23.228.0 mask 255.255.255.0
- aggregate-address 158.23.228.0 255.255.255.0 summary-only
- 
-! AS 701 Verizon - Router 14 ===============================================
-router bgp 701
- bgp router-id 10.14.14.14
- ! ...
- network 64.96.0.0 mask 255.240.0.0
- network 64.112.0.0 mask 255.240.0.0
- network 65.0.204.0 mask 255.255.255.0
- aggregate-address 64.96.0.0 255.255.255.0 summary-only
- aggregate-address 64.112.0.0 255.255.255.0 summary-only
- aggregate-address 65.0.204.0 255.255.255.0 summary-only
- 
-! AS 4637 Telstra - Router 15 ===============================================
-router bgp 4637
- bgp router-id 10.15.15.15
- ! ...
- network 211.176.128.0 mask 255.255.252.0
- network 211.176.132.0 mask 255.255.255.0 
- network 211.176.135.0 mask 255.255.255.0 
- network 211.176.136.0 mask 255.255.252.0 
- network 211.176.140.0 mask 255.255.254.0 
- network 211.176.141.0 mask 255.255.255.0
- aggregate-address 211.176.128.0 255.255.252.0 summary-only
- aggregate-address 211.176.132.0 255.255.255.0 summary-only
- aggregate-address 211.176.135.0 255.255.255.0 summary-only
- aggregate-address 211.176.136.0 255.255.252.0 summary-only
- aggregate-address 211.176.140.0 255.255.254.0 summary-only
- aggregate-address 211.176.141.0 255.255.255.0 summary-only
 ```
 
-On the ASes with more than one router, we created an access list restricting the prefixes to advertise to the eBGP peers
+On the ASes with more than one router, we created an access list restricting the prefixes to advertise to the eBGP peers.
+
+Example from Router 1
 
 ```txt
 ! AS 1273 Vodafone =========================================================
-!
 ! All routers  -------------------------------------------------------------
 ip prefix-list PREFIX_LIST_ADV_SUMM seq 5 permit 0.0.0.0/0 le 24
 !
@@ -2828,92 +2279,6 @@ router bgp 1273
  neighbor 48.73.240.2 remote-as 17390
  neighbor 48.73.240.2 soft-reconfiguration inbound
  neighbor 48.73.240.2 prefix-list PREFIX_LIST_ADV_SUMM out
-!
-! Router 3 -----------------------------------------------------------------
-router bgp 1273
- bgp router-id 10.3.3.3
- ! ...
- neighbor 48.73.240.6 remote-as 17390
- neighbor 48.73.240.6 soft-reconfiguration inbound
- neighbor 48.73.240.6 prefix-list PREFIX_LIST_ADV_SUMM out
-!
-! Router 5 -----------------------------------------------------------------
-router bgp 1273
- bgp router-id 10.5.5.5
- ! ...
- neighbor 64.112.0.1 remote-as 701
- neighbor 64.112.0.1 soft-reconfiguration-inbound
- neighbor 64.112.0.1 prefix-list PREFIX_LIST_ADV_SUMM out
-!
-! Router 6 -----------------------------------------------------------------
-router bgp 1273
- bgp router-id 10.6.6.6
- ! ...
- neighbor 48.73.240.14 remote-as 4637
- neighbor 48.73.240.14 soft-reconfiguration inbound
- neighbor 48.73.240.14 prefix-list PREFIX_LIST_ADV_SUMM out
- neighbor 48.73.240.22 remote-as 20717
- neighbor 48.73.240.22 soft-reconfiguration inbound
- neighbor 48.73.240.22 prefix-list PREFIX_LIST_ADV_SUMM out
- neighbor 48.73.240.18 remote-as 5511
- neighbor 48.73.240.18 soft-reconfiguration inbound
- neighbor 48.73.240.18 prefix-list PREFIX_LIST_ADV_SUMM out
-```
-
-```txt
-! AS 17390 IBM =============================================================
-!
-! Router 7 -----------------------------------------------------------------
-router bgp 17390
- bgp router-id 10.7.7.7
- ! ...
- neighbor 64.112.0.5 remote-as 701
- neighbor 64.112.0.5 soft-reconfiguration inbound
- neighbor 64.112.0.5 prefix-list PREFIX_LIST_ADV_SUMM out
- neighbor 64.112.0.5 remove-private-as
- neighbor 130.41.46.10 remote-as 64513
- neighbor 130.41.46.10 soft-reconfiguration inbound
- neighbor 130.41.46.10 prefix-list PREFIX_LIST_ADV_SUMM out
- neighbor 48.73.240.5 remote-as 1273
- neighbor 48.73.240.5 soft-reconfiguration inbound
- neighbor 48.73.240.5 prefix-list PREFIX_LIST_ADV_SUMM out
-!
-! Router 8 -----------------------------------------------------------------
-router bgp 17390
- bgp router-id 10.8.8.8
- ! ...
- neighbor 130.41.46.6 remote-as 64513
- neighbor 130.41.46.6 soft-reconfiguration inbound
- neighbor 130.41.46.6 prefix-list PREFIX_LIST_ADV_SUMM out
- neighbor 48.73.240.1 remote-as 1273
- neighbor 48.73.240.1 soft-reconfiguration inbound
- neighbor 48.73.240.1 prefix-list PREFIX_LIST_ADV_SUMM out
-```
-
-```txt
-! AS 5511 Orange ===========================================================
-!
-! Router 10 ----------------------------------------------------------------
-router bgp 5511
- bgp router-id 10.10.10.10
- ! ...
- neighbor 46.88.20.2 remote-as 20717
- neighbor 46.88.20.2 soft-reconfiguration inbound
- neighbor 46.88.20.2 prefix-list PREFIX_LIST_ADV_SUMM out
- neighbor 48.73.240.17 remote-as 1273
- neighbor 48.73.240.17 soft-reconfiguration inbound
- neighbor 48.73.240.17 prefix-list PREFIX_LIST_ADV_SUMM out
- neighbor 211.176.129.1 remote-as 4637
- neighbor 211.176.129.1 soft-reconfiguration inbound
- neighbor 211.176.129.1 prefix-list PREFIX_LIST_ADV_SUMM out
-!
-! Router 11 ----------------------------------------------------------------
-router bgp 5511
- bgp router-id 10.11.11.11
- ! ...
- neighbor 46.88.20.6 remote-as 23344              
- neighbor 46.88.20.6 soft-reconfiguration inbound
- neighbor 46.88.20.6 prefix-list PREFIX_LIST_ADV_SUMM out
 ```
 
 To limit the internet peering’s to a maximum of 50 prefixes, in all the BGP's `neighbour`, we use the command `neighbor [peer IP address] maximum-prefix 50`
@@ -3074,14 +2439,6 @@ Controlling the number of prefixes advertised is important for:
 
 In this lab, limiting prefixes to a maximum of 50 per peer helps maintain a manageable and stable routing environment
 
-> __Route flapping__ refers to the rapid and repeated change in the reachability of a network prefix in the routing table. This occurs when a BGP route is alternately advertised and withdrawn in quick succession due to:
->
-> - Interface instability (physical or logical link going up/down)
-> - Configuration changes
-> - Network congestion or errors
-> - Unstable peering sessions
-> - Router software/hardware issues
-
 #### 3.4.3 - What is the private AS number range in BGP? Describe some scenarios where using private ASNs can be useful.
 
 Private ASN Ranges:
@@ -3155,15 +2512,9 @@ To ensure that __AA20717__ is the preferred path for traffic originated in __AS1
 
 ```txt
 Router6 - AS1273 ===========================================================
-! AS-PATH Access List for traffic engineering
-! Matches routes that have passed through both AS20717 and AS5511
-! Syntax: _20717_5511$ = ends with AS5511 and has AS20717 somewhere before it
 ip as-path access-list 1 permit _20717_5511$
 
 Router10 - AS5511 ==========================================================
-! AS-PATH Access List for traffic engineering
-! Matches routes that have passed through AS20171 then AS1273
-! Syntax: _20171_1273$ = ends with AS1273 and has AS20171 somewhere before it
 ip as-path access-list 1 permit _20171_1273$
 ``` 
 
@@ -3171,18 +2522,11 @@ Then, we created route map with `weight 300` matching the previously configured 
 
 ```txt
 Router6 - AS1273 ===========================================================
-! Route-map for traffic engineering - preferring routes via AS20717+AS5511
-! Sets WEIGHT=300 for routes that come via AS20717 then AS5511
-! WEIGHT is Cisco proprietary (local to router, highest value wins)
 route-map RM_PREF_LOCAL_AS5511 permit 10
  match as-path 1                  ! Match routes with AS-PATH _20717_5511$
  set weight 300                   ! Set high weight to prefer these routes
 
 Router10 - AS5511 ==========================================================
-! Route-map for traffic engineering - preferring routes via AS20171+AS1273
-! Sets WEIGHT=300 for routes that come via AS20171 then AS1273
-! WEIGHT is Cisco proprietary (local to router, highest value wins)
-! This influences Orange's preference for paths through DE-CIX then Vodafone
 route-map RM_PREF_LOCAL_AS1273 permit 10
  match as-path 1                  ! Match routes with AS-PATH _20171_1273$
  set weight 300                   ! Set high weight to prefer these routes
@@ -3194,26 +2538,103 @@ At least, in the direct links connecting the transit __AS20717__ - DE-CIX, in th
 Router6 - AS1273 ===========================================================
 router bgp 1273
 ! ...
- ! eBGP Peer 2: AS20717 (DE-CIX)
  neighbor 48.73.240.22 remote-as 20717
  ! ...
- ! Apply route-map for traffic engineering (prefer routes via AS20717+AS5511)
  neighbor 48.73.240.22 route-map RM_PREF_LOCAL_AS5511 in
  ! ...
 
 Router10 - AS5511 ==========================================================
 router bgp 5511
  ! ...
- ! eBGP Peer 1: AS20717 (DE-CIX)
  neighbor 46.88.20.2 remote-as 20717
  ! ...
- ! Apply route-map for traffic engineering (prefer routes via AS20171+AS1273)
  neighbor 46.88.20.2 route-map RM_PREF_LOCAL_AS1273 in
 ```
 
 ### 4.3 - Test and Validation
 
-__TODO__
+#### Routes through AS20717
+
+Router 6
+
+```cisco
+R6#sh ip bgp regexp _20717_
+BGP table version is 41, local router ID is 10.6.6.6
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal,
+              r RIB-failure, S Stale
+Origin codes: i - IGP, e - EGP, ? - incomplete
+
+   Network          Next Hop            Metric LocPrf Weight Path
+*> 46.87.162.0/24   48.73.240.22                         300 20717 5511 i
+*> 46.88.20.0/24    48.73.240.22                         300 20717 5511 i
+*> 46.88.22.0/24    48.73.240.22                         300 20717 5511 i
+*> 46.89.36.0/24    48.73.240.22                         300 20717 5511 i
+*> 46.89.38.0/24    48.73.240.22                         300 20717 5511 i
+*> 46.92.2.0/24     48.73.240.22                         300 20717 5511 i
+
+R6#show ip bgp neighbors 48.73.240.22  advertised-routes
+BGP table version is 41, local router ID is 10.6.6.6
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal,
+              r RIB-failure, S Stale
+Origin codes: i - IGP, e - EGP, ? - incomplete
+
+   Network          Next Hop            Metric LocPrf Weight Path
+*> 46.87.162.0/24   48.73.240.22                         300 20717 5511 i
+*> 46.88.20.0/24    48.73.240.22                         300 20717 5511 i
+*> 46.88.22.0/24    48.73.240.22                         300 20717 5511 i
+*> 46.89.36.0/24    48.73.240.22                         300 20717 5511 i
+*> 46.89.38.0/24    48.73.240.22                         300 20717 5511 i
+*> 46.92.2.0/24     48.73.240.22                         300 20717 5511 i
+...
+
+Total number of prefixes 22
+
+R6#trace 46.87.162.110
+
+Type escape sequence to abort.
+Tracing the route to 46.87.162.110
+
+  1 48.73.240.22 28 msec 36 msec 12 msec
+  2 46.88.20.1 [AS 5511] 12 msec 20 msec *
+```
+
+Router 10
+
+```cisco
+R10#sh ip bgp regexp _20717_
+BGP table version is 36, local router ID is 10.10.10.10
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal,
+              r RIB-failure, S Stale
+Origin codes: i - IGP, e - EGP, ? - incomplete
+
+   Network          Next Hop            Metric LocPrf Weight Path
+*> 48.73.239.0/24   46.88.20.2                           300 20717 1273 i
+*> 48.73.240.0/22   46.88.20.2                           300 20717 1273 i
+*> 63.25.64.0/18    46.88.20.2                           300 20717 1273 i
+
+R10#show ip bgp neighbors 46.88.20.2  advertised-routes
+BGP table version is 36, local router ID is 10.10.10.10
+Status codes: s suppressed, d damped, h history, * valid, > best, i - internal,
+              r RIB-failure, S Stale
+Origin codes: i - IGP, e - EGP, ? - incomplete
+
+   Network          Next Hop            Metric LocPrf Weight Path
+...
+*> 48.73.239.0/24   46.88.20.2                           300 20717 1273 i
+*> 48.73.240.0/22   46.88.20.2                           300 20717 1273 i
+*> 63.25.64.0/18    46.88.20.2                           300 20717 1273 i
+...
+
+Total number of prefixes 22
+
+R10#trace 48.73.239.66
+
+Type escape sequence to abort.
+Tracing the route to 48.73.239.66
+
+  1 46.88.20.2 40 msec 12 msec 12 msec
+  2 48.73.240.21 [AS 1273] 12 msec 36 msec *
+```
 
 ### 4.4 - Practical Questions
 
@@ -3223,7 +2644,7 @@ Described and explained in the previous point 4.2 - Implementation
 
 #### 4.4.2 - Provide command output screenshots that demonstrate the successful application of the configured policies
 
-__TODO__
+Described and explained in the previous point 4.3 - Test and Validation
 
 #### 4.4.3 - Discuss other alternative to achieve the same results and comment on their relative pros and cons, compared to your implementation
 
@@ -3443,10 +2864,6 @@ neighbor [neighbor ip address] prefix-list BOGON-FILTER in
 In the router __BadGuy__, to simulate the advertising of `Bogons`, we created the `bogon` static routes pointing to `Null0` and in the BGP section we advertise them with the `redistribute static` command. This command allow the injection of all the static routes of the routing table in the BGP routing process
 
 ```txt
-! ===========================================================================
-!                                BOGON PREFIXES
-! ===========================================================================
-!
 ip route 0.0.0.0 255.0.0.0 Null0           ! Software (current local network)
 ip route 10.0.0.0 255.0.0.0 Null0          ! Private
 ip route 100.64.0.0 255.192.0.0 Null0      ! Shared Address Space - CG-NAT
@@ -3663,7 +3080,8 @@ Packet sent with a source address of 64.96.0.115
 Success rate is 0 percent (0/5)
 ```
 
-__TODO__ On R5–R3, run a Wireshark capture to monitor ICMP traffic
+![](./assets/img/wireshark3.png)
+Capture of ICMP traffic between R5 and R3, pinging (ICMP request) from R14-Lo2 to Server 2
 
 ### 5.4 - Practical Questions
 
@@ -3770,7 +3188,6 @@ ROOT CAUSE:
 
 [Wikipedia page about Google Outages](https://en.wikipedia.org/wiki/Google_services_outages)
 
-## **Conclusion**
 
 **Without MD5 authentication, BGP sessions are vulnerable to:**
 - ✓ Session hijacking
@@ -3778,10 +3195,6 @@ ROOT CAUSE:
 - ✓ Traffic interception
 - ✓ Denial of service
 - ✓ Prefix hijacking
-
-**MD5 authentication is a fundamental, minimum-security requirement** that should be deployed on ALL eBGP sessions. While MD5 itself has cryptographic weaknesses, it's vastly better than no authentication at all and provides a critical first layer of defense in BGP security.
-
-The ideal approach is **defense-in-depth**: combine MD5/TCP-AO authentication with prefix filtering, AS_PATH validation, RPKI/ROV, and operational monitoring to create a robust BGP security posture.
 
 #### 5.4.2 - Which Bogon ranges did you filter in your lab, and why must they not appear in the global routing table?
 
@@ -3986,18 +3399,6 @@ With uRPF: Spoofed packets dropped at first hop
 - Can't use bogon addresses
 - Can't spoof internal resources
 
-**3. Simple but Effective**
-
-- Single command implementation
-- Hardware-accelerated on most ASICs
-- Minimal performance impact
-
-**4. Compliance Ready**
-
-- Meets PCI-DSS, NIST, ISO 27001 requirements
-- Implements BCP 38/RFC 2827
-- MANRS Action 4 recommendation
-
 uRPF acts as a "return address checker" for network traffic, dropping any packets that arrive on the "wrong door" based on our routing table, making source address spoofing virtually impossible at the network edge and in our case to enable the RTBH.
 
 #### 5.4.5 - What impact would the attack from 64.96.0.115 have on AS1273 if RTBH was not deployed?
@@ -4031,2768 +3432,3 @@ Throughout the five phases, we successfully:
 The key takeaways from this project extend beyond specific commands. We have learned the critical importance of **hierarchical design** (OSPF areas, route reflection), the **policy-centric nature of BGP**, and the **non-negotiable requirement for security** in inter-domain routing. 
 
 This lab has effectively showed us the operational reality of large-scale networks. The skills developed—encompassing design, configuration, troubleshooting, and policy implementation—are directly applicable to roles in network engineering, ISP operations, and cloud infrastructure. We conclude this project with a significantly deepened appreciation for the complexity and elegance of the protocols that keep the global Internet connected and secure.
-
-<div style="page-break-after: always"></div>
-
-## Appendices
-
-### IP Addressing for Lab Topology
-
-#### Router 1
-
-| Interface | Private IP Address | Public IP Address |
-| --------- | ------------------ | ----------------- |
-| Lo0       | 10.1.1.1/32        |                   |
-| Lo1       |                    | 48.73.239.11/32   |
-| g1/0      | 10.1.2.1/30        |                   |
-| g2/0      | 10.1.3.1/30        |                   |
-| g4/0      |                    | 48.73.240.1/30    |
-
-#### Router 2
-
-| Interface | Private IP Address | Public IP Address |
-| --------- | ------------------ | ----------------- |
-| Lo0       | 10.2.2.2/32        |                   |
-| Lo1       |                    | 48.73.239.22/32   |
-| f0/0      |                    | 48.73.239.2/30    |
-| g1/0      | 10.1.2.2/30        |                   |
-| g2/0      | 10.2.4.1/30        |                   |
-
-#### Router 3
-
-| Interface | Private IP Address | Public IP Address |
-| --------- | ------------------ | ----------------- |
-| Lo0       | 10.3.3.3/32        |                   |
-| Lo1       |                    | 48.73.239.33/32   |
-| g1/0      | 10.3.4.1/30        |                   |
-| g2/0      | 10.1.3.2/30        |                   |
-| g3/0      | 10.3.5.1/30        |                   |
-| g4/0      |                    | 48.73.240.5/30    |
-
-#### Router 4
-
-| Interface | Private IP Address | Public IP Address |
-| --------- | ------------------ | ----------------- |
-| Lo0       | 10.4.4.4/32        |                   |
-| Lo1       |                    | 48.73.239.44/32   |
-| g1/0      | 10.3.4.2/30        |                   |
-| g2/0      | 10.2.4.2/30        |                   |
-| g3/0      | 10.4.6.1/30        |                   |
-
-
-#### Router 5
-
-| Interface | Private IP Address | Public IP Address |
-| --------- | ------------------ | ----------------- |
-| Lo0       | 10.5.5.5/32        |                   |
-| Lo1       |                    | 48.73.239.55/32   |
-| g1/0      |                    | 64.112.0.2/30     |
-| g3/0      | 10.3.5.2/30        |                   |
-
-#### Router 6
-
-| Interface | Private IP Address | Public IP Address |
-| --------- | ------------------ | ----------------- |
-| Lo0       | 10.6.6.6/32        |                   |
-| Lo1       |                    | 48.73.239.66/32   |
-| f0/0      |                    | 48.73.240.17/30   |
-| g1/0      |                    | 48.73.240.13/30   |
-| g2/0      |                    | 48.73.240.21/30   |
-| g3/0      | 10.4.6.2/30        |                   |
-
-#### Router 7
-
-| Interface | Private IP Address | Public IP Address |
-| --------- | ------------------ | ----------------- |
-| Lo0       | 10.7.7.7/32        |                   |
-| Lo1       |                    | 130.41.46.77/32   |
-| f0/0      |                    | 130.41.46.9/30    |
-| g1/0      | 10.7.8.1/30        |                   |
-| g4/0      |                    | 48.73.240.6/30    |
-| g5/0      |                    | 64.112.0.6/30     |
-
-#### Router 8
-
-| Interface | Private IP Address | Public IP Address |
-| --------- | ------------------ | ----------------- |
-| Lo0       | 10.8.8.8/32        |                   |
-| Lo1       |                    | 130.41.46.88/32   |
-| f0/0      |                    | 130.41.46.5/30    |
-| g1/0      | 10.7.8.2/30        |                   |
-| g4/0      |                    | 48.73.240.2/30    |
-| g5/0      |                    | 130.41.46.2/30    |
-
-#### Router 9
-
-| Interface | Private IP Address | Public IP Address |
-| --------- | ------------------ | ----------------- |
-| Lo0       | 10.9.9.9/32        |                   |
-| Lo1       |                    | 130.41.47.99/32   |
-| f0/0      |                    | 130.41.46.10/30   |
-| f0/1      |                    | 130.41.46.6/30    |
-
-#### Router 10
-
-| Interface | Private IP Address | Public IP Address |
-| --------- | ------------------ | ----------------- |
-| Lo0       | 10.10.10.10/32     |                   |
-| Lo1       |                    | 46.87.162.110/32  |
-| g1/0      | 10.10.11.1/30      |                   |
-| g2/0      |                    | 211.176.129.2/30  |
-| g3/0      | 10.10.12.1/30      |                   |
-| g4/0      |                    | 46.88.20.1/30     |
-
-#### Router 11
-
-| Interface | Private IP Address | Public IP Address |
-| --------- | ------------------ | ----------------- |
-| Lo0       | 10.11.11.11/32     |                   |
-| Lo1       |                    | 46.87.162.111/32  |
-| f0/0      |                    | 46.88.20.5/30     |
-| g1/0      | 10.10.11.2/30      |                   |
-| g2/0      | 10.11.12.1/30      |                   |
-
-#### Router 12
-
-| Interface | Private IP Address | Public IP Address |
-| --------- | ------------------ | ----------------- |
-| Lo0       | 10.12.12.12/32     |                   |
-| Lo1       |                    | 46.87.162.112/32  |
-| f0/0      |                    | 46.87.162.2/30    |
-| g2/0      | 10.11.12.2/30      |                   |
-| g3/0      | 10.10.12.2/30      |                   |
-| g5/0      |                    | 48.73.240.18/30   |
-
-#### Router 13
-
-| Interface | Private IP Address | Public IP Address |
-| --------- | ------------------ | ----------------- |
-| Lo0       | 10.13.13.13/32     |                   |
-| Lo1       |                    | 158.23.228.113/32 |
-| f0/0      |                    | 46.88.20.6/30     |
-| g1/0      |                    | 158.23.228.2/30   |
-
-#### Router 14
-
-| Interface | Private IP Address | Public IP Address |
-| --------- | ------------------ | ----------------- |
-| Lo0       | 10.14.14.14/32     |                   |
-| Lo1       |                    | 64.96.0.114/32    |
-| f0/0      |                    | 64.96.0.2/30      |
-| g1/0      |                    | 64.112.0.1/30     |
-| g3/0      |                    | 64.112.0.9/30     |
-| g5/0      |                    | 64.112.0.5/30     |
-
-#### Router 15
-
-| Interface | Private IP Address | Public IP Address |
-| --------- | ------------------ | ----------------- |
-| Lo0       | 10.15.15.15/32     |                   |
-| Lo1       |                    | 211.176.128.115/32 |
-| f0/0      |                    | 211.176.128.2/30  |
-| g1/0      |                    | 48.73.240.14/30   |
-| g2/0      |                    | 211.176.129.1/30  |
-| g3/0      |                    | 64.112.0.10/30    |
-| g4/0      |                    | 211.176.129.5/30  |
-
-#### Router 16
-
-| Interface | Private IP Address | Public IP Address |
-| --------- | ------------------ | ----------------- |
-| Lo0       | 10.16.16.16/32     |                   |
-| Lo1       |                    |                   |
-| g2/0      |                    | 48.73.240.22/30   |
-| g4/0      |                    | 48.88.20.2/30     |
-
-#### Badguy
-
-| Interface | Private IP Address | Public IP Address |
-| --------- | ------------------ | ----------------- |
-| Lo0       | 10.66.66.66/32     |                   |
-| g4/0      |                    | 211.176.129.6/30  |
-
-#### Servers
-
-| Name    | Interface | Public IP Address |
-| ------- | --------- | ----------------- |
-| Server1 | e0        | 130.41.46.1/30    |
-| Server2 | e0        | 48.73.239.1/30    |
-| Server3 | e0        | 64.96.0.1/30      |
-| Server4 | e0        | 211.176.128.1/30  |
-| Server5 | e0        | 46.87.162.1/30    |
-| Server6 | e0        | 158.23.228.1/30   |
-
-<div style="page-break-after: always"></div>
-
-### TCLSH (Tool Control Language) Shell for Testing
-
-```txt
-R9# tclsh
-R9(tcl)#
-foreach address {
-48.73.239.11
-48.73.239.22
-48.73.239.33
-48.73.239.44
-48.73.239.55
-48.73.239.66
-130.41.46.77
-130.41.46.88
-130.41.47.99
-46.87.162.110
-46.87.162.111
-46.87.162.112
-158.23.228.113
-64.96.0.114
-211.176.128.115
-130.41.46.1
-48.73.239.1
-64.96.0.1
-211.176.128.1
-46.87.162.1
-158.23.228.1
-} {ping $address source lo1}
-```
-
-<div style="page-break-after: always"></div>
-
-### Router and Server Configuration Files
-
-#### AS 1273 - Vodafone
-
-Router 1
-
-```cisco
-! ==============================================================================
-!
-!                          AS 1273 - Vodafone - R1
-!           Border Router (Edge Router) with eBGP peer to AS17390
-!
-! ==============================================================================
-!
-hostname R1
-!
-! ==============================================================================
-!                                IP Addressing
-! ==============================================================================
-!
-interface Loopback0
- ip address 10.1.1.1 255.255.255.255
-!
-interface Loopback1
- ip address 48.73.239.11 255.255.255.255
-!
-interface GigabitEthernet1/0
- ip address 10.1.2.1 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet2/0
- ip address 10.1.3.1 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet4/0
- ! EXTERNAL eBGP connection to AS17390 (Transit/Peering provider)
- ip address 48.73.240.1 255.255.255.252
- no shutdown
-!
-! ==============================================================================
-!                                  OSPF
-! ==============================================================================
-!
-router ospf 1
- ! Loopback0 set as passive - advertises route but doesn't form OSPF adjacencies
- passive-interface Loopback0               
- ! Advertise all 10.0.0.0/8 addresses in OSPF area 0 (backbone)
- network 10.0.0.0 0.255.255.255 area 0        
- ! Log adjacency changes for monitoring/troubleshooting
- log-adjacency-changes
-!
-! ==============================================================================
-!                               STATIC ROUTES
-! ==============================================================================
-!
-! Aggregate/Summary routes to be advertised via BGP (blackhole/null routes)
-! These represent customer address blocks for BGP advertisement
-ip route 48.73.239.0 255.255.255.0 Null0      ! /24 customer block
-ip route 48.73.240.0 255.255.252.0 Null0      ! /22 customer block
-ip route 63.25.64.0 255.255.192.0 Null0       ! /18 customer block
-!
-! ==============================================================================
-!                               PREFIX LISTS
-! ==============================================================================
-!
-! Prefix list for OUTBOUND BGP advertisements
-! Restricts advertisements to prefixes with mask length <= 24 (max /24)
-! Prevents route deaggregation and advertising too-specific routes
-ip prefix-list PREFIX_LIST_ADV_SUMM seq 5 permit 0.0.0.0/0 le 24
-!
-! Comprehensive BOGON filter for INBOUND BGP advertisements
-! Blocks known invalid/reserved/private IP space from being accepted
-ip prefix-list BOGON-FILTER seq 5 deny 0.0.0.0/8 le 32        ! Software (current local network)
-ip prefix-list BOGON-FILTER seq 10 deny 10.0.0.0/8 le 32      ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 15 deny 100.64.0.0/10 le 32   ! Shared Address Space - CG-NAT
-ip prefix-list BOGON-FILTER seq 20 deny 127.0.0.0/8 le 32     ! Loopback addresses to Localhost
-ip prefix-list BOGON-FILTER seq 25 deny 169.254.0.0/16 le 32  ! APIPA - Automatic Private IP Address
-ip prefix-list BOGON-FILTER seq 30 deny 172.16.0.0/12 le 32   ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 35 deny 192.0.0.0/24 le 32    ! IETF Protocol Assignments
-ip prefix-list BOGON-FILTER seq 40 deny 192.0.2.0/24 le 32    ! Documentation - TEST-NET-1
-ip prefix-list BOGON-FILTER seq 45 deny 192.88.99.0/24 le 32  ! Reserved (6to4 relay anycast)
-ip prefix-list BOGON-FILTER seq 50 deny 192.168.0.0/16 le 32  ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 55 deny 198.18.0.0/15 le 32   ! Benchmark testing
-ip prefix-list BOGON-FILTER seq 60 deny 198.51.100.0/24 le 32 ! Documentation - TEST-NET-2
-ip prefix-list BOGON-FILTER seq 65 deny 203.0.113.0/24 le 32  ! Documentation - TEST-NET-3
-ip prefix-list BOGON-FILTER seq 70 deny 224.0.0.0/4 le 32     ! Multicast address space
-ip prefix-list BOGON-FILTER seq 75 deny 233.252.0.0/24 le 32  ! Documentation - MCAST-TEST-NET
-ip prefix-list BOGON-FILTER seq 80 deny 240.0.0.0/4 le 32     ! Reserved for future use
-! Final permit statement - allows all other legitimate Internet routes
-ip prefix-list BOGON-FILTER seq 85 permit 0.0.0.0/0 le 32     ! All address space
-!
-! ==============================================================================
-!                                   BGP
-! ==============================================================================
-!
-router bgp 1273
- ! Set explicit Router ID (better than automatic selection)
- bgp router-id 10.1.1.1
- ! Disable BGP-IGP synchronization (modern networks don't need it)
- no synchronization
- ! Log neighbor state changes for monitoring
- bgp log-neighbor-changes
- !
- ! ----------------------------------------------------------------------------
- ! iBGP PEER GROUP (for internal Vodafone routers)
- ! ----------------------------------------------------------------------------
- neighbor iBGP peer-group
- neighbor iBGP remote-as 1273                 ! Same AS for internal peers
- neighbor iBGP update-source Loopback0        ! Use loopback for stable sessions
- neighbor iBGP next-hop-self                  ! Rewrite next-hop to self for iBGP
- neighbor iBGP soft-reconfiguration inbound   ! Enable non-disruptive policy changes
- !
- ! Assign specific iBGP neighbors to the peer group
- neighbor 10.3.3.3 peer-group iBGP           ! Internal Vodafone router
- neighbor 10.4.4.4 peer-group iBGP           ! Internal Vodafone router (likely RR)
- !
- ! ----------------------------------------------------------------------------
- ! eBGP PEER (External Transit/Peer - AS17390)
- ! ----------------------------------------------------------------------------
- neighbor 48.73.240.2 remote-as 17390         ! External provider/router
- neighbor 48.73.240.2 soft-reconfiguration inbound   ! Store updates for debugging
- ! Apply BOGON filter to INBOUND routes from peer
- neighbor 48.73.240.2 prefix-list BOGON-FILTER in
- ! Apply prefix length restriction to OUTBOUND advertisements
- neighbor 48.73.240.2 prefix-list PREFIX_LIST_ADV_SUMM out
- ! Limit maximum prefixes accepted (anti-DDoS/configuration error protection)
- neighbor 48.73.240.2 maximum-prefix 50
- !
- ! ----------------------------------------------------------------------------
- ! ROUTE ADVERTISEMENTS (Network statements)
- ! Advertise Vodafone address space to external peers
- ! ----------------------------------------------------------------------------
- network 48.73.239.11 mask 255.255.255.255    ! Specific Loopback1 address (/32)
- network 48.73.239.0 mask 255.255.255.0       ! Customer /24 block
- network 48.73.240.0 mask 255.255.252.0       ! Customer /22 block
- network 63.25.64.0 mask 255.255.192.0        ! Customer /18 block
- ! Disable automatic network summarization (classful boundaries)
- no auto-summary
-!
-end
-```
-
-Router 2
-
-```cisco
-! ==============================================================================
-!
-!                          AS 1273 - Vodafone - R2
-!          Internal Router with Server Connectivity & iBGP Peering
-!
-! ==============================================================================
-!
-hostname R2
-!
-! ==============================================================================
-!                                IP Addressing
-! ==============================================================================
-!
-interface Loopback0
- ! Management/OSPF/BGP Router ID interface
- ip address 10.2.2.2 255.255.255.255
-!
-interface Loopback1
- ! Public IP address for BGP advertisement
- ip address 48.73.239.22 255.255.255.255
-!
-interface FastEthernet0/0
- ! CONNECTION TO SERVER NETWORK (Customer/Server facing)
- ip address 48.73.239.2 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet1/0
- ! Internal OSPF link to R1 (10.1.2.0/30 network)
- ip address 10.1.2.2 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet2/0
- ! Internal OSPF link to R4 (10.2.4.0/30 network)
- ip address 10.2.4.1 255.255.255.252
- no shutdown
-!
-! ==============================================================================
-!                                  OSPF
-! ==============================================================================
-!
-router ospf 1
- ! Loopback0 set as passive - advertises route but doesn't form OSPF adjacencies
- passive-interface Loopback0               
- ! Advertise all 10.0.0.0/8 addresses in OSPF area 0 (backbone)
- network 10.0.0.0 0.255.255.255 area 0        
- ! Log adjacency changes for monitoring/troubleshooting
- log-adjacency-changes
-!
-! ==============================================================================
-!                               STATIC ROUTES
-! ==============================================================================
-!
-! Aggregate/Summary routes for BGP advertisement
-! These represent customer address blocks
-ip route 48.73.239.0 255.255.255.0 Null0      ! /24 customer block
-ip route 48.73.240.0 255.255.252.0 Null0      ! /22 customer block
-ip route 63.25.64.0 255.255.192.0 Null0       ! /18 customer block
-!
-! ==============================================================================
-!                                   BGP
-! ==============================================================================
-!
-router bgp 1273
- ! Set explicit Router ID
- bgp router-id 10.2.2.2
- ! Disable BGP-IGP synchronization
- no synchronization
- ! Log neighbor state changes for monitoring
- bgp log-neighbor-changes
- !
- ! ----------------------------------------------------------------------------
- ! iBGP PEER GROUP (for internal Vodafone routers)
- ! ----------------------------------------------------------------------------
- neighbor iBGP peer-group
- neighbor iBGP remote-as 1273                 ! Same AS for internal peers
- neighbor iBGP update-source Loopback0        ! Use loopback for stable sessions
- neighbor iBGP next-hop-self                  ! Rewrite next-hop to self for iBGP
- neighbor iBGP soft-reconfiguration inbound   ! Enable non-disruptive policy changes
- !
- ! Assign specific iBGP neighbors to the peer group
- neighbor 10.3.3.3 peer-group iBGP           ! Internal Vodafone router
- neighbor 10.4.4.4 peer-group iBGP           ! Internal Vodafone router (Route Reflector)
- !
- ! ----------------------------------------------------------------------------
- ! ROUTE ADVERTISEMENTS (Network statements)
- ! Advertise Vodafone address space to iBGP peers
- ! ----------------------------------------------------------------------------
- network 48.73.239.0 mask 255.255.255.0       ! Customer /24 block includes Loopback1
- ! ----------------------------------------------------------------------------
- ! CRITICAL: This /30 advertisement is a workaround/hack
- ! Purpose: "avoid black-hole in access to server2"
- ! This advertises a more specific route (48.73.239.0/30) that includes
- ! the server's actual IP (48.73.239.1). This overrides the /24 null route
- ! for traffic destined to the server, preventing it from being blackholed.
- ! ----------------------------------------------------------------------------
- network 48.73.239.0 mask 255.255.255.252     ! Specific /30 for server access
- network 48.73.240.0 mask 255.255.252.0       ! Customer /22 block
- network 63.25.64.0 mask 255.255.192.0        ! Customer /18 block
- network 48.73.239.22 mask 255.255.255.255    ! Lo1
- ! Disable automatic network summarization
- no auto-summary
-!
-end
-```
-
-Router 2
-
-```cisco
-! ==============================================================================
-!
-!                          AS 1273 - Vodafone - R3
-!          Route Reflector & Border Router (Dual-homed to AS17390)
-!
-! ==============================================================================
-!
-hostname R3
-!
-! ==============================================================================
-!                                IP Addressing
-! ==============================================================================
-!
-interface Loopback0
- ! Management/OSPF/BGP Router ID interface
- ip address 10.3.3.3 255.255.255.255
-!
-interface Loopback1
- ! Public IP address for BGP advertisement
- ip address 48.73.239.33 255.255.255.255
-!
-interface GigabitEthernet1/0
- ! Internal OSPF link to R4 (10.3.4.0/30 network)
- ip address 10.3.4.1 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet2/0
- ! Internal OSPF link to R1 (10.1.3.0/30 network)
- ip address 10.1.3.2 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet3/0
- ! Internal OSPF link to R5 (10.3.5.0/30 network)
- ip address 10.3.5.1 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet4/0
- ! EXTERNAL eBGP connection to AS17390
- ip address 48.73.240.5 255.255.255.252
- no shutdown
-!
-! ==============================================================================
-!                                  OSPF
-! ==============================================================================
-!
-router ospf 1
- ! Loopback0 set as passive - advertises route but doesn't form OSPF adjacencies
- passive-interface Loopback0               
- ! Advertise all 10.0.0.0/8 addresses in OSPF area 0 (backbone)
- network 10.0.0.0 0.255.255.255 area 0        
- ! Log adjacency changes for monitoring/troubleshooting
- log-adjacency-changes
-!
-! ==============================================================================
-!                               STATIC ROUTES
-! ==============================================================================
-!
-! Aggregate/Summary routes for BGP advertisement
-ip route 48.73.239.0 255.255.255.0 Null0      ! /24 customer block
-ip route 48.73.240.0 255.255.252.0 Null0      ! /22 customer block
-ip route 63.25.64.0 255.255.192.0 Null0       ! /18 customer block
-!
-! ==============================================================================
-!                               PREFIX LISTS
-! ==============================================================================
-!
-! Prefix list for OUTBOUND BGP advertisements
-! Restricts advertisements to prefixes with mask length <= 24 (max /24)
-ip prefix-list PREFIX_LIST_ADV_SUMM seq 5 permit 0.0.0.0/0 le 24
-!
-! Comprehensive BOGON filter for INBOUND BGP advertisements
-ip prefix-list BOGON-FILTER seq 5 deny 0.0.0.0/8 le 32        ! Software (current local network)
-ip prefix-list BOGON-FILTER seq 10 deny 10.0.0.0/8 le 32      ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 15 deny 100.64.0.0/10 le 32   ! Shared Address Space - CG-NAT
-ip prefix-list BOGON-FILTER seq 20 deny 127.0.0.0/8 le 32     ! Loopback addresses to Localhost
-ip prefix-list BOGON-FILTER seq 25 deny 169.254.0.0/16 le 32  ! APIPA - Automatic Private IP Address
-ip prefix-list BOGON-FILTER seq 30 deny 172.16.0.0/12 le 32   ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 35 deny 192.0.0.0/24 le 32    ! IETF Protocol Assignments
-ip prefix-list BOGON-FILTER seq 40 deny 192.0.2.0/24 le 32    ! Documentation - TEST-NET-1
-ip prefix-list BOGON-FILTER seq 45 deny 192.88.99.0/24 le 32  ! Reserved (6to4 relay anycast)
-ip prefix-list BOGON-FILTER seq 50 deny 192.168.0.0/16 le 32  ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 55 deny 198.18.0.0/15 le 32   ! Benchmark testing
-ip prefix-list BOGON-FILTER seq 60 deny 198.51.100.0/24 le 32 ! Documentation - TEST-NET-2
-ip prefix-list BOGON-FILTER seq 65 deny 203.0.113.0/24 le 32  ! Documentation - TEST-NET-3
-ip prefix-list BOGON-FILTER seq 70 deny 224.0.0.0/4 le 32     ! Multicast address space
-ip prefix-list BOGON-FILTER seq 75 deny 233.252.0.0/24 le 32  ! Documentation - MCAST-TEST-NET
-ip prefix-list BOGON-FILTER seq 80 deny 240.0.0.0/4 le 32     ! Reserved for future use
-! Final permit statement - allows all other legitimate Internet routes
-ip prefix-list BOGON-FILTER seq 85 permit 0.0.0.0/0 le 32     ! All address space
-!
-! ==============================================================================
-!                                   BGP
-! ==============================================================================
-!
-router bgp 1273
- ! Set explicit Router ID
- bgp router-id 10.3.3.3
- ! Route Reflector Cluster ID
- bgp cluster-id 1273
- ! Disable BGP-IGP synchronization
- no synchronization
- ! Log neighbor state changes for monitoring
- bgp log-neighbor-changes
- !
- ! ----------------------------------------------------------------------------
- ! iBGP PEER GROUP CONFIGURATIONS
- ! ----------------------------------------------------------------------------
- 
- ! iBGP Peer Group (for Route Reflector Clients)
- neighbor iBGP peer-group
- neighbor iBGP remote-as 1273                 ! Same AS for internal peers
- neighbor iBGP update-source Loopback0        ! Use loopback for stable sessions
- neighbor iBGP route-reflector-client         ! CRITICAL: Treat these as RR clients
- neighbor iBGP next-hop-self                  ! Rewrite next-hop to self for iBGP
- neighbor iBGP soft-reconfiguration inbound   ! Enable non-disruptive policy changes
- 
- ! iBGP_RR Peer Group (for other Route Reflectors)
- neighbor iBGP_RR peer-group
- neighbor iBGP_RR remote-as 1273              ! Same AS
- neighbor iBGP_RR update-source Loopback0     ! Loopback-based sessions
- neighbor iBGP_RR soft-reconfiguration inbound ! Enable inbound soft-reconfig
- 
- ! ----------------------------------------------------------------------------
- ! iBGP NEIGHBOR ASSIGNMENTS
- ! R3 acts as a Route Reflector with 5 clients and 1 non-client (R4)
- ! ----------------------------------------------------------------------------
- neighbor 10.1.1.1 peer-group iBGP           ! R1 - RR client
- neighbor 10.2.2.2 peer-group iBGP           ! R2 - RR client
- neighbor 10.4.4.4 peer-group iBGP_RR        ! R4 - Other RR (non-client)
- neighbor 10.5.5.5 peer-group iBGP           ! R5 - RR client
- neighbor 10.6.6.6 peer-group iBGP           ! R6 - RR client
- 
- ! ----------------------------------------------------------------------------
- ! eBGP PEER (External Transit/Peer - AS17390)
- ! Secondary connection to same provider as R1
- ! ----------------------------------------------------------------------------
- neighbor 48.73.240.6 remote-as 17390         ! External provider/router (peer to R1's peer)
- neighbor 48.73.240.6 soft-reconfiguration inbound   ! Store updates for debugging
- ! Apply BOGON filter to INBOUND routes from peer
- neighbor 48.73.240.6 prefix-list BOGON-FILTER in
- ! Apply prefix length restriction to OUTBOUND advertisements
- neighbor 48.73.240.6 prefix-list PREFIX_LIST_ADV_SUMM out
- ! Limit maximum prefixes accepted (anti-DDoS/configuration error protection)
- neighbor 48.73.240.6 maximum-prefix 50
- 
- ! ----------------------------------------------------------------------------
- ! ROUTE ADVERTISEMENTS (Network statements)
- ! Advertise Vodafone address space to external and internal peers
- ! ----------------------------------------------------------------------------
- network 48.73.239.33 mask 255.255.255.255   ! Specific Loopback1 address (/32)
- network 48.73.239.0 mask 255.255.255.0      ! Customer /24 block
- network 48.73.240.0 mask 255.255.252.0      ! Customer /22 block
- ! ----------------------------------------------------------------------------
- ! IMPORTANT: Advertise the specific /30 link to AS17390
- ! Purpose: "to AS 17390 avoiding black-hole"
- ! This advertises the specific point-to-point link (48.73.240.4/30)
- ! to ensure connectivity to the eBGP peer isn't broken by the /22 null route
- ! ----------------------------------------------------------------------------
- network 48.73.240.4 mask 255.255.255.252    ! Specific /30 eBGP link
- network 63.25.64.0 mask 255.255.192.0       ! Customer /18 block
- ! Disable automatic network summarization
- no auto-summary
-!
-end
-```
-
-Router 4
-
-```cisco
-! ==============================================================================
-!
-!                          AS 1273 - Vodafone - R4
-!       Primary Route Reflector with DDoS Mitigation (RTBH) Capabilities
-!
-! ==============================================================================
-!
-hostname R4
-!
-! ==============================================================================
-!                                IP Addressing
-! ==============================================================================
-!
-interface Loopback0
- ! Management/OSPF/BGP Router ID interface
- ip address 10.4.4.4 255.255.255.255
-!
-interface Loopback1
- ! Public IP address
- ip address 48.73.239.44 255.255.255.255
-!
-interface GigabitEthernet1/0
- ! Internal OSPF link to R3 (10.3.4.0/30 network)
- ip address 10.3.4.2 255.255.255.252
- !uRPF (Unicast Reverse Path Forwarding)
- ip verify unicast reverse-path
- no shutdown
-!
-interface GigabitEthernet2/0
- ! Internal OSPF link to R2 (10.2.4.0/30 network)
- ip address 10.2.4.2 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet3/0
- ! Internal OSPF link to R6 (10.4.6.0/30 network)
- ip address 10.4.6.1 255.255.255.252
- no shutdown
-!
-! ==============================================================================
-!                                    OSPF
-! ==============================================================================
-!
-router ospf 1
- ! Loopback0 set as passive - advertises route but doesn't form OSPF adjacencies
- passive-interface Loopback0               
- ! Advertise all 10.0.0.0/8 addresses in OSPF area 0 (backbone)
- network 10.0.0.0 0.255.255.255 area 0        
- ! Log adjacency changes for monitoring/troubleshooting
- log-adjacency-changes
-!
-! ==============================================================================
-!                               STATIC ROUTES
-! ==============================================================================
-!
-! Aggregate/Summary routes for BGP advertisement (same as other routers)
-ip route 48.73.239.0 255.255.255.0 Null0      ! /24 customer block
-ip route 48.73.240.0 255.255.252.0 Null0      ! /22 customer block
-ip route 63.25.64.0 255.255.192.0 Null0       ! /18 customer block
-!
-! ==============================================================================
-!                          Remote Triggered Black Hole (RTBH)
-!                    DDoS Mitigation / Traffic Scrubbing System
-! ==============================================================================
-!
-! Blackhole route for specific victim IP (64.96.0.115)
-! TAG 66: Used for identification/tracking of blackhole routes
-ip route 64.96.0.115 255.255.255.255 Null0 tag 66
-
-! Prefix list to match the blackhole route
-ip prefix-list BH seq 5 permit 64.96.0.115/32
-
-! Route-map to modify BGP attributes for blackhole routes
-route-map black-hole-trigger permit 10
-  ! Match the specific blackhole prefix
-  match ip address prefix-list BH
-  
-  ! Set BGP LOCAL_PREFERENCE to 200 (high priority within AS)
-  set local-preference 200
-  
-  ! Set BGP ORIGIN attribute to IGP (marks as internally originated)
-  set origin igp
-  
-  ! Add NO-EXPORT community (prevents route from leaving AS1273)
-  set community no-export
-  
-  ! CRITICAL: Redirect traffic to scrubbing center (192.0.2.1)
-  ! This modifies the next-hop, sending traffic to DDoS mitigation appliance
-  set ip next-hop 192.0.2.1
-
-! Additional permit statement for normal routes
-route-map black-hole-trigger permit 20
-  ! Without match clause → match everything
-  ! Without set commands → keeps original attributes
-  ! IMPORTANTE: This clause ensures that non blackholed routes to be announced normally
-
-! Loop prevention route for scrubbing center
-! Prevents traffic to the scrubbing center itself from looping
-ip route 192.0.2.1 255.255.255.255 Null0
-!
-! ==============================================================================
-!                                   BGP
-! ==============================================================================
-!
-router bgp 1273
- ! ----------------------------------------------------------------------------
- ! REDISTRIBUTE STATIC ROUTES (including blackhole routes)
- ! This imports all static routes into BGP, including:
- ! 1. Customer aggregates (48.73.239.0/24, etc.)
- ! 2. Blackhole routes (64.96.0.115/32 when activated)
- ! ----------------------------------------------------------------------------
- redistribute static
- 
- ! Set explicit Router ID
- bgp router-id 10.4.4.4
- ! Route Reflector Cluster ID (same as R3 - redundant RR cluster)
- bgp cluster-id 1273
- ! Disable BGP-IGP synchronization
- no synchronization
- ! Log neighbor state changes for monitoring
- bgp log-neighbor-changes
- !
- ! ----------------------------------------------------------------------------
- ! iBGP PEER GROUP CONFIGURATIONS
- ! ----------------------------------------------------------------------------
- 
- ! iBGP Peer Group (for Route Reflector Clients)
- neighbor iBGP peer-group
- neighbor iBGP remote-as 1273                 ! Same AS for internal peers
- neighbor iBGP update-source Loopback0        ! Use loopback for stable sessions
- neighbor iBGP route-reflector-client         ! Treat these as RR clients
- neighbor iBGP next-hop-self                  ! Rewrite next-hop to self for iBGP
- neighbor iBGP soft-reconfiguration inbound   ! Enable non-disruptive policy changes
- neighbor iBGP send-community                 ! Send community attribute to peers
- ! ----------------------------------------------------------------------------
- ! CRITICAL: Apply blackhole route-map to ALL outgoing iBGP advertisements
- ! ----------------------------------------------------------------------------
- neighbor iBGP route-map black-hole-trigger out
- 
- ! iBGP_RR Peer Group (for other Route Reflectors)
- neighbor iBGP_RR peer-group
- neighbor iBGP_RR remote-as 1273               ! Same AS
- neighbor iBGP_RR update-source Loopback0      ! Loopback-based sessions
- neighbor iBGP_RR soft-reconfiguration inbound ! Enable inbound soft-reconfig
- neighbor iBGP_RR route-map black-hole-trigger out
- 
- ! ----------------------------------------------------------------------------
- ! iBGP NEIGHBOR ASSIGNMENTS
- ! R4 acts as primary Route Reflector with 4 clients and 1 non-client (R3)
- ! ----------------------------------------------------------------------------
- neighbor 10.1.1.1 peer-group iBGP           ! R1 - RR client
- neighbor 10.2.2.2 peer-group iBGP           ! R2 - RR client
- neighbor 10.3.3.3 peer-group iBGP_RR        ! R3 - Other RR (non-client)
- neighbor 10.5.5.5 peer-group iBGP           ! R5 - RR client
- neighbor 10.6.6.6 peer-group iBGP           ! R6 - RR client
- 
- network 48.73.239.44 mask 255.255.255.255   ! Lo1
- 
- ! Disable automatic network summarization
- no auto-summary
-!
-end
-```
-
-Router 5
-
-```cisco
-! ==============================================================================
-!
-!                          AS 1273 - Vodafone - R5
-!                Border Router with eBGP to AS701 (Verizon/UUNET)
-!
-! ==============================================================================
-!
-hostname R5
-!
-! ==============================================================================
-!                                 Services
-! ==============================================================================
-!
-service password-encryption ! Encrypts passwords to prevent plain text display
-!
-! ==============================================================================
-!                                IP Addressing
-! ==============================================================================
-!
-interface Loopback0
- ! Management/OSPF/BGP Router ID interface
- ip address 10.5.5.5 255.255.255.255
-!
-interface Loopback1
- ! Public IP address for BGP advertisement
- ip address 48.73.239.55 255.255.255.255
-!
-interface GigabitEthernet1/0
- ! EXTERNAL eBGP connection to AS701 (Verizon/UUNET)
- ip address 64.112.0.2 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet3/0
- ! Internal OSPF link to R3 (10.3.5.0/30 network)
- ip address 10.3.5.2 255.255.255.252
- no shutdown
-!
-! ==============================================================================
-!                                    OSPF
-! ==============================================================================
-!
-router ospf 1
- ! Loopback0 set as passive - advertises route but doesn't form OSPF adjacencies
- passive-interface Loopback0               
- ! Advertise all 10.0.0.0/8 addresses in OSPF area 0 (backbone)
- network 10.0.0.0 0.255.255.255 area 0        
- ! Log adjacency changes for monitoring/troubleshooting
- log-adjacency-changes
-!
-! ==============================================================================
-!                               STATIC ROUTES
-! ==============================================================================
-!
-! Aggregate/Summary routes for BGP advertisement
-! These represent customer address blocks
-ip route 48.73.239.0 255.255.255.0 Null0      ! /24 customer block
-ip route 48.73.240.0 255.255.252.0 Null0      ! /22 customer block
-ip route 63.25.64.0 255.255.192.0 Null0       ! /18 customer block
-!
-! ==============================================================================
-!                               PREFIX LISTS
-! ==============================================================================
-!
-! Prefix list for OUTBOUND BGP advertisements
-! Restricts advertisements to prefixes with mask length <= 24 (max /24)
-! Prevents route deaggregation and advertising too-specific routes
-ip prefix-list PREFIX_LIST_ADV_SUMM seq 5 permit 0.0.0.0/0 le 24
-!
-! Comprehensive BOGON filter for INBOUND BGP advertisements
-! Blocks known invalid/reserved/private IP space from being accepted
-ip prefix-list BOGON-FILTER seq 5 deny 0.0.0.0/8 le 32        ! Software (current local network)
-ip prefix-list BOGON-FILTER seq 10 deny 10.0.0.0/8 le 32      ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 15 deny 100.64.0.0/10 le 32   ! Shared Address Space - CG-NAT
-ip prefix-list BOGON-FILTER seq 20 deny 127.0.0.0/8 le 32     ! Loopback addresses to Localhost
-ip prefix-list BOGON-FILTER seq 25 deny 169.254.0.0/16 le 32  ! APIPA - Automatic Private IP Address
-ip prefix-list BOGON-FILTER seq 30 deny 172.16.0.0/12 le 32   ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 35 deny 192.0.0.0/24 le 32    ! IETF Protocol Assignments
-ip prefix-list BOGON-FILTER seq 40 deny 192.0.2.0/24 le 32    ! Documentation - TEST-NET-1
-ip prefix-list BOGON-FILTER seq 45 deny 192.88.99.0/24 le 32  ! Reserved (6to4 relay anycast)
-ip prefix-list BOGON-FILTER seq 50 deny 192.168.0.0/16 le 32  ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 55 deny 198.18.0.0/15 le 32   ! Benchmark testing
-ip prefix-list BOGON-FILTER seq 60 deny 198.51.100.0/24 le 32 ! Documentation - TEST-NET-2
-ip prefix-list BOGON-FILTER seq 65 deny 203.0.113.0/24 le 32  ! Documentation - TEST-NET-3
-ip prefix-list BOGON-FILTER seq 70 deny 224.0.0.0/4 le 32     ! Multicast address space
-ip prefix-list BOGON-FILTER seq 75 deny 233.252.0.0/24 le 32  ! Documentation - MCAST-TEST-NET
-ip prefix-list BOGON-FILTER seq 80 deny 240.0.0.0/4 le 32     ! Reserved for future use
-! Final permit statement - allows all other legitimate Internet routes
-ip prefix-list BOGON-FILTER seq 85 permit 0.0.0.0/0 le 32     ! All address space
-!
-! ==============================================================================
-!                                   BGP
-! ==============================================================================
-!
-router bgp 1273
- ! Set explicit Router ID
- bgp router-id 10.5.5.5
- ! Disable BGP-IGP synchronization (modern networks don't need it)
- no synchronization
- ! Log neighbor state changes for monitoring
- bgp log-neighbor-changes
- !
- ! ----------------------------------------------------------------------------
- ! iBGP PEER GROUP (for internal Vodafone routers)
- ! ----------------------------------------------------------------------------
- neighbor iBGP peer-group
- neighbor iBGP remote-as 1273                 ! Same AS for internal peers
- neighbor iBGP update-source Loopback0        ! Use loopback for stable sessions
- neighbor iBGP next-hop-self                  ! Rewrite next-hop to self for iBGP
- neighbor iBGP soft-reconfiguration inbound   ! Enable non-disruptive policy changes
- ! Security: Add prefix limits for iBGP sessions
- neighbor iBGP maximum-prefix 50
- !
- ! Assign specific iBGP neighbors to the peer group
- neighbor 10.3.3.3 peer-group iBGP            ! Internal Vodafone router (RR)
- neighbor 10.4.4.4 peer-group iBGP            ! Internal Vodafone router (RR)
- !
- ! ----------------------------------------------------------------------------
- ! eBGP PEER (External Transit/Peer - AS701 - Verizon)
- ! ----------------------------------------------------------------------------
- neighbor 64.112.0.1 remote-as 701             ! External provider/router (AS701 = Verizon)
- ! BGP MD5 authentication
- neighbor 64.112.0.1 password BGP@p455w0rd_701-1273
- neighbor 64.112.0.1 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes from peer
- neighbor 64.112.0.1 prefix-list BOGON-FILTER in
- ! Apply prefix length restriction to OUTBOUND advertisements
- neighbor 64.112.0.1 prefix-list PREFIX_LIST_ADV_SUMM out
- ! Limit maximum prefixes accepted (anti-DDoS/configuration error protection)
- neighbor 64.112.0.1 maximum-prefix 50
- !
- ! ----------------------------------------------------------------------------
- ! ROUTE ADVERTISEMENTS (Network statements)
- ! Advertise Vodafone address space to external peers
- ! ----------------------------------------------------------------------------
- ! IMPORTANT: Unlike R3, R5 does NOT advertise the specific /30 eBGP link
- ! This could cause blackholing issues if the aggregate points to Null0
- network 48.73.239.55 mask 255.255.255.255   ! Specific Loopback1 address (/32)
- network 48.73.239.0 mask 255.255.255.0      ! Customer /24 block
- network 48.73.240.0 mask 255.255.252.0      ! Customer /22 block (aggregate)
- network 63.25.64.0 mask 255.255.192.0       ! Customer /18 block
- network 64.112.0.0 mask 255.255.255.252     ! Specific /30 eBGP link to AS701
- ! Disable automatic network summarization
- no auto-summary
-!
-end
-```
-
-Router 6
-
-```cisco
-! ==============================================================================
-!
-!                          AS 1273 - Vodafone - R6
-!  Multi-homed Border Router with Three eBGP Peers (AS4637, AS20717, AS5511)
-!
-! ==============================================================================
-!
-hostname R6
-!
-! ==============================================================================
-!                                IP Addressing
-! ==============================================================================
-!
-interface Loopback0
- ! Management/OSPF/BGP Router ID interface
- ip address 10.6.6.6 255.255.255.255
-!
-interface Loopback1
- ! Public IP address for BGP advertisement
- ip address 48.73.239.66 255.255.255.255
-!
-interface FastEthernet0/0
- ! EXTERNAL eBGP connection to AS5511 (Orange)
- ip address 48.73.240.17 255.255.255.252
- ! Force full duplex operation (important for stability)
- duplex full
- no shutdown
-!
-interface GigabitEthernet1/0
- ! EXTERNAL eBGP connection to AS4637 (Telstra)
- ip address 48.73.240.13 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet2/0
- ! EXTERNAL eBGP connection to AS20717 (DE-CIX)
- ip address 48.73.240.21 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet3/0
- ! INTERNAL OSPF link to R4 (10.4.6.0/30 network)
- ip address 10.4.6.2 255.255.255.252
- no shutdown
-!
-! ==============================================================================
-!                                    OSPF
-! ==============================================================================
-!
-router ospf 1
- ! Loopback0 set as passive - advertises route but doesn't form OSPF adjacencies
- passive-interface Loopback0               
- ! Advertise all 10.0.0.0/8 addresses in OSPF area 0 (backbone)
- network 10.0.0.0 0.255.255.255 area 0
- ! Log adjacency changes for monitoring/troubleshooting
- log-adjacency-changes
-!
-! ==============================================================================
-!                               STATIC ROUTES
-! ==============================================================================
-!
-! Aggregate/Summary routes for BGP advertisement
-! These represent customer address blocks
-ip route 48.73.239.0 255.255.255.0 Null0      ! /24 customer block
-ip route 48.73.240.0 255.255.252.0 Null0      ! /22 customer block
-ip route 63.25.64.0 255.255.192.0 Null0       ! /18 customer block
-!
-! ==============================================================================
-!                           PREFIX and ACCESS LISTS
-! ==============================================================================
-!
-! Prefix list for OUTBOUND BGP advertisements
-! Restricts advertisements to prefixes with mask length <= 24 (max /24)
-! Prevents route deaggregation and advertising too-specific routes
-ip prefix-list PREFIX_LIST_ADV_SUMM seq 5 permit 0.0.0.0/0 le 24
-!
-! AS-PATH Access List for traffic engineering
-! Matches routes that have passed through both AS20717 and AS5511
-! Syntax: _20717_5511$ = ends with AS5511 and has AS20717 somewhere before it
-ip as-path access-list 1 permit _20717_5511$
-!
-! Comprehensive BOGON filter for INBOUND BGP advertisements
-! Blocks known invalid/reserved/private IP space from being accepted
-ip prefix-list BOGON-FILTER seq 5 deny 0.0.0.0/8 le 32        ! Software (current local network)
-ip prefix-list BOGON-FILTER seq 10 deny 10.0.0.0/8 le 32      ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 15 deny 100.64.0.0/10 le 32   ! Shared Address Space - CG-NAT
-ip prefix-list BOGON-FILTER seq 20 deny 127.0.0.0/8 le 32     ! Loopback addresses to Localhost
-ip prefix-list BOGON-FILTER seq 25 deny 169.254.0.0/16 le 32  ! APIPA - Automatic Private IP Address
-ip prefix-list BOGON-FILTER seq 30 deny 172.16.0.0/12 le 32   ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 35 deny 192.0.0.0/24 le 32    ! IETF Protocol Assignments
-ip prefix-list BOGON-FILTER seq 40 deny 192.0.2.0/24 le 32    ! Documentation - TEST-NET-1
-ip prefix-list BOGON-FILTER seq 45 deny 192.88.99.0/24 le 32  ! Reserved (6to4 relay anycast)
-ip prefix-list BOGON-FILTER seq 50 deny 192.168.0.0/16 le 32  ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 55 deny 198.18.0.0/15 le 32   ! Benchmark testing
-ip prefix-list BOGON-FILTER seq 60 deny 198.51.100.0/24 le 32 ! Documentation - TEST-NET-2
-ip prefix-list BOGON-FILTER seq 65 deny 203.0.113.0/24 le 32  ! Documentation - TEST-NET-3
-ip prefix-list BOGON-FILTER seq 70 deny 224.0.0.0/4 le 32     ! Multicast address space
-ip prefix-list BOGON-FILTER seq 75 deny 233.252.0.0/24 le 32  ! Documentation - MCAST-TEST-NET
-ip prefix-list BOGON-FILTER seq 80 deny 240.0.0.0/4 le 32     ! Reserved for future use
-! Final permit statement - allows all other legitimate Internet routes
-ip prefix-list BOGON-FILTER seq 85 permit 0.0.0.0/0 le 32     ! All address space
-!
-! ==============================================================================
-!                               ROUTE MAP
-! ==============================================================================
-!
-! Route-map for traffic engineering - preferring routes via AS20717+AS5511
-! Sets WEIGHT=300 for routes that come via AS20717 then AS5511
-! WEIGHT is Cisco proprietary (local to router, highest value wins)
-route-map RM_PREF_LOCAL_AS5511 permit 10
- match as-path 1                  ! Match routes with AS-PATH _20717_5511$
- set weight 300                   ! Set high weight to prefer these routes
-!
-! ==============================================================================
-!                                   BGP
-! ==============================================================================
-!
-router bgp 1273
- ! Set explicit Router ID
- bgp router-id 10.6.6.6
- ! Disable BGP-IGP synchronization (modern networks don't need it)
- no synchronization
- ! Log neighbor state changes for monitoring
- bgp log-neighbor-changes
- !
- ! ----------------------------------------------------------------------------
- ! iBGP PEER GROUP (for internal Vodafone routers)
- ! ----------------------------------------------------------------------------
- neighbor iBGP peer-group
- neighbor iBGP remote-as 1273                 ! Same AS for internal peers
- neighbor iBGP update-source Loopback0        ! Use loopback for stable sessions
- neighbor iBGP next-hop-self                  ! Rewrite next-hop to self for iBGP
- neighbor iBGP soft-reconfiguration inbound   ! Enable non-disruptive policy changes
- ! Security: Add prefix limits for iBGP sessions
- neighbor iBGP maximum-prefix 1000 80 restart 30
- !
- ! Assign specific iBGP neighbors to the peer group
- neighbor 10.3.3.3 peer-group iBGP           ! Internal Vodafone router (RR)
- neighbor 10.4.4.4 peer-group iBGP           ! Internal Vodafone router (RR)
- !
- ! ----------------------------------------------------------------------------
- ! eBGP PEERS (Three External Transit/Peering Providers)
- ! ----------------------------------------------------------------------------
- 
- ! eBGP Peer 1: AS4637 (Telstra)
- neighbor 48.73.240.14 remote-as 4637
- neighbor 48.73.240.14 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 48.73.240.14 prefix-list BOGON-FILTER in
- ! Apply prefix length restriction to OUTBOUND advertisements
- neighbor 48.73.240.14 prefix-list PREFIX_LIST_ADV_SUMM out
- ! Limit maximum prefixes accepted
- neighbor 48.73.240.14 maximum-prefix 50
- 
- ! eBGP Peer 2: AS20717 (DE-CIX)
- neighbor 48.73.240.22 remote-as 20717
- ! neighbor 49.73.240.22 prefix-list BOGON-FILTER in
- neighbor 48.73.240.22 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 48.73.240.22 prefix-list BOGON-FILTER in
- ! Apply prefix length restriction to OUTBOUND advertisements
- neighbor 48.73.240.22 prefix-list PREFIX_LIST_ADV_SUMM out
- ! Apply route-map for traffic engineering (prefer routes via AS20717+AS5511)
- neighbor 48.73.240.22 route-map RM_PREF_LOCAL_AS5511 in
- ! Limit maximum prefixes accepted
- neighbor 48.73.240.22 maximum-prefix 50
- 
- ! eBGP Peer 3: AS5511 (Orange)
- neighbor 48.73.240.18 remote-as 5511
- neighbor 48.73.240.18 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 48.73.240.18 prefix-list BOGON-FILTER in
- ! Apply prefix length restriction to OUTBOUND advertisements
- neighbor 48.73.240.18 prefix-list PREFIX_LIST_ADV_SUMM out
- ! Limit maximum prefixes accepted
- neighbor 48.73.240.18 maximum-prefix 50
- !
- ! ----------------------------------------------------------------------------
- ! ROUTE ADVERTISEMENTS (Network statements)
- ! Advertise Vodafone address space to external peers
- ! ----------------------------------------------------------------------------
- ! CRITICAL:
- ! To avoid blackholing issues for eBGP sessions
- ! Each /30 link should be advertised separately
- network 48.73.239.66 mask 255.255.255.255   ! Specific Loopback1 address (/32)
- network 48.73.239.0 mask 255.255.255.0      ! Customer /24 block
- network 48.73.240.0 mask 255.255.252.0      ! Customer /22 block (aggregate)
- network 63.25.64.0 mask 255.255.192.0       ! Customer /18 block
- network 48.73.240.12 mask 255.255.255.252   ! Link to AS4637 (48.73.240.13/30)
- network 48.73.240.20 mask 255.255.255.252   ! Link to AS20717 (48.73.240.21/30)
- network 48.73.240.16 mask 255.255.255.252   ! Link to AS5511 (48.73.240.17/30)
- ! Disable automatic network summarization
- no auto-summary
-!
-end
-```
-
-Server 2
-
-```cisco
-# Server 2
-
-ip 48.73.239.1 48.73.239.2 30
-set pcname Server2
-```
-
-#### AS 17390 - IBM
-
-Router 7
-
-```cisco
-! ==============================================================================
-!
-!                              AS 17390 - IBM - R7
-!                Transit Provider Router with Multiple eBGP Peers
-!
-! ==============================================================================
-!
-hostname R7
-!
-! ==============================================================================
-!                                 Services
-! ==============================================================================
-!
-service password-encryption ! Encrypts passwords to prevent plain text display
-!
-! ==============================================================================
-!                                IP Addressing
-! ==============================================================================
-!
-interface Loopback0
- ! Management/OSPF/BGP Router ID interface
- ip address 10.7.7.7 255.255.255.255
-!
-interface Loopback1
- ! Public IP address for BGP advertisement (IBM customer-facing)
- ip address 130.41.46.77 255.255.255.255
-!
-interface FastEthernet0/0
- ! EXTERNAL eBGP connection to AS64513 (private)
- ip address 130.41.46.9 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet1/0
- ! INTERNAL OSPF link to R8 (10.7.8.0/30 network)
- ip address 10.7.8.1 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet4/0
- ! EXTERNAL eBGP connection to AS1273 (Vodafone - R3)
- ip address 48.73.240.6 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet5/0
- ! EXTERNAL eBGP connection to AS701 (Verizon)
- ip address 64.112.0.6 255.255.255.252
- no shutdown
-!
-! ==============================================================================
-!                                    OSPF
-! ==============================================================================
-!
-router ospf 1
- ! Loopback0 set as passive - advertises route but doesn't form OSPF adjacencies
- passive-interface Loopback0               
- ! Advertise all 10.0.0.0/8 addresses in OSPF area 0 (backbone)
- network 10.0.0.0 0.255.255.255 area 0        
- ! Log adjacency changes for monitoring/troubleshooting
- log-adjacency-changes
-!
-! ==============================================================================
-!                               STATIC ROUTES
-! ==============================================================================
-!
-! Aggregate route for BGP advertisement (IBM address space)
-ip route 130.41.46.0 255.255.255.0 Null0      ! IBM /24 customer block
-!
-! ==============================================================================
-!                               PREFIX LISTS
-! ==============================================================================
-!
-! Prefix list for OUTBOUND BGP advertisements
-! Restricts advertisements to prefixes with mask length <= 24 (max /24)
-! Prevents route deaggregation and advertising too-specific routes
-ip prefix-list PREFIX_LIST_ADV_SUMM seq 5 permit 0.0.0.0/0 le 24
-!
-! Comprehensive BOGON filter for INBOUND BGP advertisements
-! Blocks known invalid/reserved/private IP space from being accepted
-ip prefix-list BOGON-FILTER seq 5 deny 0.0.0.0/8 le 32        ! Software (current local network)
-ip prefix-list BOGON-FILTER seq 10 deny 10.0.0.0/8 le 32      ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 15 deny 100.64.0.0/10 le 32   ! Shared Address Space - CG-NAT
-ip prefix-list BOGON-FILTER seq 20 deny 127.0.0.0/8 le 32     ! Loopback addresses to Localhost
-ip prefix-list BOGON-FILTER seq 25 deny 169.254.0.0/16 le 32  ! APIPA - Automatic Private IP Address
-ip prefix-list BOGON-FILTER seq 30 deny 172.16.0.0/12 le 32   ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 35 deny 192.0.0.0/24 le 32    ! IETF Protocol Assignments
-ip prefix-list BOGON-FILTER seq 40 deny 192.0.2.0/24 le 32    ! Documentation - TEST-NET-1
-ip prefix-list BOGON-FILTER seq 45 deny 192.88.99.0/24 le 32  ! Reserved (6to4 relay anycast)
-ip prefix-list BOGON-FILTER seq 50 deny 192.168.0.0/16 le 32  ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 55 deny 198.18.0.0/15 le 32   ! Benchmark testing
-ip prefix-list BOGON-FILTER seq 60 deny 198.51.100.0/24 le 32 ! Documentation - TEST-NET-2
-ip prefix-list BOGON-FILTER seq 65 deny 203.0.113.0/24 le 32  ! Documentation - TEST-NET-3
-ip prefix-list BOGON-FILTER seq 70 deny 224.0.0.0/4 le 32     ! Multicast address space
-ip prefix-list BOGON-FILTER seq 75 deny 233.252.0.0/24 le 32  ! Documentation - MCAST-TEST-NET
-ip prefix-list BOGON-FILTER seq 80 deny 240.0.0.0/4 le 32     ! Reserved for future use
-! Final permit statement - allows all other legitimate Internet routes
-ip prefix-list BOGON-FILTER seq 85 permit 0.0.0.0/0 le 32     ! All address space
-!
-! ==============================================================================
-!                                   BGP
-! ==============================================================================
-!
-router bgp 17390
- ! Set explicit Router ID
- bgp router-id 10.7.7.7
- ! Disable BGP-IGP synchronization (modern networks don't need it)
- no synchronization
- ! Log neighbor state changes for monitoring
- bgp log-neighbor-changes
- !
- ! ----------------------------------------------------------------------------
- ! iBGP PEER (Internal IBM router - R8)
- ! ----------------------------------------------------------------------------
- neighbor 10.8.8.8 remote-as 17390           ! Internal IBM router
- neighbor 10.8.8.8 update-source Loopback0   ! Use loopback for stable sessions
- neighbor 10.8.8.8 next-hop-self             ! Rewrite next-hop to self for iBGP
- neighbor 10.8.8.8 soft-reconfiguration inbound
- ! Security: Add prefix limits for iBGP session
- neighbor 10.8.8.8 maximum-prefix 50
- !
- ! ----------------------------------------------------------------------------
- ! eBGP PEERS (Three External Connections)
- ! ----------------------------------------------------------------------------
- ! eBGP Peer 1: AS701 (Verizon)
- neighbor 64.112.0.5 remote-as 701
- ! MD5 authentication configured
- neighbor 64.112.0.5 password BGP@p455w0rd_701-17390
- neighbor 64.112.0.5 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 64.112.0.5 prefix-list BOGON-FILTER in
- ! Apply prefix length restriction to OUTBOUND advertisements
- neighbor 64.112.0.5 prefix-list PREFIX_LIST_ADV_SUMM out
- ! Limit maximum prefixes accepted
- neighbor 64.112.0.5 maximum-prefix 50
- ! Remove-private-as strips private AS numbers from AS-PATH
- neighbor 64.112.0.5 remove-private-as
- 
- ! eBGP Peer 2: AS64513 (private AS)
- neighbor 130.41.46.10 remote-as 64513
- neighbor 130.41.46.10 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 130.41.46.10 prefix-list BOGON-FILTER in
- ! Apply prefix length restriction to OUTBOUND advertisements
- neighbor 130.41.46.10 prefix-list PREFIX_LIST_ADV_SUMM out
- ! Limit maximum prefixes accepted
- neighbor 130.41.46.10 maximum-prefix 50
- 
- ! eBGP Peer 3: AS1273 (Vodafone)
- neighbor 48.73.240.5 remote-as 1273
- neighbor 48.73.240.5 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 48.73.240.5 prefix-list BOGON-FILTER in
- ! Apply prefix length restriction to OUTBOUND advertisements
- neighbor 48.73.240.5 prefix-list PREFIX_LIST_ADV_SUMM out
- ! Limit maximum prefixes accepted
- neighbor 48.73.240.5 maximum-prefix 50
- ! Strip private AS numbers from AS-PATH
- neighbor 48.73.240.5 remove-private-as
- !
- ! ----------------------------------------------------------------------------
- ! ROUTE ADVERTISEMENTS (Network statements)
- ! Advertise IBM address space to external peers
- ! ----------------------------------------------------------------------------
- network 130.41.46.77 mask 255.255.255.255     ! Specific Loopback1 address (/32)
- network 130.41.46.0 mask 255.255.255.0        ! IBM /24 block
- network 130.41.46.8 mask 255.255.255.252      ! Link to AS64513 (130.41.46.9/30)
- network 48.73.240.4 mask 255.255.255.252      ! Link to AS1273 (48.73.240.6/30)
- network 64.112.0.4 mask 255.255.255.252       ! Link to AS701 (64.112.0.6/30)
- ! Disable automatic network summarization
- no auto-summary
-!
-end
-```
-
-Router 8
-
-```cisco
-! ==============================================================================
-!
-!                              AS 17390 - IBM - R8
-!             Secondary IBM Router with eBGP to AS1273 and AS64513
-!
-! ==============================================================================
-!
-hostname R8
-!
-! ==============================================================================
-!                                IP Addressing
-! ==============================================================================
-!
-interface Loopback0
- ! Management/OSPF/BGP Router ID interface
- ip address 10.8.8.8 255.255.255.255
-!
-interface Loopback1
- ! Public IP address for BGP advertisement
- ip address 130.41.46.88 255.255.255.255
-!
-interface FastEthernet0/0
- ! EXTERNAL eBGP connection to AS64513 (private AS)
- ip address 130.41.46.5 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet1/0
- ! INTERNAL OSPF link to R7 (10.7.8.0/30 network)
- ip address 10.7.8.2 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet4/0
- ! EXTERNAL eBGP connection to AS1273 (Vodafone - R1)
- ip address 48.73.240.2 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet5/0
- ! To Server1
- ip address 130.41.46.2 255.255.255.252
- no shutdown
-!
-! ==============================================================================
-!                                    OSPF
-! ==============================================================================
-!
-router ospf 1
- ! Loopback0 set as passive - advertises route but doesn't form OSPF adjacencies
- passive-interface Loopback0               
- ! Advertise all 10.0.0.0/8 addresses in OSPF area 0 (backbone)
- network 10.0.0.0 0.255.255.255 area 0        
- ! Log adjacency changes for monitoring/troubleshooting
- log-adjacency-changes
-!
-! ==============================================================================
-!                               STATIC ROUTES
-! ==============================================================================
-!
-! Aggregate route for BGP advertisement (IBM address space)
-ip route 130.41.46.0 255.255.255.0 Null0      ! IBM /24 customer block
-!
-! ==============================================================================
-!                               PREFIX LISTS
-! ==============================================================================
-!
-! Prefix list for OUTBOUND BGP advertisements
-! Restricts advertisements to prefixes with mask length <= 24 (max /24)
-! Prevents route deaggregation and advertising too-specific routes
-ip prefix-list PREFIX_LIST_ADV_SUMM seq 5 permit 0.0.0.0/0 le 24
-!
-! Comprehensive BOGON filter for INBOUND BGP advertisements
-! Blocks known invalid/reserved/private IP space from being accepted
-ip prefix-list BOGON-FILTER seq 5 deny 0.0.0.0/8 le 32        ! Software (current local network)
-ip prefix-list BOGON-FILTER seq 10 deny 10.0.0.0/8 le 32      ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 15 deny 100.64.0.0/10 le 32   ! Shared Address Space - CG-NAT
-ip prefix-list BOGON-FILTER seq 20 deny 127.0.0.0/8 le 32     ! Loopback addresses to Localhost
-ip prefix-list BOGON-FILTER seq 25 deny 169.254.0.0/16 le 32  ! APIPA - Automatic Private IP Address
-ip prefix-list BOGON-FILTER seq 30 deny 172.16.0.0/12 le 32   ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 35 deny 192.0.0.0/24 le 32    ! IETF Protocol Assignments
-ip prefix-list BOGON-FILTER seq 40 deny 192.0.2.0/24 le 32    ! Documentation - TEST-NET-1
-ip prefix-list BOGON-FILTER seq 45 deny 192.88.99.0/24 le 32  ! Reserved (6to4 relay anycast)
-ip prefix-list BOGON-FILTER seq 50 deny 192.168.0.0/16 le 32  ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 55 deny 198.18.0.0/15 le 32   ! Benchmark testing
-ip prefix-list BOGON-FILTER seq 60 deny 198.51.100.0/24 le 32 ! Documentation - TEST-NET-2
-ip prefix-list BOGON-FILTER seq 65 deny 203.0.113.0/24 le 32  ! Documentation - TEST-NET-3
-ip prefix-list BOGON-FILTER seq 70 deny 224.0.0.0/4 le 32     ! Multicast address space
-ip prefix-list BOGON-FILTER seq 75 deny 233.252.0.0/24 le 32  ! Documentation - MCAST-TEST-NET
-ip prefix-list BOGON-FILTER seq 80 deny 240.0.0.0/4 le 32     ! Reserved for future use
-! Final permit statement - allows all other legitimate Internet routes
-ip prefix-list BOGON-FILTER seq 85 permit 0.0.0.0/0 le 32     ! All address space
-!
-! ==============================================================================
-!                                   BGP
-! ==============================================================================
-!
-router bgp 17390
- ! Set explicit Router ID
- bgp router-id 10.8.8.8
- ! Disable BGP-IGP synchronization (modern networks don't need it)
- no synchronization
- ! Log neighbor state changes for monitoring
- bgp log-neighbor-changes
- !
- ! ----------------------------------------------------------------------------
- ! iBGP PEER (Internal IBM router - R7)
- ! ----------------------------------------------------------------------------
- neighbor 10.7.7.7 remote-as 17390           ! Internal IBM router (R7)
- neighbor 10.7.7.7 update-source Loopback0   ! Use loopback for stable sessions
- neighbor 10.7.7.7 next-hop-self             ! Rewrite next-hop to self for iBGP
- neighbor 10.7.7.7 soft-reconfiguration inbound
- ! Security: Add prefix limits for iBGP session
- neighbor 10.7.7.7 maximum-prefix 50
- !
- ! ----------------------------------------------------------------------------
- ! eBGP PEERS (Two External Connections)
- ! ----------------------------------------------------------------------------
- 
- ! eBGP Peer 1: AS64513 (private AS)
- neighbor 130.41.46.6 remote-as 64513
- neighbor 130.41.46.6 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 130.41.46.6 prefix-list BOGON-FILTER in
- ! Apply prefix length restriction to OUTBOUND advertisements
- neighbor 130.41.46.6 prefix-list PREFIX_LIST_ADV_SUMM out
- ! Limit maximum prefixes accepted
- neighbor 130.41.46.6 maximum-prefix 50
- 
- ! eBGP Peer 2: AS1273 (Vodafone)
- neighbor 48.73.240.1 remote-as 1273
- neighbor 48.73.240.1 soft-reconfiguration inbound
- ! FIXED: Correct IP address in prefix-list command
- neighbor 48.73.240.1 prefix-list BOGON-FILTER in
- ! Apply prefix length restriction to OUTBOUND advertisements
- neighbor 48.73.240.1 prefix-list PREFIX_LIST_ADV_SUMM out
- ! Limit maximum prefixes accepted
- neighbor 48.73.240.1 maximum-prefix 50
- ! remove-private-as strips private AS numbers from AS-PATH
- neighbor 48.73.240.1 remove-private-as
- !
- ! ----------------------------------------------------------------------------
- ! ROUTE ADVERTISEMENTS (Network statements)
- ! Advertise IBM address space to external peers
- ! ----------------------------------------------------------------------------
- network 130.41.46.0 mask 255.255.255.0        ! IBM /24 block (aggregate)
- network 130.41.46.0 mask 255.255.255.252      ! Specific Server1 (/30)
- network 130.41.46.4 mask 255.255.255.252      ! Link to AS64513 (specific /30)
- network 130.41.46.88 mask 255.255.255.255     ! Specific Loopback1 address (/32)
- network 48.73.240.0 mask 255.255.255.252      ! Link to AS1273
- ! Disable automatic network summarization
- no auto-summary
-!
-end
-```
-
-Server 1
-
-```cisco
-# Server 1
-
-ip 130.41.46.1 130.41.46.2 30
-set pcname Server1
-```
-
-#### AS 64513 (Private)
-
-Router 9
-
-```cisco
-! ==============================================================================
-!
-!                          AS 64513 (Private AS) - R9
-!             Customer Router with Dual-homed BGP to IBM (AS17390)
-!
-! ==============================================================================
-!
-hostname R9
-!
-! ==============================================================================
-!                                IP Addressing
-! ==============================================================================
-!
-interface Loopback0
- ! Management/BGP Router ID interface
- ip address 10.9.9.9 255.255.255.255
-!
-interface Loopback1
- ! Public IP address for BGP advertisement
- ip address 130.41.47.99 255.255.255.255
-!
-interface FastEthernet0/0
- ! EXTERNAL eBGP connection to IBM R7 (AS17390)
- ip address 130.41.46.10 255.255.255.252
- no shutdown
-!
-interface FastEthernet1/0
- ! EXTERNAL eBGP connection to IBM R8 (AS17390)
- ip address 130.41.46.6 255.255.255.252
- no shutdown
-!
-! ==============================================================================
-!                           SECURITY FILTERS
-! ==============================================================================
-!
-! BOGON filter for INBOUND BGP advertisements (basic version)
-! Customer routers should filter invalid routes from providers
-ip prefix-list BOGON-FILTER seq 5 deny 0.0.0.0/8 le 32        ! Software (current local network)
-ip prefix-list BOGON-FILTER seq 10 deny 10.0.0.0/8 le 32      ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 15 deny 100.64.0.0/10 le 32   ! Shared Address Space - CG-NAT
-ip prefix-list BOGON-FILTER seq 20 deny 127.0.0.0/8 le 32     ! Loopback addresses to Localhost
-ip prefix-list BOGON-FILTER seq 25 deny 169.254.0.0/16 le 32  ! APIPA - Automatic Private IP Address
-ip prefix-list BOGON-FILTER seq 30 deny 172.16.0.0/12 le 32   ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 35 deny 192.0.0.0/24 le 32    ! IETF Protocol Assignments
-ip prefix-list BOGON-FILTER seq 40 deny 192.0.2.0/24 le 32    ! Documentation - TEST-NET-1
-ip prefix-list BOGON-FILTER seq 45 deny 192.88.99.0/24 le 32  ! Reserved (6to4 relay anycast)
-ip prefix-list BOGON-FILTER seq 50 deny 192.168.0.0/16 le 32  ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 55 deny 198.18.0.0/15 le 32   ! Benchmark testing
-ip prefix-list BOGON-FILTER seq 60 deny 198.51.100.0/24 le 32 ! Documentation - TEST-NET-2
-ip prefix-list BOGON-FILTER seq 65 deny 203.0.113.0/24 le 32  ! Documentation - TEST-NET-3
-ip prefix-list BOGON-FILTER seq 70 deny 224.0.0.0/4 le 32     ! Multicast address space
-ip prefix-list BOGON-FILTER seq 75 deny 233.252.0.0/24 le 32  ! Documentation - MCAST-TEST-NET
-ip prefix-list BOGON-FILTER seq 80 deny 240.0.0.0/4 le 32     ! Reserved for future use
-! Accept default route from provider (common for customers)
-ip prefix-list BOGON-FILTER seq 85 permit 0.0.0.0/0
-! Accept all other routes from provider
-ip prefix-list BOGON-FILTER seq 90 permit 0.0.0.0/0 le 32
-!
-! ==============================================================================
-!                               STATIC ROUTES
-! ==============================================================================
-!
-! Aggregate route for BGP advertisement (customer address space)
-ip route 130.41.47.0 255.255.255.0 Null0      ! Customer /24 block
-!
-! ==============================================================================
-!                                   BGP
-! ==============================================================================
-!
-router bgp 64513
- ! Set explicit Router ID
- ! NOTE: AS64513 is a PRIVATE AS NUMBER (range 64512-65534)
- bgp router-id 10.9.9.9
- ! Disable BGP-IGP synchronization
- no synchronization
- ! Log neighbor state changes for monitoring
- bgp log-neighbor-changes
- !
- ! ----------------------------------------------------------------------------
- ! eBGP PEERS (Dual-homed to IBM AS17390)
- ! ----------------------------------------------------------------------------
- 
- ! eBGP Peer 1: IBM R7 (130.41.46.9)
- neighbor 130.41.46.9 remote-as 17390
- neighbor 130.41.46.9 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes from provider
- neighbor 130.41.46.9 prefix-list BOGON-FILTER in
- ! Limit maximum prefixes accepted from provider
- neighbor 130.41.46.9 maximum-prefix 50
- 
- ! eBGP Peer 2: IBM R8 (130.41.46.5)
- neighbor 130.41.46.5 remote-as 17390
- neighbor 130.41.46.5 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes from provider
- neighbor 130.41.46.5 prefix-list BOGON-FILTER in
- ! Limit maximum prefixes accepted from provider
- neighbor 130.41.46.5 maximum-prefix 50
- !
- ! ----------------------------------------------------------------------------
- ! ROUTE ADVERTISEMENTS
- ! ----------------------------------------------------------------------------
- ! Advertise customer address space to providers
- network 130.41.47.99 mask 255.255.255.255    ! Specific Loopback1 address (/32)
- network 130.41.47.0 mask 255.255.255.0       ! Customer /24 block
- network 130.41.46.8 mask 255.255.255.252     ! Link to IBM R7
- network 130.41.46.4 mask 255.255.255.252     ! Link to IBM R8
- ! Use aggregate-address to ensure only /24 is advertised (not /32s)
- ! summary-only suppresses more specific routes (/32)
- aggregate-address 130.41.47.0 255.255.255.0 summary-only
- ! Note: no auto-summary is implicit with "router bgp" in newer IOS
-!
-end
-```
-
-#### AS 5511 - Orange
-
-Router 10
-
-```cisco
-! ==============================================================================
-!
-!                            AS 5511 - Orange - R10
-!            Core Router for Orange (AS5511) with Multiple eBGP Peers
-!
-! ==============================================================================
-!
-hostname R10
-!
-! ==============================================================================
-!                                IP Addressing
-! ==============================================================================
-!
-interface Loopback0
- ! Management/OSPF/BGP Router ID interface
- ip address 10.10.10.10 255.255.255.255
-!
-interface Loopback1
- ! Public IP address for BGP advertisement
- ip address 46.87.162.110 255.255.255.255
-!
-interface GigabitEthernet1/0
- ! INTERNAL OSPF link to R11 (10.10.11.0/30 network) - Area 0
- ip address 10.10.11.1 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet2/0
- ! EXTERNAL eBGP connection to AS4637 (Telstra)
- ip address 211.176.129.2 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet3/0
- ! INTERNAL OSPF link to R12 (10.10.12.0/30 network) - Area 1
- ip address 10.10.12.1 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet4/0
- ! EXTERNAL eBGP connection to AS20717 (DE-CIX)
- ip address 46.88.20.1 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet5/0
- ! EXTERNAL eBGP connection to AS1273 (Vodafone - R6)
- ip address 48.73.240.18 255.255.255.252
- no shutdown
-!
-! ==============================================================================
-!                                    OSPF
-! ==============================================================================
-!
-router ospf 1
- ! Explicit Router ID (best practice)
- router-id 10.10.10.10             
- ! Area 0 (backbone) networks
- network 10.10.11.0 0.0.0.3 area 0   ! Link to R11
- ! Area 1 (stub area) networks
- network 10.10.12.0 0.0.0.3 area 1   ! Link to R12
- ! Loopback0 in Area 0
- network 10.10.10.10 0.0.0.0 area 0  ! Lo0
- ! Configure Area 1 as STUB area (no external routes)
- area 1 stub        
- ! Log adjacency changes for monitoring/troubleshooting
- log-adjacency-changes
-!
-! ==============================================================================
-!                               STATIC ROUTES
-! ==============================================================================
-!
-! Aggregate routes for BGP advertisement (Orange address space)
-ip route 46.87.162.0 255.255.255.0 Null0      ! /24 block
-ip route 46.88.20.0 255.255.255.0 Null0       ! /24 block
-ip route 46.88.22.0 255.255.255.0 Null0       ! /24 block
-ip route 46.89.36.0 255.255.255.0 Null0       ! /24 block
-ip route 46.89.38.0 255.255.255.0 Null0       ! /24 block
-ip route 46.92.2.0 255.255.255.0 Null0        ! /24 block
-!
-! ==============================================================================
-!                               PREFIX LISTS
-! ==============================================================================
-!
-! Prefix list for OUTBOUND BGP advertisements
-! Restricts advertisements to prefixes with mask length <= 24 (max /24)
-! Prevents route deaggregation and advertising too-specific routes
-ip prefix-list PREFIX_LIST_ADV_SUMM seq 5 permit 0.0.0.0/0 le 24
-!
-! Comprehensive BOGON filter for INBOUND BGP advertisements
-! Blocks known invalid/reserved/private IP space from being accepted
-ip prefix-list BOGON-FILTER seq 5 deny 0.0.0.0/8 le 32        ! Software (current local network)
-ip prefix-list BOGON-FILTER seq 10 deny 10.0.0.0/8 le 32      ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 15 deny 100.64.0.0/10 le 32   ! Shared Address Space - CG-NAT
-ip prefix-list BOGON-FILTER seq 20 deny 127.0.0.0/8 le 32     ! Loopback addresses to Localhost
-ip prefix-list BOGON-FILTER seq 25 deny 169.254.0.0/16 le 32  ! APIPA - Automatic Private IP Address
-ip prefix-list BOGON-FILTER seq 30 deny 172.16.0.0/12 le 32   ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 35 deny 192.0.0.0/24 le 32    ! IETF Protocol Assignments
-ip prefix-list BOGON-FILTER seq 40 deny 192.0.2.0/24 le 32    ! Documentation - TEST-NET-1
-ip prefix-list BOGON-FILTER seq 45 deny 192.88.99.0/24 le 32  ! Reserved (6to4 relay anycast)
-ip prefix-list BOGON-FILTER seq 50 deny 192.168.0.0/16 le 32  ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 55 deny 198.18.0.0/15 le 32   ! Benchmark testing
-ip prefix-list BOGON-FILTER seq 60 deny 198.51.100.0/24 le 32 ! Documentation - TEST-NET-2
-ip prefix-list BOGON-FILTER seq 65 deny 203.0.113.0/24 le 32  ! Documentation - TEST-NET-3
-ip prefix-list BOGON-FILTER seq 70 deny 224.0.0.0/4 le 32     ! Multicast address space
-ip prefix-list BOGON-FILTER seq 75 deny 233.252.0.0/24 le 32  ! Documentation - MCAST-TEST-NET
-ip prefix-list BOGON-FILTER seq 80 deny 240.0.0.0/4 le 32     ! Reserved for future use
-! Final permit statement - allows all other legitimate Internet routes
-ip prefix-list BOGON-FILTER seq 85 permit 0.0.0.0/0 le 32     ! All address space
-!
-! ==============================================================================
-!                           AS-PATH FILTERING
-! ==============================================================================
-!
-! AS-PATH Access List for traffic engineering
-! Matches routes that have passed through AS20171 then AS1273
-! Syntax: _20171_1273$ = ends with AS1273 and has AS20171 somewhere before it
-ip as-path access-list 1 permit _20171_1273$
-!
-! ==============================================================================
-!                               ROUTE MAP
-! ==============================================================================
-!
-! Route-map for traffic engineering - preferring routes via AS20171+AS1273
-! Sets WEIGHT=300 for routes that come via AS20171 then AS1273
-! WEIGHT is Cisco proprietary (local to router, highest value wins)
-! This influences Orange's preference for paths through DE-CIX then Vodafone
-route-map RM_PREF_LOCAL_AS1273 permit 10
- match as-path 1                  ! Match routes with AS-PATH _20171_1273$
- set weight 300                   ! Set high weight to prefer these routes
-!
-! ==============================================================================
-!                                   BGP
-! ==============================================================================
-!
-router bgp 5511
- ! Set explicit Router ID
- bgp router-id 10.10.10.10
- ! Disable BGP-IGP synchronization
- no synchronization
- ! Log neighbor state changes for monitoring
- bgp log-neighbor-changes
- !
- ! ----------------------------------------------------------------------------
- ! iBGP PEERS (Internal Orange routers)
- ! ----------------------------------------------------------------------------
- ! iBGP to R11
- neighbor 10.11.11.11 remote-as 5511
- neighbor 10.11.11.11 update-source Loopback0
- neighbor 10.11.11.11 next-hop-self
- neighbor 10.11.11.11 soft-reconfiguration inbound
- ! Security: Add prefix limits for iBGP session
- neighbor 10.11.11.11 maximum-prefix 50
- 
- ! iBGP to R12
- neighbor 10.12.12.12 remote-as 5511
- neighbor 10.12.12.12 update-source Loopback0
- neighbor 10.12.12.12 next-hop-self
- neighbor 10.12.12.12 soft-reconfiguration inbound
- ! Security: Add prefix limits for iBGP session
- neighbor 10.12.12.12 maximum-prefix 50
- !
- ! ----------------------------------------------------------------------------
- ! eBGP PEERS (Three External Connections)
- ! ----------------------------------------------------------------------------
- 
- ! eBGP Peer 1: AS20717 (DE-CIX)
- neighbor 46.88.20.2 remote-as 20717
- neighbor 46.88.20.2 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 46.88.20.2 prefix-list BOGON-FILTER in
- ! Apply prefix length restriction to OUTBOUND advertisements
- neighbor 46.88.20.2 prefix-list PREFIX_LIST_ADV_SUMM out
- ! Apply route-map for traffic engineering (prefer routes via AS20171+AS1273)
- neighbor 46.88.20.2 route-map RM_PREF_LOCAL_AS1273 in
- ! Limit maximum prefixes accepted
- neighbor 46.88.20.2 maximum-prefix 50
- 
- ! eBGP Peer 2: AS1273 (Vodafone - R6)
- neighbor 48.73.240.17 remote-as 1273
- neighbor 48.73.240.17 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 48.73.240.17 prefix-list BOGON-FILTER in
- ! Apply prefix length restriction to OUTBOUND advertisements
- neighbor 48.73.240.17 prefix-list PREFIX_LIST_ADV_SUMM out
- ! Limit maximum prefixes accepted
- neighbor 48.73.240.17 maximum-prefix 50
- 
- ! eBGP Peer 3: AS4637 (Telstra)
- neighbor 211.176.129.1 remote-as 4637
- neighbor 211.176.129.1 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 211.176.129.1 prefix-list BOGON-FILTER in
- ! Apply prefix length restriction to OUTBOUND advertisements
- neighbor 211.176.129.1 prefix-list PREFIX_LIST_ADV_SUMM out
- ! Limit maximum prefixes accepted
- neighbor 211.176.129.1 maximum-prefix 50
- !
- ! ----------------------------------------------------------------------------
- ! ROUTE ADVERTISEMENTS (Network statements)
- ! Advertise Orange address space to external peers
- ! ----------------------------------------------------------------------------
- network 46.87.162.110 mask 255.255.255.255     ! Specific Loopback1 address (/32)
- network 46.87.162.0 mask 255.255.255.0         ! /24 block
- network 46.88.20.0 mask 255.255.255.0          ! /24 block
- network 46.88.22.0 mask 255.255.255.0          ! /24 block
- network 46.89.36.0 mask 255.255.255.0          ! /24 block
- network 46.89.38.0 mask 255.255.255.0          ! /24 block
- network 46.92.2.0 mask 255.255.255.0           ! /24 block
- network 46.88.20.0 mask 255.255.255.252        ! Link to AS20717 (DE-CIX)
- network 48.73.240.16 mask 255.255.255.252      ! Link to AS1273
- network 211.176.129.0 mask 255.255.255.252     ! Link to AS4637 (Telstra)
- ! Disable automatic network summarization
- no auto-summary
-!
-end
-```
-
-Router 11
-
-```cisco
-! ==============================================================================
-!
-!                            AS 5511 - Orange - R11
-!               Orange Router with eBGP to AS23344 (Customer/Peer)
-!
-! ==============================================================================
-!
-hostname R11
-!
-! ==============================================================================
-!                                IP Addressing
-! ==============================================================================
-!
-interface Loopback0
- ! Management/OSPF/BGP Router ID interface
- ip address 10.11.11.11 255.255.255.255
-!
-interface Loopback1
- ! Public IP address for BGP advertisement
- ip address 46.87.162.111 255.255.255.255
-!
-interface FastEthernet0/0
- ! EXTERNAL eBGP connection to AS23344 (Disney)
- ip address 46.88.20.5 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet1/0
- ! INTERNAL OSPF link to R10 (10.10.11.0/30 network) - Area 0
- ip address 10.10.11.2 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet2/0
- ! INTERNAL OSPF link to R12 (10.11.12.0/30 network) - Area 1
- ip address 10.11.12.1 255.255.255.252
- no shutdown
-!
-! ==============================================================================
-!                                    OSPF
-! ==============================================================================
-!
-router ospf 1
- ! Explicit Router ID (best practice)
- router-id 10.11.11.11              
- ! Area 0 (backbone) networks
- network 10.10.11.0 0.0.0.3 area 0    ! Link to R10
- ! Area 1 (stub area) networks
- network 10.11.12.0 0.0.0.3 area 1    ! Link to R12
- ! Loopback0 in Area 0
- network 10.11.11.11 0.0.0.0 area 0   ! Lo0
- ! Configure Area 1 as STUB area (no external routes)
- area 1 stub       
- ! Log adjacency changes for monitoring/troubleshooting
- log-adjacency-changes
-!
-! ==============================================================================
-!                               STATIC ROUTES
-! ==============================================================================
-!
-! Aggregate routes for BGP advertisement (Orange address space)
-ip route 46.87.162.0 255.255.255.0 Null0      ! /24 block
-ip route 46.88.20.0 255.255.255.0 Null0       ! /24 block
-ip route 46.88.22.0 255.255.255.0 Null0       ! /24 block
-ip route 46.89.36.0 255.255.255.0 Null0       ! /24 block
-ip route 46.89.38.0 255.255.255.0 Null0       ! /24 block
-ip route 46.92.2.0 255.255.255.0 Null0        ! /24 block
-!
-! ==============================================================================
-!                               PREFIX LISTS
-! ==============================================================================
-!
-! Prefix list for OUTBOUND BGP advertisements
-! Restricts advertisements to prefixes with mask length <= 24 (max /24)
-! Prevents route deaggregation and advertising too-specific routes
-ip prefix-list PREFIX_LIST_ADV_SUMM seq 5 permit 0.0.0.0/0 le 24
-!
-! Comprehensive BOGON filter for INBOUND BGP advertisements
-! Blocks known invalid/reserved/private IP space from being accepted
-ip prefix-list BOGON-FILTER seq 5 deny 0.0.0.0/8 le 32        ! Software (current local network)
-ip prefix-list BOGON-FILTER seq 10 deny 10.0.0.0/8 le 32      ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 15 deny 100.64.0.0/10 le 32   ! Shared Address Space - CG-NAT
-ip prefix-list BOGON-FILTER seq 20 deny 127.0.0.0/8 le 32     ! Loopback addresses to Localhost
-ip prefix-list BOGON-FILTER seq 25 deny 169.254.0.0/16 le 32  ! APIPA - Automatic Private IP Address
-ip prefix-list BOGON-FILTER seq 30 deny 172.16.0.0/12 le 32   ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 35 deny 192.0.0.0/24 le 32    ! IETF Protocol Assignments
-ip prefix-list BOGON-FILTER seq 40 deny 192.0.2.0/24 le 32    ! Documentation - TEST-NET-1
-ip prefix-list BOGON-FILTER seq 45 deny 192.88.99.0/24 le 32  ! Reserved (6to4 relay anycast)
-ip prefix-list BOGON-FILTER seq 50 deny 192.168.0.0/16 le 32  ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 55 deny 198.18.0.0/15 le 32   ! Benchmark testing
-ip prefix-list BOGON-FILTER seq 60 deny 198.51.100.0/24 le 32 ! Documentation - TEST-NET-2
-ip prefix-list BOGON-FILTER seq 65 deny 203.0.113.0/24 le 32  ! Documentation - TEST-NET-3
-ip prefix-list BOGON-FILTER seq 70 deny 224.0.0.0/4 le 32     ! Multicast address space
-ip prefix-list BOGON-FILTER seq 75 deny 233.252.0.0/24 le 32  ! Documentation - MCAST-TEST-NET
-ip prefix-list BOGON-FILTER seq 80 deny 240.0.0.0/4 le 32     ! Reserved for future use
-! Final permit statement - allows all other legitimate Internet routes
-ip prefix-list BOGON-FILTER seq 85 permit 0.0.0.0/0 le 32     ! All address space
-!
-! ==============================================================================
-!                                   BGP
-! ==============================================================================
-!
-router bgp 5511
- ! Set explicit Router ID
- bgp router-id 10.11.11.11
- ! Disable BGP-IGP synchronization
- no synchronization
- ! Log neighbor state changes for monitoring
- bgp log-neighbor-changes
- !
- ! ----------------------------------------------------------------------------
- ! iBGP PEERS (Internal Orange routers)
- ! ----------------------------------------------------------------------------
- ! iBGP to R10 (core router)
- neighbor 10.10.10.10 remote-as 5511
- neighbor 10.10.10.10 update-source Loopback0
- neighbor 10.10.10.10 next-hop-self
- neighbor 10.10.10.10 soft-reconfiguration inbound
- ! Security: Add prefix limits for iBGP session
- neighbor 10.10.10.10 maximum-prefix 50
- 
- ! iBGP to R12 (area 1 router)
- neighbor 10.12.12.12 remote-as 5511
- neighbor 10.12.12.12 update-source Loopback0
- neighbor 10.12.12.12 next-hop-self
- neighbor 10.12.12.12 soft-reconfiguration inbound
- ! Security: Add prefix limits for iBGP session
- neighbor 10.12.12.12 maximum-prefix 50
- !
- ! ----------------------------------------------------------------------------
- ! eBGP PEER (AS23344 - Customer/Peer)
- ! ----------------------------------------------------------------------------
- neighbor 46.88.20.6 remote-as 23344  
- ! CRITICAL: default-originate sends default route (0.0.0.0/0) to this peer
- ! This is common for customer connections (providing Internet access)
- ! In our case is a stub AS
- neighbor 46.88.20.6 default-originate               
- neighbor 46.88.20.6 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 46.88.20.6 prefix-list BOGON-FILTER in
- ! Apply prefix length restriction to OUTBOUND advertisements
- neighbor 46.88.20.6 prefix-list PREFIX_LIST_ADV_SUMM out
- ! Limit maximum prefixes accepted
- neighbor 46.88.20.6 maximum-prefix 50
- !
- ! ----------------------------------------------------------------------------
- ! ROUTE ADVERTISEMENTS (Network statements)
- ! Advertise Orange address space to external peers
- ! ----------------------------------------------------------------------------
- network 46.87.162.111 mask 255.255.255.255     ! Specific Loopback1 address (/32)
- network 46.87.162.0 mask 255.255.255.0         ! /24 block
- network 46.88.20.0 mask 255.255.255.0          ! /24 block (contains eBGP link!)
- network 46.88.22.0 mask 255.255.255.0          ! /24 block
- network 46.89.36.0 mask 255.255.255.0          ! /24 block
- network 46.89.38.0 mask 255.255.255.0          ! /24 block
- network 46.92.2.0 mask 255.255.255.0           ! /24 block
- network 46.88.20.4 mask 255.255.255.252        ! Link to AS23344
- ! Disable automatic network summarization
- no auto-summary
-!
-end
-```
-
-Router 12
-```cisco
-! ==============================================================================
-!
-!                            AS 5511 - Orange - R12
-!            Access Router in OSPF Stub Area with Server Connectivity
-!
-! ==============================================================================
-!
-hostname R12
-!
-! ==============================================================================
-!                                IP Addressing
-! ==============================================================================
-!
-interface Loopback0
- ! Management/OSPF/BGP Router ID interface
- ip address 10.12.12.12 255.255.255.255
-!
-interface Loopback1
- ! Public IP address for BGP advertisement
- ip address 46.87.162.112 255.255.255.255
-!
-interface FastEthernet0/0
- ! SERVER CONNECTION (Server5 - 46.87.162.1/30)
- ip address 46.87.162.2 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet2/0
- ! INTERNAL OSPF link to R11 (10.11.12.0/30 network) - Area 1
- ip address 10.11.12.2 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet3/0
- ! INTERNAL OSPF link to R10 (10.10.12.0/30 network) - Area 1
- ip address 10.10.12.2 255.255.255.252
- no shutdown
-!
-! ==============================================================================
-!                                    OSPF
-! ==============================================================================
-!
-router ospf 1
- ! Explicit Router ID
- router-id 10.12.12.12             
- ! Area 1 (stub area) networks
- network 10.11.12.0 0.0.0.3 area 1      ! Link to R11
- network 10.10.12.0 0.0.0.3 area 1      ! Link to R10
- ! Loopback0 in Area 1
- network 10.12.12.12 0.0.0.0 area 1     ! Lo0
- ! Server network in Area 1 (makes server reachable via OSPF internally)
- network 46.87.162.0 0.0.0.255 area 1   ! Server5 network (46.87.162.0/24)
- ! Configure Area 1 as STUB area (no external routes)
- area 1 stub      
- ! Log adjacency changes for monitoring/troubleshooting
- log-adjacency-changes
-!
-! ==============================================================================
-!                                   BGP
-! ==============================================================================
-!
-router bgp 5511
- ! Set explicit Router ID
- bgp router-id 10.12.12.12
- ! Disable BGP-IGP synchronization
- no synchronization
- ! Log neighbor state changes for monitoring
- bgp log-neighbor-changes
- !
- ! ----------------------------------------------------------------------------
- ! iBGP PEERS (Internal Orange routers)
- ! ----------------------------------------------------------------------------
- ! iBGP to R10 (core router)
- neighbor 10.10.10.10 remote-as 5511
- neighbor 10.10.10.10 update-source Loopback0
- neighbor 10.10.10.10 next-hop-self
- neighbor 10.10.10.10 soft-reconfiguration inbound
- ! Security: Add prefix limits for iBGP session
- neighbor 10.10.10.10 maximum-prefix 50
- 
- ! iBGP to R11 (ABR router)
- neighbor 10.11.11.11 remote-as 5511
- neighbor 10.11.11.11 update-source Loopback0
- neighbor 10.11.11.11 next-hop-self
- neighbor 10.11.11.11 soft-reconfiguration inbound
- ! Security: Add prefix limits for iBGP session
- neighbor 10.11.11.11 maximum-prefix 50
- !
- ! ----------------------------------------------------------------------------
- ! ROUTE ADVERTISEMENTS (Network statements)
- ! Advertise specific Orange resources
- ! ----------------------------------------------------------------------------
- network 46.87.162.112 mask 255.255.255.255    ! Loopback1 (/32)
- network 46.87.162.1 mask 255.255.255.255      ! Server5 (/32)
- ! Note: no auto-summary is default in newer IOS versions
-!
-end
-```
-
-Server 5
-```cisco
-# Server 5
-
-set pcname Server5
-ip 46.87.162.1 46.87.162.2 30
-```
-
-#### AS 23344 - Disney
-
-Router 13
-
-```cisco
-! ==============================================================================
-!
-!                          AS 23344 - Disney - R13
-!          Customer Router with Single-homed BGP to Orange (AS5511)
-!
-! ==============================================================================
-!
-hostname R13
-!
-! ==============================================================================
-!                                IP Addressing
-! ==============================================================================
-!
-interface Loopback0
- ! Management/BGP Router ID interface
- ip address 10.13.13.13 255.255.255.255
-!
-interface Loopback1
- ! Public IP address for BGP advertisement (Disney service)
- ip address 158.23.228.113 255.255.255.255
-!
-interface FastEthernet0/0
- ! EXTERNAL eBGP connection to Orange R11 (AS5511)
- ip address 46.88.20.6 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet1/0
- ! INTERNAL connection (Server Connection)
- ip address 158.23.228.2 255.255.255.252
- no shutdown
-!
-! ==============================================================================
-!                               STATIC ROUTES
-! ==============================================================================
-!
-! Aggregate route for BGP advertisement (Disney address space)
-ip route 158.23.228.0 255.255.255.0 Null0      ! Disney /24 block
-!
-! ==============================================================================
-!                               PREFIX LISTS
-! ==============================================================================
-!
-! Comprehensive BOGON filter for INBOUND BGP advertisements
-! Important for customer to filter invalid routes from provider
-ip prefix-list BOGON-FILTER seq 5 deny 0.0.0.0/8 le 32        ! Software (current local network)
-ip prefix-list BOGON-FILTER seq 10 deny 10.0.0.0/8 le 32      ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 15 deny 100.64.0.0/10 le 32   ! Shared Address Space - CG-NAT
-ip prefix-list BOGON-FILTER seq 20 deny 127.0.0.0/8 le 32     ! Loopback addresses to Localhost
-ip prefix-list BOGON-FILTER seq 25 deny 169.254.0.0/16 le 32  ! APIPA - Automatic Private IP Address
-ip prefix-list BOGON-FILTER seq 30 deny 172.16.0.0/12 le 32   ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 35 deny 192.0.0.0/24 le 32    ! IETF Protocol Assignments
-ip prefix-list BOGON-FILTER seq 40 deny 192.0.2.0/24 le 32    ! Documentation - TEST-NET-1
-ip prefix-list BOGON-FILTER seq 45 deny 192.88.99.0/24 le 32  ! Reserved (6to4 relay anycast)
-ip prefix-list BOGON-FILTER seq 50 deny 192.168.0.0/16 le 32  ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 55 deny 198.18.0.0/15 le 32   ! Benchmark testing
-ip prefix-list BOGON-FILTER seq 60 deny 198.51.100.0/24 le 32 ! Documentation - TEST-NET-2
-ip prefix-list BOGON-FILTER seq 65 deny 203.0.113.0/24 le 32  ! Documentation - TEST-NET-3
-ip prefix-list BOGON-FILTER seq 70 deny 224.0.0.0/4 le 32     ! Multicast address space
-ip prefix-list BOGON-FILTER seq 75 deny 233.252.0.0/24 le 32  ! Documentation - MCAST-TEST-NET
-ip prefix-list BOGON-FILTER seq 80 deny 240.0.0.0/4 le 32     ! Reserved for future use
-! Accept default route from provider (Orange provides default via default-originate)
-ip prefix-list BOGON-FILTER seq 85 permit 0.0.0.0/0
-! Accept all other routes from provider
-ip prefix-list BOGON-FILTER seq 90 permit 0.0.0.0/0 le 32
-!
-! ==============================================================================
-!                                   BGP
-! ==============================================================================
-!
-router bgp 23344
- ! Set explicit Router ID
- ! AS23344: The Walt Disney Company's AS number
- bgp router-id 10.13.13.13
- ! Disable BGP-IGP synchronization
- no synchronization
- ! Log neighbor state changes for monitoring
- bgp log-neighbor-changes
- !
- ! ----------------------------------------------------------------------------
- ! eBGP PEER (Orange AS5511)
- ! ----------------------------------------------------------------------------
- neighbor 46.88.20.5 remote-as 5511              
- neighbor 46.88.20.5 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes from provider
- neighbor 46.88.20.5 prefix-list BOGON-FILTER in
- neighbor 46.88.20.5 maximum-prefix 50
- !
- ! ----------------------------------------------------------------------------
- ! ROUTE ADVERTISEMENTS
- ! ----------------------------------------------------------------------------
- ! Advertise Disney address space to provider
- network 158.23.228.113 mask 255.255.255.255    ! Specific Loopback1 address (/32)
- network 158.23.228.0 mask 255.255.255.0        ! Disney /24 block
- network 46.88.20.4 mask 255.255.255.252        ! Link to Orange R11
- ! Use aggregate-address to ensure only /24 is advertised (not /32s)
- ! summary-only suppresses more specific routes (/32)
- aggregate-address 158.23.228.0 255.255.255.0 summary-only
- ! Note: no auto-summary is implicit with "router bgp" in newer IOS
-!
-end
-```
-
-Server 6
-
-```cisco
-# Server 6
-
-set pcname Server6
-ip 158.23.228.1 158.23.228.2 30
-```
-
-#### AS 701 - Verizon
-
-Router 14
-
-```cisco
-! ==============================================================================
-!
-!                            AS 701 - Verizon - R14
-!           Tier 1 Transit Provider Router with Multiple eBGP Peers
-!
-! ==============================================================================
-!
-hostname R14
-!
-! ==============================================================================
-!                                 Services
-! ==============================================================================
-!
-service password-encryption ! Encrypts passwords to prevent plain text display
-!
-! ==============================================================================
-!                                IP Addressing
-! ==============================================================================
-!
-interface Loopback0
- ! Management/BGP Router ID interface
- ip address 10.14.14.14 255.255.255.255
-!
-interface Loopback1
- ! Public IP address for BGP advertisement
- ip address 64.96.0.114 255.255.255.255
-!
-interface Loopback2
- ! **SIMULATION LOOPBACK** - Represents DDoS attacker
- ! This is the IP source of attack (64.96.0.115)
- ! Used for DDoS mitigation testing/blackhole demonstration
- ip address 64.96.0.115 255.255.255.255
-!
-interface FastEthernet0/0
- ! SERVER CONNECTION
- ! Possibly reserved for future connection or simulation
- ip address 64.96.0.2 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet1/0
- ! EXTERNAL eBGP connection to Vodafone R5 (AS1273)
- ip address 64.112.0.1 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet3/0
- ! EXTERNAL eBGP connection to Telstra (AS4637)
- ip address 64.112.0.9 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet5/0
- ! EXTERNAL eBGP connection to IBM R7 (AS17390)
- ip address 64.112.0.5 255.255.255.252
- no shutdown
-!
-! ==============================================================================
-!                               STATIC ROUTES
-! ==============================================================================
-!
-! Aggregate routes for BGP advertisement (Verizon address space)
-ip route 64.96.0.0 255.240.0.0 Null0      ! 64.96.0.0/12 (/12 block)
-ip route 64.112.0.0 255.240.0.0 Null0     ! 64.112.0.0/12 (/12 block)
-ip route 65.0.204.0 255.255.255.0 Null0   ! 65.0.204.0/24 (specific /24)
-
-! This ensures connectivity to server at 64.96.0.1
-ip route 64.96.0.0 255.255.255.252 FastEthernet0/0
-!
-! ==============================================================================
-!                               PREFIX LISTS
-! ==============================================================================
-!
-! Comprehensive BOGON filter for INBOUND BGP advertisements
-ip prefix-list BOGON-FILTER seq 5 deny 0.0.0.0/8 le 32        ! Software (current local network)
-ip prefix-list BOGON-FILTER seq 10 deny 10.0.0.0/8 le 32      ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 15 deny 100.64.0.0/10 le 32   ! Shared Address Space - CG-NAT
-ip prefix-list BOGON-FILTER seq 20 deny 127.0.0.0/8 le 32     ! Loopback addresses to Localhost
-ip prefix-list BOGON-FILTER seq 25 deny 169.254.0.0/16 le 32  ! APIPA - Automatic Private IP Address
-ip prefix-list BOGON-FILTER seq 30 deny 172.16.0.0/12 le 32   ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 35 deny 192.0.0.0/24 le 32    ! IETF Protocol Assignments
-ip prefix-list BOGON-FILTER seq 40 deny 192.0.2.0/24 le 32    ! Documentation - TEST-NET-1
-ip prefix-list BOGON-FILTER seq 45 deny 192.88.99.0/24 le 32  ! Reserved (6to4 relay anycast)
-ip prefix-list BOGON-FILTER seq 50 deny 192.168.0.0/16 le 32  ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 55 deny 198.18.0.0/15 le 32   ! Benchmark testing
-ip prefix-list BOGON-FILTER seq 60 deny 198.51.100.0/24 le 32 ! Documentation - TEST-NET-2
-ip prefix-list BOGON-FILTER seq 65 deny 203.0.113.0/24 le 32  ! Documentation - TEST-NET-3
-ip prefix-list BOGON-FILTER seq 70 deny 224.0.0.0/4 le 32     ! Multicast address space
-ip prefix-list BOGON-FILTER seq 75 deny 233.252.0.0/24 le 32  ! Documentation - MCAST-TEST-NET
-ip prefix-list BOGON-FILTER seq 80 deny 240.0.0.0/4 le 32     ! Reserved for future use
-! Final permit statement - allows all other legitimate Internet routes
-ip prefix-list BOGON-FILTER seq 85 permit 0.0.0.0/0 le 32     ! All address space
-!
-! ==============================================================================
-!                                   BGP
-! ==============================================================================
-!
-router bgp 701
- ! Set explicit Router ID
- bgp router-id 10.14.14.14
- ! Disable BGP-IGP synchronization
- no synchronization
- ! Log neighbor state changes for monitoring
- bgp log-neighbor-changes
- !
- ! ----------------------------------------------------------------------------
- ! eBGP PEERS (Three External Connections - All Transit Customers)
- ! ----------------------------------------------------------------------------
- 
- ! eBGP Peer 1: AS4637 (Telstra Global - Peering/Tier 1)
- neighbor 64.112.0.10 remote-as 4637
- ! MD5 authentication configured
- neighbor 64.112.0.10 password BGP@p455w0rd_701-4637
- neighbor 64.112.0.10 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 64.112.0.10 prefix-list BOGON-FILTER in
- ! Limit maximum prefixes accepted
- neighbor 64.112.0.10 maximum-prefix 50
- 
- ! eBGP Peer 2: AS1273 (Vodafone)
- neighbor 64.112.0.2 remote-as 1273
- ! GOOD: MD5 authentication configured
- neighbor 64.112.0.2 password BGP@p455w0rd_701-1273
- neighbor 64.112.0.2 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 64.112.0.2 prefix-list BOGON-FILTER in
- ! Limit maximum prefixes accepted
- neighbor 64.112.0.2 maximum-prefix 50
- 
- ! eBGP Peer 3: AS17390 (IBM)
- neighbor 64.112.0.6 remote-as 17390
- ! GOOD: MD5 authentication configured
- neighbor 64.112.0.6 password BGP@p455w0rd_701-17390
- neighbor 64.112.0.6 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 64.112.0.6 prefix-list BOGON-FILTER in
- ! Limit maximum prefixes accepted
- neighbor 64.112.0.6 maximum-prefix 50
- !
- ! ----------------------------------------------------------------------------
- ! ROUTE ADVERTISEMENTS (Network statements)
- ! Advertise Verizon address space to peers
- ! ----------------------------------------------------------------------------
- network 64.96.0.114 mask 255.255.255.255    ! Loopback1 (/32)
- network 64.96.0.0 mask 255.240.0.0          ! 64.96.0.0/12 
- network 64.112.0.0 mask 255.240.0.0         ! 64.112.0.0/12
- network 65.0.204.0 mask 255.255.255.0       ! 65.0.204.0/24 (specific /24)
- network 64.112.0.0 mask 255.255.255.252     ! Link to Vodafone (64.112.0.1/30)
- network 64.112.0.8 mask 255.255.255.252     ! Link to Telstra (64.112.0.9/30)
- network 64.112.0.4 mask 255.255.255.252     ! Link to IBM (64.112.0.5/30)
-
- ! SIMULATION: Advertising attack IP (for DDoS mitigation testing)
- network 64.96.0.115 mask 255.255.255.255     ! Loopback2 - Simulate attacker
-
- ! Aggregate addresses to control route advertisement
- ! These ensure only specific aggregates are advertised, not more specifics
- aggregate-address 64.96.0.0 255.255.255.0 summary-only    ! Controls /24 within /12
- aggregate-address 64.112.0.0 255.255.255.0 summary-only   ! Controls /24 within /12
- aggregate-address 65.0.204.0 255.255.255.0 summary-only   ! Already /24
- ! Note: no auto-summary is default in newer IOS versions
-!
-end
-```
-
-Server 3
-
-```cisco
-# Server 3
-
-ip 64.96.0.1 64.96.0.2 30
-set pcname Server3
-```
-
-#### AS 4637 - TELSTRA
-
-Router 15
-
-```cisco
-! ==============================================================================
-!
-!                            AS 4637 - Telstra - R15
-!                Transit Provider Router with Multiple eBGP Peers
-!
-! ==============================================================================
-!
-hostname R15
-!
-! ==============================================================================
-!                                 Services
-! ==============================================================================
-!
-service password-encryption ! Encrypts passwords to prevent plain text display
-!
-! ==============================================================================
-!                                IP Addressing
-! ==============================================================================
-!
-interface Loopback0
- ! Management/BGP Router ID interface
- ip address 10.15.15.15 255.255.255.255
-!
-interface Loopback1
- ! Public IP address for BGP advertisement
- ip address 211.176.128.115 255.255.255.255
-!
-interface FastEthernet0/0
- ! SERVER CONNECTION
- ip address 211.176.128.2 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet1/0
- ! EXTERNAL eBGP connection to Vodafone R6 (AS1273)
- ip address 48.73.240.14 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet2/0
- ! EXTERNAL eBGP connection to Orange R10 (AS5511)
- ip address 211.176.129.1 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet3/0
- ! EXTERNAL eBGP connection to Verizon R14 (AS701)
- ip address 64.112.0.10 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet4/0
- ! EXTERNAL eBGP connection to AS1 (BadGuy)
- ! AS1 is reserved/historical (original ARPANET)
- ip address 211.176.129.5 255.255.255.252
- no shutdown
-!
-! ==============================================================================
-!                               STATIC ROUTES
-! ==============================================================================
-!
-! Multiple aggregate routes for BGP advertisement (Telstra address space)
-! Telstra has numerous non-contiguous /24 blocks
-ip route 211.176.128.0 255.255.255.0 Null0      ! /24 block
-ip route 211.176.129.0 255.255.255.0 Null0      ! /24 block
-ip route 211.176.130.0 255.255.254.0 Null0      ! /23 block
-ip route 211.176.132.0 255.255.255.0 Null0      ! /24 block
-ip route 211.176.135.0 255.255.255.0 Null0      ! /24 block
-ip route 211.176.136.0 255.255.252.0 Null0      ! /22 block
-ip route 211.176.137.0 255.255.255.0 Null0      ! /24 block
-ip route 211.176.138.0 255.255.255.0 Null0      ! /24 block
-ip route 211.176.139.0 255.255.255.0 Null0      ! /24 block
-ip route 211.176.140.0 255.255.255.0 Null0      ! /24 block
-ip route 211.176.141.0 255.255.255.0 Null0      ! /24 block
-ip route 211.176.142.0 255.255.255.0 Null0      ! /24 block
-!
-! ==============================================================================
-!                               PREFIX LISTS
-! ==============================================================================
-!
-! Comprehensive BOGON filter for INBOUND BGP advertisements
-! Tier 1 providers must filter invalid routes rigorously
-ip prefix-list BOGON-FILTER seq 5 deny 0.0.0.0/8 le 32        ! Software (current local network)
-ip prefix-list BOGON-FILTER seq 10 deny 10.0.0.0/8 le 32      ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 15 deny 100.64.0.0/10 le 32   ! Shared Address Space - CG-NAT
-ip prefix-list BOGON-FILTER seq 20 deny 127.0.0.0/8 le 32     ! Loopback addresses to Localhost
-ip prefix-list BOGON-FILTER seq 25 deny 169.254.0.0/16 le 32  ! APIPA - Automatic Private IP Address
-ip prefix-list BOGON-FILTER seq 30 deny 172.16.0.0/12 le 32   ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 35 deny 192.0.0.0/24 le 32    ! IETF Protocol Assignments
-ip prefix-list BOGON-FILTER seq 40 deny 192.0.2.0/24 le 32    ! Documentation - TEST-NET-1
-ip prefix-list BOGON-FILTER seq 45 deny 192.88.99.0/24 le 32  ! Reserved (6to4 relay anycast)
-ip prefix-list BOGON-FILTER seq 50 deny 192.168.0.0/16 le 32  ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 55 deny 198.18.0.0/15 le 32   ! Benchmark testing
-ip prefix-list BOGON-FILTER seq 60 deny 198.51.100.0/24 le 32 ! Documentation - TEST-NET-2
-ip prefix-list BOGON-FILTER seq 65 deny 203.0.113.0/24 le 32  ! Documentation - TEST-NET-3
-ip prefix-list BOGON-FILTER seq 70 deny 224.0.0.0/4 le 32     ! Multicast address space
-ip prefix-list BOGON-FILTER seq 75 deny 233.252.0.0/24 le 32  ! Documentation - MCAST-TEST-NET
-ip prefix-list BOGON-FILTER seq 80 deny 240.0.0.0/4 le 32     ! Reserved for future use
-! Final permit statement - allows all other legitimate Internet routes
-ip prefix-list BOGON-FILTER seq 85 permit 0.0.0.0/0 le 32     ! All address space
-!
-! ==============================================================================
-!                                   BGP
-! ==============================================================================
-!
-router bgp 4637
- ! Set explicit Router ID
- ! AS4637: Telstra Global - Australian Tier 1 provider
- bgp router-id 10.15.15.15
- ! Disable BGP-IGP synchronization
- no synchronization
- ! Log neighbor state changes for monitoring
- bgp log-neighbor-changes
- !
- ! ----------------------------------------------------------------------------
- ! eBGP PEERS (Four External Connections)
- ! ----------------------------------------------------------------------------
- 
- ! eBGP Peer 1: AS701 (Verizon)
- neighbor 64.112.0.9 remote-as 701
- ! GOOD: MD5 authentication configured
- neighbor 64.112.0.9 password BGP@p455w0rd_701-4637
- neighbor 64.112.0.9 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 64.112.0.9 prefix-list BOGON-FILTER in
- ! Limit maximum prefixes accepted
- neighbor 64.112.0.9 maximum-prefix 50
- 
- ! eBGP Peer 2: AS1273 (Vodafone)
- neighbor 48.73.240.13 remote-as 1273                 
- neighbor 48.73.240.13 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 48.73.240.13 prefix-list BOGON-FILTER in
- ! Limit maximum prefixes accepted
- neighbor 48.73.240.13 maximum-prefix 50
- 
- ! eBGP Peer 3: AS5511 (Orange)
- neighbor 211.176.129.2 remote-as 5511                 
- neighbor 211.176.129.2 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 211.176.129.2 prefix-list BOGON-FILTER in
- ! Limit maximum prefixes accepted
- neighbor 211.176.129.2 maximum-prefix 50
- 
- ! eBGP Peer 4: AS1 (BadGuy)
- ! AS1 is reserved/historical (original ARPANET, BBN)
- neighbor 211.176.129.6 remote-as 1                           
- neighbor 211.176.129.6 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 211.176.129.6 prefix-list BOGON-FILTER in
- ! Limit maximum prefixes accepted
- neighbor 211.176.129.6 maximum-prefix 50
- !
- ! ----------------------------------------------------------------------------
- ! ROUTE ADVERTISEMENTS (Network statements)
- ! Advertise Telstra address space to peers
- ! ----------------------------------------------------------------------------
- network 211.176.128.115 mask 255.255.255.255    ! Loopback1 (/32)
- network 211.176.128.0 mask 255.255.252.0        ! 211.176.128.0/22
- network 211.176.132.0 mask 255.255.255.0        ! 211.176.132.0/24
- network 211.176.135.0 mask 255.255.255.0        ! 211.176.135.0/24
- network 211.176.136.0 mask 255.255.252.0        ! 211.176.136.0/22
- network 211.176.140.0 mask 255.255.254.0        ! 211.176.140.0/23
- network 211.176.141.0 mask 255.255.255.0        ! 211.176.141.0/24
- network 48.73.240.12 mask 255.255.255.252       ! Link to Vodafone
- network 211.176.129.0 mask 255.255.255.252      ! Link to Orange
- network 64.112.0.8 mask 255.255.255.252         ! Link to Verizon
- network 211.176.129.4 mask 255.255.255.252      ! Link to AS1
- !
- ! Aggregate addresses to control route advertisement
- ! These ensure only specific aggregates are advertised
- aggregate-address 211.176.128.0 255.255.252.0 summary-only    ! /22
- aggregate-address 211.176.132.0 255.255.255.0 summary-only    ! /24
- aggregate-address 211.176.135.0 255.255.255.0 summary-only    ! /24
- aggregate-address 211.176.136.0 255.255.252.0 summary-only    ! /22
- aggregate-address 211.176.140.0 255.255.254.0 summary-only    ! /23
- aggregate-address 211.176.141.0 255.255.255.0 summary-only    ! /24
- ! Note: no auto-summary is default in newer IOS versions
-!
-end
-```
-
-Server 4
-
-```cisco
-# Server4
-
-ip 211.176.128.1 211.176.128.2 30
-set pcname Server4
-```
-
-#### AS 20717 - DE-CIX
-
-Router 16
-
-```cisco
-! ==============================================================================
-!
-!                        AS 20717 - DE-CIX - R16
-!                Internet Exchange / Transit Provider Router
-!
-! ==============================================================================
-!
-hostname R16
-!
-! ==============================================================================
-!                                IP Addressing
-! ==============================================================================
-!
-interface Loopback0
- ! Management/BGP Router ID interface
- ip address 10.16.16.16 255.255.255.255
-!
-interface GigabitEthernet2/0
- ! EXTERNAL eBGP connection to Vodafone R6 (AS1273)
- ip address 48.73.240.22 255.255.255.252
- no shutdown
-!
-interface GigabitEthernet4/0
- ! EXTERNAL eBGP connection to Orange R10 (AS5511)
- ip address 46.88.20.2 255.255.255.252
- no shutdown
-!
-! ==============================================================================
-!                               PREFIX LISTS
-! ==============================================================================
-!
-! Comprehensive BOGON filter for INBOUND BGP advertisements
-! Important for transit provider to filter invalid routes
-ip prefix-list BOGON-FILTER seq 5 deny 0.0.0.0/8 le 32        ! Software (current local network)
-ip prefix-list BOGON-FILTER seq 10 deny 10.0.0.0/8 le 32      ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 15 deny 100.64.0.0/10 le 32   ! Shared Address Space - CG-NAT
-ip prefix-list BOGON-FILTER seq 20 deny 127.0.0.0/8 le 32     ! Loopback addresses to Localhost
-ip prefix-list BOGON-FILTER seq 25 deny 169.254.0.0/16 le 32  ! APIPA - Automatic Private IP Address
-ip prefix-list BOGON-FILTER seq 30 deny 172.16.0.0/12 le 32   ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 35 deny 192.0.0.0/24 le 32    ! IETF Protocol Assignments
-ip prefix-list BOGON-FILTER seq 40 deny 192.0.2.0/24 le 32    ! Documentation - TEST-NET-1
-ip prefix-list BOGON-FILTER seq 45 deny 192.88.99.0/24 le 32  ! Reserved (6to4 relay anycast)
-ip prefix-list BOGON-FILTER seq 50 deny 192.168.0.0/16 le 32  ! Private RFC1918 space
-ip prefix-list BOGON-FILTER seq 55 deny 198.18.0.0/15 le 32   ! Benchmark testing
-ip prefix-list BOGON-FILTER seq 60 deny 198.51.100.0/24 le 32 ! Documentation - TEST-NET-2
-ip prefix-list BOGON-FILTER seq 65 deny 203.0.113.0/24 le 32  ! Documentation - TEST-NET-3
-ip prefix-list BOGON-FILTER seq 70 deny 224.0.0.0/4 le 32     ! Multicast address space
-ip prefix-list BOGON-FILTER seq 75 deny 233.252.0.0/24 le 32  ! Documentation - MCAST-TEST-NET
-ip prefix-list BOGON-FILTER seq 80 deny 240.0.0.0/4 le 32     ! Reserved for future use
-! Final permit statement - allows all other legitimate Internet routes
-ip prefix-list BOGON-FILTER seq 85 permit 0.0.0.0/0 le 32     ! All address space
-!
-! ==============================================================================
-!                                   BGP
-! ==============================================================================
-!
-router bgp 20717
- ! Set explicit Router ID
- bgp router-id 10.16.16.16
- ! Disable BGP-IGP synchronization
- no synchronization
- ! Log neighbor state changes for monitoring
- bgp log-neighbor-changes
- !
- ! ----------------------------------------------------------------------------
- ! eBGP PEERS (Two External Connections)
- ! ----------------------------------------------------------------------------
- 
- ! eBGP Peer 1: AS1273 (Vodafone)
- neighbor 48.73.240.21 remote-as 1273                 
- neighbor 48.73.240.21 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 48.73.240.21 prefix-list BOGON-FILTER in
- ! Limit maximum prefixes accepted
- neighbor 48.73.240.21 maximum-prefix 50
- 
- ! eBGP Peer 2: AS5511 (Orange)
- neighbor 46.88.20.1 remote-as 5511                 
- neighbor 46.88.20.1 soft-reconfiguration inbound
- ! Apply BOGON filter to INBOUND routes
- neighbor 46.88.20.1 prefix-list BOGON-FILTER in
- ! Limit maximum prefixes accepted
- neighbor 46.88.20.1 maximum-prefix 50
- !
- ! Note: No "network" statements = R16 doesn't advertise its own prefixes
- ! This is a TRANSPIT-ONLY or IXP router
- ! Disable automatic network summarization
- no auto-summary
-!
-end
-```
-
-#### AS 1 - Level 3 Parent, LCC
-
-BadGuy
-
-```cisco
-! ==============================================================================
-!                 AS 1 - Level 3 Parent, LLC - BADGUY
-! ==============================================================================
-!
-hostname BadGuy
-!
-! ==============================================================================
-!                                IP Addressing
-! ==============================================================================
-!
-! Loopback interface for router ID and management
-interface Loopback0
- ip address 10.66.66.66 255.255.255.255
-!
-! eBGP uplink to AS 4637 (Transit provider)
-interface GigabitEthernet4/0
- ip address 211.176.129.6 255.255.255.252
- no shutdown
-!
-! ==============================================================================
-!                                BOGON PREFIXES
-! ==============================================================================
-!
-! Null route bogon prefixes to prevent traffic to/from non-routable addresses
-! These routes drop traffic at the forwarding plane, protecting against
-! spoofed traffic and DDoS attacks using bogon source addresses.
-ip route 0.0.0.0 255.0.0.0 Null0           ! Software (current local network)
-ip route 10.0.0.0 255.0.0.0 Null0          ! Private RFC 1918 space
-ip route 100.64.0.0 255.192.0.0 Null0      ! Shared Address Space - CG-NAT (RFC 6598)
-ip route 127.0.0.0 255.0.0.0 Null0         ! Loopback addresses to Localhost
-ip route 169.254.0.0 255.255.0.0 Null0     ! APIPA - Automatic Private IP Address (RFC 3927)
-ip route 172.16.0.0 255.240.0.0 Null0      ! Private RFC 1918 space
-ip route 192.0.0.0 255.255.255.0 Null0     ! IETF Protocol Assignments (RFC 5736)
-ip route 192.0.2.0 255.255.255.0 Null0     ! Documentation - TEST-NET-1 (RFC 5737)
-ip route 192.88.99.0 255.255.255.0 Null0   ! Reserved (6to4 Relay Anycast - RFC 3068)
-ip route 192.168.0.0 255.255.0.0 Null0     ! Private RFC 1918 space
-ip route 198.18.0.0 255.254.0.0 Null0      ! Benchmark testing (RFC 2544)
-ip route 198.51.100.0 255.255.255.0 Null0  ! Documentation - TEST-NET-2 (RFC 5737)
-ip route 203.0.113.0 255.255.255.0 Null0   ! Documentation - TEST-NET-3 (RFC 5737)
-ip route 224.0.0.0 240.0.0.0 Null0         ! Multicast (Class D)
-ip route 233.252.0.0 255.255.255.0 Null0   ! Documentation - MCAST-TEST-NET (RFC 5771)
-ip route 240.0.0.0 240.0.0.0 Null0         ! Reserved for future use (Class E)
-!
-! ==============================================================================
-!                                   BGP
-! ==============================================================================
-!
-router bgp 1
- bgp router-id 10.66.66.66                  ! Use loopback address as router ID
- no synchronization                         ! Disable IGP synchronization (not using IGP)
- bgp log-neighbor-changes                   ! Log BGP neighbor state changes
- !
- ! eBGP Session to AS 4637
- ! ------------------------------------------
- neighbor 211.176.129.5 remote-as 4637      ! Peer with AS 4637
- neighbor 211.176.129.5 soft-reconfiguration inbound  ! Enable soft reconfig for policy changes
- neighbor 211.176.129.5 maximum-prefix 50   ! Limit prefixes to prevent route leaks/floods
- no auto-summary                            ! Disable automatic network summarization
-
- redistribute static                        ! Advertise static routes (bogons) to peers
-end
-```

@@ -7,3 +7,4 @@
 # Arquivos do GNS3
 **/.gns3* filter=lfs diff=lfs merge=lfs -text
 **/*.gns3 filter=lfs diff=lfs merge=lfs -text
+**/*.gns3project filter=lfs diff=lfs merge=lfs -text
