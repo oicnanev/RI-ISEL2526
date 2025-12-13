@@ -1,0 +1,12 @@
+Dec 13 10:57:42.594 HYPERVISOR: Release 0.2.23-amd64/Darwin (tag 2023010200)
+Dec 13 10:57:42.595 HYPERVISOR: Started on IP = 127.0.0.1, TCP port = 54458.
+Dec 13 10:57:42.599 HYPERVISOR: exec_cmd: hypervisor version 
+Dec 13 10:57:42.599 HYPERVISOR: exec_cmd: hypervisor working_dir /Users/oicnanev/GNS3/projects/RI_25_26_GROUP1_Phase4/project-files/dynamips 
+Dec 13 10:57:42.599 GENERAL: working_dir=/Users/oicnanev/GNS3/projects/RI_25_26_GROUP1_Phase4/project-files/dynamips
+Dec 13 10:57:42.599 HYPERVISOR: exec_cmd: ethsw create IXP1 
+Dec 13 10:57:46.144 HYPERVISOR: exec_cmd: nio create_udp udp-08ab455f-dc54-48b9-bf93-e29019d8c56a 10255 127.0.0.1 10254 
+Dec 13 10:57:46.145 HYPERVISOR: exec_cmd: ethsw add_nio IXP1 udp-08ab455f-dc54-48b9-bf93-e29019d8c56a 
+Dec 13 10:57:46.150 HYPERVISOR: exec_cmd: ethsw set_access_port IXP1 udp-08ab455f-dc54-48b9-bf93-e29019d8c56a 1 
+Dec 13 10:57:48.282 HYPERVISOR: exec_cmd: nio create_udp udp-85bd7cde-42bd-4d79-bc05-c4af087ddbbf 10348 127.0.0.1 10349 
+Dec 13 10:57:48.283 HYPERVISOR: exec_cmd: ethsw add_nio IXP1 udp-85bd7cde-42bd-4d79-bc05-c4af087ddbbf 
+Dec 13 10:57:48.294 HYPERVISOR: exec_cmd: ethsw set_access_port IXP1 udp-85bd7cde-42bd-4d79-bc05-c4af087ddbbf 1 
